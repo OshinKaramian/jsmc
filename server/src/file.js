@@ -48,7 +48,7 @@ let validateAndCleanFFProbeOutput = function(directory, metadata) {
   // get rid of the root
   filename = metadata.format.filename.substring(directory.length + 1);
   filename = filename.split(path.sep)[0];
-  let filename = filename.toLowerCase();
+  filename = filename.toLowerCase();
 
   ignoredPhrases.forEach(function(phrase) {
     var returnValue = filename.split(phrase);
