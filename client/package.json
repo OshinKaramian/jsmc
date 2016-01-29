@@ -1,0 +1,42 @@
+{
+  "name": "node-media-center",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "babel": "^6.0.15",
+    "bluebird": "^3.0.5",
+    "bootstrap": "^3.3.5",
+    "hapi": "*",
+    "inert": "^3.1.0",
+    "jquery": "^2.1.4",
+    "react": "^0.14.0",
+    "react-bootstrap": "^0.27.3",
+    "react-dom": "^0.14.0",
+    "react-masonry-component": "^2.0.0",
+    "react-modal": "^0.6.1",
+    "videojs": "^4.12.15",
+    "videojs-contrib-hls": "^0.17.9",
+    "videojs-contrib-media-sources": "^1.0.0",
+    "walk": "^2.3.9"
+  },
+  "devDependencies": {
+    "browserify": "^12.0.1",
+    "del": "^2.0.2",
+    "gulp": "^3.9.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-html-replace": "^1.5.4",
+    "gulp-react": "^3.1.0",
+    "gulp-streamify": "^1.0.2",
+    "gulp-stylus": "^2.1.0",
+    "gulp-uglify": "^1.5.1",
+    "reactify": "^1.1.1",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.6.0"
+  }
+}

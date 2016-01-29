@@ -1,0 +1,24 @@
+{
+  "name": "node-media-center",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "better-console": "^0.2.4",
+    "bluebird": "^3.0.5",
+    "fluent-ffmpeg": "git://github.com/OshinKaramian/node-fluent-ffmpeg.git",
+    "fs-extra": "^0.24.0",
+    "hapi": "*",
+    "inert": "^3.1.0",
+    "jquery": "^2.1.4",
+    "mongodb": "^2.0.47",
+    "request": "^2.65.0",
+    "sleep": "^3.0.0",
+    "walk": "^2.3.9"
+  }
+}

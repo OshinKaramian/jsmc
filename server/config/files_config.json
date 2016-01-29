@@ -1,0 +1,10 @@
+{
+  "Movies": {
+    "directory": "/Volumes/share/Movies",
+    "type": "movie"
+  },
+  "Television": {
+    "directory": "/Volumes/share/TV",
+    "type": "tv"
+  }
+}
