@@ -61,4 +61,4 @@ cd /folder/to/jsmc/client/dist
 node server.js
 ```
 
-* Navigate to http://localhost:8000/index.html
+* Navigate to [http://localhost:8000/index.html](http://localhost:8000/index.html)
