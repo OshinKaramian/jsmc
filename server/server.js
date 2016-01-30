@@ -53,6 +53,7 @@ server.register(inert, function () {
     method: 'GET',
     path: '/collections/{collection*}',
     handler: function (request, reply) {
+      debugger;
      var name = request.params.collection;
 
      if (name) {

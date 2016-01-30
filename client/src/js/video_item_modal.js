@@ -1,3 +1,4 @@
+"use strict";
 var $ = require('jquery');
 window.$ = window.jQuery = require('jquery')
 var jquery = require('jquery');
@@ -7,8 +8,8 @@ var Grid = require('react-bootstrap').Grid;
 var Row = require('react-bootstrap').Row;
 var Col = require('react-bootstrap').Col;
 
-var ModalItemInfo = React.createClass({
-  render: function() {
+class ModalItemInfo extends React.Component {
+  render() {
     var titleClass = this.props.className + "-title";
     return (
       <Row className={this.props.className}>
@@ -16,18 +17,19 @@ var ModalItemInfo = React.createClass({
         <Col md={11} sm={9}><h4><small>{this.props.content}</small></h4></Col>
       </Row>
     );
-
   }
-});
+}
 
-var VideoOptionBar = React.createClass({
-  playVideo: function() {
+class VideoOptionBar extends React.Component {
+  playVideo() {
     window.location = 'video.html?filename=' + this.props.videoId;
-  },
-  openInfo: function() {
+  }
+
+  openInfo() {
     this.props.openInfo();
-  },
-  render: function() {
+  }
+
+  render() {
     return (
       <Row className="video-option-bar">
         <Col md={10} sm={4} />
@@ -36,28 +38,30 @@ var VideoOptionBar = React.createClass({
       </Row>
     );
   }
-});
+}
 
-var VideoItemModal = React.createClass({
-  getInitialState: function() {
-    return {
+// This is huge, chop it down
+class VideoItemModal extends React.Component {
+  constructor() {
+    super();
+    this.state = {
       currentMovie: null,
       isModalOpen: false,
-      currentPanel: this.generalInfoContent
+      currentPanel: this.generalInfoContent.bind(this)
     };
-  },
+  }
 
-  closeModal: function() {
+  closeModal() {
     $("body").removeClass("modal-open");
     this.props.onRequestClose();
-    this.setState({ currentPanel: this.generalInfoContent });
-  },
+    this.setState({ currentPanel: this.generalInfoContent.bind(this) });
+  }
 
-  openInfoPanel: function() {
-    this.setState({ currentPanel: this.fileInfoContent });
-  },
+  openInfoPanel() {
+    this.setState({ currentPanel: this.fileInfoContent.bind(this) });
+  }
 
-  generalInfoContent: function() {
+  generalInfoContent() {
     return (
       <Row>
         <Col md={6} sm={12} className="movie-info-backdrop-column">
@@ -76,17 +80,13 @@ var VideoItemModal = React.createClass({
         </Col>
       </Row>
     );
-  },
+  }
 
-  playFile: function(fileInfo, index) {
-    console.log(fileInfo);
-    console.log(index);
-    console.log(this.props);
+  playFile(fileInfo, index) {
     window.location = 'video.html?filename=' + this.props.id + '&fileId=' + index;
-  },
+  }
 
-  fileInfoContent: function() {
-    var self = this;
+  fileInfoContent() {
     var files = this.props.filedata.map(function(file, index) {
       return (
         <Row>
@@ -96,7 +96,6 @@ var VideoItemModal = React.createClass({
       );
     }.bind(this));
 
-    console.log(this.props.currentMovie);
     return (
       <Row>
         <Col md={12}>
@@ -104,9 +103,9 @@ var VideoItemModal = React.createClass({
         </Col>
       </Row>
     );
-  },
+  }
 
-  render: function() {
+  render() {
      var modalStyle = {
         content: {
           padding: "0px",
@@ -136,6 +135,6 @@ var VideoItemModal = React.createClass({
       return null;
     }
   }
-});
+};
 
 module.exports = VideoItemModal;
