@@ -40,7 +40,7 @@
       var fileIndex = $.getUrlVar('fileId');
 
       $.ajax({
-        url: 'http://localhost:3000/video/' + filename,
+        url: 'http://localhost:3000/media/' + filename,
         type: 'GET',
         success: function(data, textStatus, jqXHR) {
           console.log(data.backdrop_path );
@@ -48,10 +48,10 @@
         }
       });
 
-      var url = 'http://localhost:3000/transcode/' + filename
-      if (fileIndex) {
-        url += '/' + fileIndex;
+      if (!fileIndex) {
+        fileIndex = 0;
       }
+      var url = 'http://localhost:3000/media/' + filename + '/file/' + fileIndex + '/transcode';
 
       $.ajax({
         url: url,

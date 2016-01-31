@@ -25,16 +25,16 @@ server.register(inert, function () {
 
   server.route( {
     method: 'POST',
-    path: '/transcode/{mediaId}/{fileIndex?}',
+    path: '/media/{mediaId}/file/{fileIndex}/transcode',
     handler: transcode
   });
 
   server.route({
     method: 'GET',
-    path: '/video/{mediaId*}',
+    path: '/media/{mediaId*}',
     handler: function (request, reply) {
       db.getMedia('movies', request.params.mediaId).then(function(media) {
-        return reply(doc).header('Content-Type', 'application/json');
+        return reply(media).header('Content-Type', 'application/json');
       })
     }
   });

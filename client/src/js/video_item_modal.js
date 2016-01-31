@@ -33,8 +33,8 @@ class VideoOptionBar extends React.Component {
     return (
       <Row className="video-option-bar">
         <Col md={10} sm={4} />
-        <Col md={1}  sm={4}><span onClick={this.openInfo} className="glyphicon glyphicon-info-sign" /></Col>
-        <Col md={1}  sm={4}><span onClick={this.playVideo} className="glyphicon glyphicon-play" /></Col>
+        <Col md={1}  sm={4}><span onClick={this.openInfo.bind(this)} className="glyphicon glyphicon-info-sign" /></Col>
+        <Col md={1}  sm={4}><span onClick={this.playVideo.bind(this)} className="glyphicon glyphicon-play" /></Col>
       </Row>
     );
   }
@@ -120,7 +120,7 @@ class VideoItemModal extends React.Component {
     if (this.props.isModalOpen) {
       $("body").addClass("modal-open");
       return (
-        <Modal className="modal-info-body" onRequestClose={this.closeModal} style={ modalStyle } isOpen={this.props.isModalOpen} >
+        <Modal className="modal-info-body" onRequestClose={this.closeModal.bind(this)} style={ modalStyle } isOpen={this.props.isModalOpen} >
           <Grid className="movie-info-content" fluid={true}>
             <Row className="movie-info-header" >
               <Col className="movie-info-header-title" md={12}>
