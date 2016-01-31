@@ -1,3 +1,4 @@
+"use strict";
 var $ = require('jquery');
 window.$ = window.jQuery = require('jquery')
 var React = require('react');
@@ -19,7 +20,8 @@ var VideoDisplay = React.createClass({
 
   componentDidMount: function() {
     var self = this;
-    api.getCollection('Movies').then(function(data) {
+    let collection = new api.collection('movies');
+    collection.get('Movies').then(function(data) {
       self.setState({ data: data});
     }.bind(this));
   },
@@ -94,7 +96,8 @@ var TopBanner = React.createClass({
 
   componentDidMount: function() {
     var self = this;
-    api.getConfig().then(function(data) {
+    let config = new api.config();
+    config.get().then(function(data) {
       self.setState({ config: data});
     }.bind(this));
   },
