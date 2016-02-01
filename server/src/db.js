@@ -34,5 +34,5 @@ module.exports.getMedia = function(collectionName, mediaId) {
 };
 
 module.exports.getCollection = function(collectionCategory, collectionName) {
-  return db.findAsync({ collection: collectionName }).sort({ title: 1}).toArray();
+  return db.findAsync({ collection: collectionName });
 };

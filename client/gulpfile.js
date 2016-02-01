@@ -11,6 +11,7 @@ var path = {
   HTML: 'src/index.html',
   HTML_PLAYER: 'src/video.html',
   SERVER: 'src/server.js',
+  ELECTRON: 'src/main.js',
   MINIFIED_OUT: 'build.min.js',
   OUT: 'build.js',
   DEST: 'dist',
@@ -27,6 +28,9 @@ gulp.task('copy', function(){
   .pipe(gulp.dest(path.DEST));
 
   gulp.src(path.SERVER)
+  .pipe(gulp.dest(path.DEST));
+  
+  gulp.src(path.ELECTRON)
   .pipe(gulp.dest(path.DEST));
 });
 
