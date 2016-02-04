@@ -8,10 +8,10 @@ let db = new Database({ filename: path.join(__dirname,'..', 'db', 'jsmc.db'), au
 db = Promise.promisifyAll(db);
 
 module.exports.insertQuery = function(collectionName, data) {
-    console.log(data)
   return db.findOneAsync({ "title": data.title  })
     .then(function(item) {
-        console.log('dog');
+    console.log('found');
+    console.log(item);
       if (!item) {
         console.log('Inserted new item for: ' + data.title);
         data.collection = collectionName;
@@ -21,11 +21,13 @@ module.exports.insertQuery = function(collectionName, data) {
       } else {
         console.log('Appending new file for: ' + data.title + ' filename: ' + data.filedata[0].filename);
         item.filedata.push(data.filedata[0]);
+
         return db.insertAsync({ "title" : data.title }, item);
       }
     })
     .catch(function(err) {
       console.error(err);
+      throw err;
     })
 };
 

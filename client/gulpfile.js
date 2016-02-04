@@ -10,6 +10,7 @@ var streamify = require('gulp-streamify');
 var path = {
   HTML: 'src/index.html',
   HTML_PLAYER: 'src/video.html',
+  CSS: 'src/style/',
   SERVER: 'src/server.js',
   ELECTRON: 'src/main.js',
   MINIFIED_OUT: 'build.min.js',
@@ -24,6 +25,8 @@ gulp.task('copy', function(){
   gulp.src(path.HTML)
   .pipe(gulp.dest(path.DEST));
 
+  gulp.src(path.CSS)
+  .pipe(gulp.dest(path.DEST));
   gulp.src(path.HTML_PLAYER)
   .pipe(gulp.dest(path.DEST));
 

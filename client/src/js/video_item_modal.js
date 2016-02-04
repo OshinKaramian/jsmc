@@ -11,10 +11,12 @@ var Col = require('react-bootstrap').Col;
 class ModalItemInfo extends React.Component {
   render() {
     var titleClass = this.props.className + "-title";
+    var contentClass = this.props.className + "-content";
     return (
       <Row className={this.props.className}>
-        <Col md={1} sm={3} className={titleClass}><h6>{this.props.title}</h6></Col>
-        <Col md={11} sm={9}><h4><small>{this.props.content}</small></h4></Col>
+        <Col md={1} className={titleClass}><h4>{this.props.title}</h4></Col>
+        <Col md={1}/>
+        <Col md={10} className={contentClass}><h5>{this.props.content}</h5></Col>
       </Row>
     );
   }
@@ -32,9 +34,8 @@ class VideoOptionBar extends React.Component {
   render() {
     return (
       <Row className="video-option-bar">
-        <Col md={10} sm={4} />
-        <Col md={1}  sm={4}><span onClick={this.openInfo.bind(this)} className="glyphicon glyphicon-info-sign" /></Col>
-        <Col md={1}  sm={4}><span onClick={this.playVideo.bind(this)} className="glyphicon glyphicon-play" /></Col>
+        <Col md={3}><button className="btn btn-default btn-lg" onClick={this.openInfo.bind(this)}><span className="glyphicon glyphicon-info-sign"></span> Info</button></Col>
+        <Col md={3}><button className="btn btn-default btn-lg" onClick={this.playVideo.bind(this)}><span  className="glyphicon glyphicon-play"></span> Play</button></Col>
       </Row>
     );
   }
@@ -62,21 +63,37 @@ class VideoItemModal extends React.Component {
   }
 
   generalInfoContent() {
-    return (
-      <Row>
-        <Col md={6} sm={12} className="movie-info-backdrop-column">
+     
+       /*<Col md={4} sm={12} className="movie-info-backdrop-column">
           <Row>
             <Col md={12}>
               <img className="backdrop-img" src={this.props.backdrop_path} />
             </Col>
           </Row>
           <VideoOptionBar openInfo={this.openInfoPanel} videoId={this.props.id} />
-        </Col>
-        <Col md={6} sm={12}>
-          <ModalItemInfo className="modal-grid-row-right-top" title="Plot:" content={this.props.long_plot} />
-          <ModalItemInfo className="modal-grid-row-right" title="Director:" content={this.props.director} />
-          <ModalItemInfo className="modal-grid-row-right" title="Writer:" content={this.props.writer} />
-          <ModalItemInfo className="modal-grid-row-right" title="Actors:" content={this.props.actors} />
+        </Col>*/
+            /*     <h4>{this.props.movie.title}</h4>
+              <h6>IMDB: <small>{this.props.movie.tomato_user_rating}</small></h6>
+          <h6>Metacritc: <small>{this.props.movie.metacritic_rating}</small></h6>
+          <h6>RT: <small>{this.props.movie.tomato_meter}/{this.props.movie.tomato_user_rating}</small></h6>
+          */
+        
+        //document.body.style.background = "url(" + this.props.backdrop_path + ")";
+         // document.body.style.-webkit-background-size = 'cover';
+        //document.body.style.-moz-background-size = 'cover';
+        //document.body.style.-o-background-size = 'cover';
+        //document.body.style.background-size = 'cover';
+    return (
+      <Row >      
+        <Col className="modal-video-info" md={4} sm={4} >
+          <Row className="modal-movie-title"><h1>{this.props.title}</h1></Row>
+          <Col md={12}>           
+            <ModalItemInfo className="modal-grid-row-right" title="Plot:" content={this.props.long_plot} />
+            <ModalItemInfo className="modal-grid-row-right" title="Director:" content={this.props.director} />
+            <ModalItemInfo className="modal-grid-row-right" title="Writer:" content={this.props.writer} />
+            <ModalItemInfo className="modal-grid-row-right" title="Actors:" content={this.props.actors} />
+            <VideoOptionBar openInfo={this.openInfoPanel} videoId={this.props.id} />
+          </Col>
         </Col>
       </Row>
     );
@@ -118,18 +135,14 @@ class VideoItemModal extends React.Component {
       };
 
     if (this.props.isModalOpen) {
-      $("body").addClass("modal-open");
+
       return (
-        <Modal className="modal-info-body" onRequestClose={this.closeModal.bind(this)} style={ modalStyle } isOpen={this.props.isModalOpen} >
+
           <Grid className="movie-info-content" fluid={true}>
-            <Row className="movie-info-header" >
-              <Col className="movie-info-header-title" md={12}>
-                <h2>{this.props.title}</h2>
-              </Col>
-            </Row>
+         
             {this.state.currentPanel()}
           </Grid>
-        </Modal>
+ 
       );
     } else {
       return null;

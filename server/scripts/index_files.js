@@ -42,6 +42,7 @@ let indexAllFiles = function(collectionName, searchInfo) {
 
 process.on('uncaughtException', function (err) {
   console.log(err);
+  console.log(err.stack);
   process.exit(1);
 })
 

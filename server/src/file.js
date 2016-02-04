@@ -38,8 +38,8 @@ const validExtensions = [
   '.mp4'
 ];
 
-ffmpeg.setFfmpegPath(path.join('..','ffmpeg','win','bin','ffmpeg.exe'));
-ffmpeg.setFfprobePath(path.join('..','ffmpeg','win','bin','ffprobe.exe'));
+ffmpeg.setFfmpegPath(path.join('ffmpeg','win','bin','ffmpeg.exe'));
+ffmpeg.setFfprobePath(path.join('ffmpeg','win','bin','ffprobe.exe'));
 
 let validateAndCleanFFProbeOutput = function(directory, metadata) {
   let filename;

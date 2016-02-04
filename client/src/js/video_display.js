@@ -2,6 +2,9 @@
 var $ = require('jquery');
 window.$ = window.jQuery = require('jquery')
 var React = require('react');
+var Coverflow = require('react-coverflow');
+var Slider = require('react-slick');
+var Slick = require('slick-carousel');
 var ReactDOM = require('react-dom');
 var Row = require('react-bootstrap').Row;
 var Col = require('react-bootstrap').Col;
@@ -36,6 +39,57 @@ var VideoDisplay = React.createClass({
   onRequestClose: function(event) {
     this.setState({ isModalOpen: false });
   },
+  
+  componentDidUpdate: function() {
+      $('.carousel').slick({    
+        infinite: false,
+        dots: false,
+        speed: 500,
+        slidesToShow: 6,
+        slidesToScroll: 1,
+        prevArrow: $('.slider-button-left'),
+        nextArrow: $('.slider-button-right'),
+        // the magic
+        responsive: [{
+            breakpoint: 1500,
+            settings: {
+                slidesToShow: 4,
+                infinite: true
+            }
+
+            },{
+
+            breakpoint: 1280,
+            settings: {
+                slidesToShow: 3,
+                infinite: true
+            }
+
+            },
+            {
+
+            breakpoint: 1024,
+            settings: {
+                slidesToShow: 2,
+                infinite: true
+            }
+
+            }, {
+
+            breakpoint: 600,
+            settings: {
+                slidesToShow: 1,
+                dots: true
+            }
+
+            }, {
+
+            breakpoint: 300,
+            settings: "unslick" // destroys slick
+
+            }]
+        });
+  },
 
   render: function() {
     var
@@ -45,17 +99,39 @@ var VideoDisplay = React.createClass({
         return <VideoItem onItemClick={self.onChildClick} key={index} movie={movie} poster={movie.poster_path} title={movie.title} videoid={movie.id}></VideoItem>
       }),
       currentMovie = this.state.currentMovie || {};
-
+      var rowStyle = { height: "500px", top:"0px"}
     return (
-        <div>
-          <VideoItemModal
+        <div>    
+          <Row style={rowStyle}>
+            <Col md={12}>
+            <div >
+             <VideoItemModal
             {... currentMovie}
             isModalOpen={this.state.isModalOpen}
             onRequestClose={this.onRequestClose}
-          />
-          <Row>
-            {nodes}
+            />
+            </div>
+            </Col>
           </Row>
+          <center>
+          <Row className="footer">
+            <Col md={1}>
+            <div>
+                <h1><i className="slider-button slider-button-left fa fa-chevron-circle-left fa-8x"></i></h1>
+            </div>
+            </Col>
+            <Col md={10}>
+            <div className="carousel">
+                {nodes}
+            </div>
+            </Col>
+            <Col md={1}>
+                <div>
+                    <h1><i className="slider-button slider-button-right fa fa-chevron-circle-right fa-8x"></i></h1>
+                </div>
+            </Col>
+          </Row>
+          </center>
         </div>
       );
   }
@@ -63,26 +139,24 @@ var VideoDisplay = React.createClass({
 
 var VideoItem = React.createClass({
   handleClick: function(event) {
-    console.log(this.props);
+    var itemStyle = { 
+        'background': "url(" + this.props.movie.backdrop_path + ")", 
+        '-webkit-background-size': 'cover',
+    };
+    $('body').css(itemStyle);
     this.props.onItemClick(this.props.movie);
   },
 
   render: function() {
     var self = this;
-    return (
-      <Col className="col-centered" lg={3} md={4} sm={4} xs={6} >
-      <div >
-        <div className="centered" onClick={this.handleClick} className="videoItem">
-        <center>
-          <img width="200px" src={this.props.poster}/>
-          <h4>{this.props.movie.title}</h4>
-          <h6>IMDB: <small>{this.props.movie.tomato_user_rating}</small></h6>
-          <h6>Metacritc: <small>{this.props.movie.metacritic_rating}</small></h6>
-          <h6>RT: <small>{this.props.movie.tomato_meter}/{this.props.movie.tomato_user_rating}</small></h6>
-          </center>
+    var divStyle = {
+        display: 'inline-block'
+    };
+          
+    return (     
+        <div onClick={this.handleClick}>
+          <img height="100%" src={this.props.poster}/>
         </div>
-      </div>
-      </Col>
     )
   }
 });
@@ -119,7 +193,6 @@ var App = React.createClass({
   render: function() {
     return (
       <div className="container-full">
-        <TopBanner />
         <VideoDisplay />
       </div>
     );

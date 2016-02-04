@@ -1,10 +1,6 @@
 {
   "Movies": {
-    "directory": "/Volumes/share/Movies",
+    "directory": "Z:\\Movies",
     "type": "movie"
-  },
-  "Television": {
-    "directory": "/Volumes/share/TV",
-    "type": "tv"
   }
 }
