@@ -6849,12 +6849,12 @@ vjs.MediaTechController.prototype.emulateTextTracks = function() {
       tracks,
       script;
 
-  if (!window['WebVTT']) {
-    script = document.createElement('script');
-    script.src = player.options()['vtt.js'] || '../node_modules/vtt.js/dist/vtt.js';
-    player.el().appendChild(script);
-    window['WebVTT'] = true;
-  }
+ // if (!window['WebVTT']) {
+ //   script = document.createElement('script');
+    //script.src = player.options()['vtt.js'] || '../node_modules/vtt.js/dist/vtt.js';
+  //  player.el().appendChild(script);
+  //  window['WebVTT'] = true;
+  //}
 
   tracks = this.textTracks();
   if (!tracks) {

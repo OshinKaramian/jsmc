@@ -2,15 +2,13 @@
 var $ = require('jquery');
 window.$ = window.jQuery = require('jquery')
 var React = require('react');
-var Coverflow = require('react-coverflow');
-var Slider = require('react-slick');
 var Slick = require('slick-carousel');
 var ReactDOM = require('react-dom');
 var Row = require('react-bootstrap').Row;
 var Col = require('react-bootstrap').Col;
 var Bootstrap = require('bootstrap');
 var VideoItemModal = require('./video_item_modal.js');
-var api = require('./api.js');
+var api = require('../common/api.js');
 
 var VideoDisplay = React.createClass({
   getInitialState: function() {
@@ -23,7 +21,7 @@ var VideoDisplay = React.createClass({
 
   componentDidMount: function() {
     var self = this;
-    let collection = new api.collection('movies');
+    let collection = new api.Collection('movies');
     collection.get('Movies').then(function(data) {
       self.setState({ data: data});
     }.bind(this));
@@ -170,7 +168,7 @@ var TopBanner = React.createClass({
 
   componentDidMount: function() {
     var self = this;
-    let config = new api.config();
+    let config = new api.Config();
     config.get().then(function(data) {
       self.setState({ config: data});
     }.bind(this));

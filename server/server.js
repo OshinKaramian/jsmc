@@ -72,9 +72,7 @@ server.register(inert, function () {
     method: 'GET',
     path: '/{file*}',
     handler: function (request, reply) {
-      console.log(request.params.file);
       if (path.extname(request.params.file) === '.ts') {
-        console.log('is ts');
         reply.file(request.params.file).header('Content-Type', 'application/vnd.apple.mpegurl');
       } else {
         reply.file(request.params.file);

@@ -4,18 +4,22 @@ var baseApiUrl = 'http://localhost:3000/';
 
 window.$ = window.jQuery = require('jquery');
 
-module.exports.media = class Media {
+module.exports.Media = class Media {
   constructor() {
   }
+  
+  get(mediaId) {
+    return $.get(baseApiUrl + 'media/' + mediaId);
+  }
+  
+  transcode({mediaId: mediaId, fileIndex: fileIndex = 0}) {
+    return $.post(baseApiUrl + 'media/' + mediaId + '/file/' + fileIndex + '/transcode')
+  }
+}
 
-
-
-
-},
-
-module.exports.collection = class Collection {
+module.exports.Collection = class Collection {
   constructor(name) {
-    this.name = name;
+    this.name = name; 
   }
 
   get(collectionName) {
@@ -27,7 +31,7 @@ module.exports.collection = class Collection {
   }
 }
 
-module.exports.config = class Config {
+module.exports.Config = class Config {
   contructor() {
   }
 
