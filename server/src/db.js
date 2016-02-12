@@ -22,7 +22,7 @@ module.exports.insertQuery = function(collectionName, data) {
         console.log('Appending new file for: ' + data.title + ' filename: ' + data.filedata[0].filename);
         item.filedata.push(data.filedata[0]);
 
-        return db.insertAsync({ "title" : data.title }, item);
+        return db.updateAsync({ "title" : data.title }, item);
       }
     })
     .catch(function(err) {
