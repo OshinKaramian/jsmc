@@ -25,16 +25,16 @@ server.register(inert, function () {
 
   server.route( {
     method: 'POST',
-    path: '/transcode/{mediaId}/{fileIndex?}',
+    path: '/media/{mediaId}/file/{fileIndex}/transcode',
     handler: transcode
   });
 
   server.route({
     method: 'GET',
-    path: '/video/{mediaId*}',
+    path: '/media/{mediaId*}',
     handler: function (request, reply) {
       db.getMedia('movies', request.params.mediaId).then(function(media) {
-        return reply(doc).header('Content-Type', 'application/json');
+        return reply(media).header('Content-Type', 'application/json');
       })
     }
   });
@@ -53,6 +53,7 @@ server.register(inert, function () {
     method: 'GET',
     path: '/collections/{collection*}',
     handler: function (request, reply) {
+      debugger;
      var name = request.params.collection;
 
      if (name) {
@@ -69,9 +70,13 @@ server.register(inert, function () {
 
   server.route({
     method: 'GET',
-    path: '/{param*}',
-    handler: {
-      directory: { path: '.' }
+    path: '/{file*}',
+    handler: function (request, reply) {
+      if (path.extname(request.params.file) === '.ts') {
+        reply.file(request.params.file).header('Content-Type', 'application/vnd.apple.mpegurl');
+      } else {
+        reply.file(request.params.file);
+      }
      }
   });
 

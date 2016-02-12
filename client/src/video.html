@@ -1,10 +1,11 @@
 <head>
     <link href="http://vjs.zencdn.net/4.12/video-js.css" rel="stylesheet">
     <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="src/video.dev.js"></script>
+    <script src="src/videojs-media-sources.js"></script>
+    <script src="src/videojs.hls.min.js"></script>
 
-    <script src="video.dev.js"></script>
-    <script src="videojs-media-sources.js"></script>
-    <script src="videojs.hls.min.js"></script>
+   
     <style>
       .video-js {
         width: 100% !important;
@@ -31,59 +32,5 @@
   </video>
   </div>
   </div>
-
-  <script>
-    var myPlayer = videojs('my-video');
-
-    var transcodeAndRun = function() {
-      var filename = $.getUrlVar('filename');
-      var fileIndex = $.getUrlVar('fileId');
-
-      $.ajax({
-        url: 'http://localhost:3000/video/' + filename,
-        type: 'GET',
-        success: function(data, textStatus, jqXHR) {
-          console.log(data.backdrop_path );
-          myPlayer.poster(data.backdrop_path);
-        }
-      });
-
-      var url = 'http://localhost:3000/transcode/' + filename
-      if (fileIndex) {
-        url += '/' + fileIndex;
-      }
-
-      $.ajax({
-        url: url,
-        type: 'POST',
-        success: function(data, textStatus, jqXHR) {
-          // give 10 seconds to buffer
-          setTimeout(function() {
-            myPlayer.src({"src": "http://localhost:3000/" + data, "type":"application/x-mpegURL"});
-            myPlayer.currentTime(0);
-            myPlayer.play();
-          }, 15000);
-        }
-      });
-    };
-
-    myPlayer.ready(function() {
-      $.extend({
-        getUrlVars: function(){
-          var vars = [], hash;
-          var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-          for(var i = 0; i < hashes.length; i++) {
-            hash = hashes[i].split('=');
-            vars.push(hash[0]);
-            vars[hash[0]] = hash[1];
-          }
-          return vars;
-        },
-        getUrlVar: function(name){
-          return $.getUrlVars()[name];
-        }
-      });
-      transcodeAndRun();
-    });
-  </script>
+ <script src="src/video.build.js"></script>
 </body>
