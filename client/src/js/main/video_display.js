@@ -97,7 +97,8 @@ var VideoDisplay = React.createClass({
         return <VideoItem onItemClick={self.onChildClick} key={index} movie={movie} poster={movie.poster_path} title={movie.title} videoid={movie.id}></VideoItem>
       }),
       currentMovie = this.state.currentMovie || {};
-      var rowStyle = { height: "500px", top:"0px"}
+      var rowStyle = { height: "500px", top:"0px"};
+      
     return (
         <div>    
           <Row style={rowStyle}>

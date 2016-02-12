@@ -24,7 +24,7 @@ class ModalItemInfo extends React.Component {
 
 class VideoOptionBar extends React.Component {
   playVideo() {
-    window.location = 'video.html?filename=' + this.props.videoId;
+    window.location = 'video.html?mediaId=' + this.props.videoId;
   }
 
   openInfo() {
@@ -100,7 +100,7 @@ class VideoItemModal extends React.Component {
   }
 
   playFile(fileInfo, index) {
-    window.location = 'video.html?filename=' + this.props.id + '&fileId=' + index;
+    window.location = 'video.html?mediaId=' + this.props.id + '&fileIndex=' + index;
   }
 
   fileInfoContent() {

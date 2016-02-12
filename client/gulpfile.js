@@ -5,9 +5,7 @@ var htmlreplace = require('gulp-html-replace');
 var source = require('vinyl-source-stream');
 var browserify = require('browserify');
 var watchify = require('watchify');
-var reactify = require('reactify');
 var streamify = require('gulp-streamify');
-var debug = require('gulp-debug');
 var buffer = require('vinyl-buffer');
 var babelify = require('babelify');
 
@@ -118,7 +116,7 @@ gulp.task('watchVideo', function() {
           console.log(error.stack, error.message);
           this.emit('end');
         })
-      //.on('error', gutil.log.bind(gutil, 'Browserify Error'))
+      .on('error', gutil.log.bind(gutil, 'Browserify Error'))
       .pipe(source(path.OUT_VIDEO))
       .pipe(gulp.dest(path.DEST_SRC))
     })
@@ -127,7 +125,7 @@ gulp.task('watchVideo', function() {
       console.log(error.stack, error.message);
       this.emit('end');
     })
-    //.on('error', gutil.log.bind(gutil, 'Browserify Error'))
+    .on('error', gutil.log.bind(gutil, 'Browserify Error'))
     .pipe(source(path.OUT_VIDEO))
     .pipe(gulp.dest(path.DEST_SRC))
 });

@@ -3,15 +3,11 @@ var $ = require('jquery');
 window.$ = window.jQuery = require('jquery')
 var api = require('../common/api.js');
 var myPlayer = videojs('my-video');
+var queryString = require('query-string');
 
 var transcodeAndRun = function() {
   var media = new api.Media();
-  var transcodeRequestObject = {};
-  
-  transcodeRequestObject.mediaId = $.getUrlVar('filename');
-  if ($.getUrlVar('fileId')) {
-    transcodeRequestObject.fileIndex = $.getUrlVar('fileId');
-  }
+  var transcodeRequestObject = queryString.parse(location.search);
   
   media.get(transcodeRequestObject.mediaId)
     .then(function(data) {
@@ -31,21 +27,4 @@ var transcodeAndRun = function() {
     });
 };
 
-myPlayer.ready(function() {
-  $.extend({
-    getUrlVars: function(){
-      var vars = [], hash;
-      var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-      for(var i = 0; i < hashes.length; i++) {
-        hash = hashes[i].split('=');
-        vars.push(hash[0]);
-        vars[hash[0]] = hash[1];
-      }
-      return vars;
-    },
-    getUrlVar: function(name){
-      return $.getUrlVars()[name];
-    }
-  });
-  transcodeAndRun();
-});
+myPlayer.ready(transcodeAndRun);
