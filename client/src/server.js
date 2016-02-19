@@ -11,7 +11,7 @@ server.register(inert, function () {
     method: 'GET',
     path: '/{param*}',
     handler: {
-      directory: { path: '.' }
+      directory: { path: 'dist' }
      }
   });
 

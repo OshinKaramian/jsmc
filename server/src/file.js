@@ -3,8 +3,8 @@ const Promise = require('bluebird');
 const path = require('path');
 const ffmpeg = require('fluent-ffmpeg');
 const fs = Promise.promisifyAll(require('fs-extra'));
-const query = require('../src/query.js');
-const db = require('../src/db.js');
+const query = require('./query.js');
+const db = require('./db.js')();
 const ffprobe = Promise.promisify(ffmpeg.ffprobe);
 const ignoredPhrases = [
   'bdrip',
@@ -54,18 +54,11 @@ let validateAndCleanFFProbeOutput = function(directory, metadata) {
   filename = filename.toLowerCase();
 
   ignoredPhrases.forEach(function(phrase) {
-    var returnValue = filename.split(phrase);
+    let returnValue = filename.split(phrase);
     if (returnValue.length > 1) {
       filename = returnValue[0];
     }
   });
-
-  filename = filename.split('.');
-  filename = filename.join('+');
-  filename = filename.split('_');
-  filename = filename.join('+');
-  filename = filename.split(' ');
-  filename = filename.join('+');
 
   return {'metadata': metadata,'filename' : filename};
 };
@@ -87,7 +80,7 @@ exports.transcode = function(collection, mediaId, fileIndex) {
   return fs.existsAsync('tmp/' + mediaId + '_'+ fileIndex + '.m3u8')
     .then(function(exists) {
       if (!exists) {
-        db.getMedia(collection, mediaId).then(function(doc) {
+        db.getMedia(mediaId).then(function(doc) {
           console.log('transcode');
           console.log(doc);
           ffmpeg(doc.filedata[fileIndex].filename)
@@ -103,15 +96,22 @@ exports.transcode = function(collection, mediaId, fileIndex) {
               console.log('Processing: ' + progress.percent + '% done');
             })
             .on('error', function(err, stdout, stderr) {
-              console.log('Cannot process video: ' + err.message);
+              throw err;
+              //console.log('Cannot process video: ' + err.message);
             })
             .on('start', function() {
               console.log('Transcoding: ' + doc.filedata[fileIndex].filename);
             })
             .save('tmp/' + mediaId + '_' + fileIndex +'_%05d.ts');
+        }).catch(function(error) {
+          console.log(error);
         });
       }
 
+      return 'tmp/'+ mediaId + '_' + fileIndex +'.m3u8';
+    })
+    .catch(function(error) {
+      console.log(error);
       return 'tmp/'+ mediaId + '_' + fileIndex +'.m3u8';
     });
 };

@@ -8,6 +8,8 @@ var watchify = require('watchify');
 var streamify = require('gulp-streamify');
 var buffer = require('vinyl-buffer');
 var babelify = require('babelify');
+var fs = require('fs');
+var child = require('child_process');
 
 var path = {
   HTML: './src/index.html',
@@ -16,7 +18,7 @@ var path = {
   SERVER: './src/server.js',
   ELECTRON: './src/main.js',
   VIDEOJS: './src/js/video/video.dev.js',
-  VIDEOJSHLS: './src/js/video/videojs.hls.min.js',
+  VIDEOJSHLS: './src/js/video/videojs.contrib.hls.min.js',
   VIDEOJSMSE: './src/js/video/videojs-media-sources.js',
   MINIFIED_OUT: 'build.min.js',
   MINIFIED_OUT_VIDEO: 'video.build.min.js',
@@ -29,6 +31,13 @@ var path = {
   ENTRY_POINT: './src/js/main/app.js',
   ENTRY_POINT_VIDEO: './src/js/video/app.js'
 };
+
+gulp.task('server', function() {
+  var server = child.spawn('node', ['dist/server.js']);
+  var log = fs.createWriteStream('server.log', {flags: 'a'});
+  server.stdout.pipe(log);
+  server.stderr.pipe(log);
+});
 
 gulp.task('copy', function(){
   return gulp.src([
@@ -164,4 +173,4 @@ gulp.task('replaceHTML', function(){
 });
 
 gulp.task('production', ['replaceHTML', 'build']);
-gulp.task('default', ['copy', 'copyJS', 'copyCSS', 'watchMain', 'watchVideo']);
+gulp.task('default', ['copy', 'copyJS', 'copyCSS', 'watchMain', 'watchVideo', 'server']);

@@ -1,0 +1,170 @@
+[
+  {
+    "input": "cloud.atlas.2012.rc.720p.bdrip.ac3.x264-voxhd.mkv",
+    "output": {
+      "title": "Cloud Atlas"
+    }
+  },
+  {
+    "input": "contagion.2011.dvdrip.xvid-amiable.avi",
+    "output": {
+      "title": "Contagion"
+    }
+  },
+  {
+    "input": "dead.ringers.1988.720p.bluray.x264-sinners.mkv",
+    "output":{
+      "title": "Dead Ringers"
+    }
+  },
+  {
+    "input": "easy riders raging bulls.avi",
+    "output":{
+      "title": "Easy Riders, Raging Bulls"
+    }
+  },
+  {
+    "input": "get.him.to.the.greek.2010.dvdrip.xvid-amiable",
+    "output":{
+      "title": "Get Him to the Greek"
+    }
+  },
+  {
+    "input": "macgruber.2010.brrip.xvid.ac3-vision",
+    "output":{
+      "title": "MacGruber"
+    }
+  },
+  {
+    "input": "producers_1967.avi",
+    "output":{
+      "title": "The Producers"
+    }
+  },
+  {
+    "input":"rise.of.the.planet.of.the.apes.2011.bluray.720p.dts.2audio.x264-chd.mkv",
+    "output":{
+      "title": "Rise of the Planet of the Apes"
+    }
+  },
+  {
+    "input":"sorcerer.1977.720p.bluray.x264-hd4u.mkv",
+    "output":{
+      "title": "Sorcerer"
+    }
+  },
+  {
+    "input":"the fountain.wmv",
+    "output":{
+      "title": "The Fountain"
+    }
+  },
+  {
+    "input":"the thin red line (1998) dvdrip mkv/",
+    "output":{
+      "title": "The Thin Red Line"
+    }
+  },
+  {
+    "input":"the.amazing.spider-man.2.2014.720p.web-dl.dd5.1.h.264-hdclub.mkv",
+    "output":{
+      "title": "The Amazing Spider-Man 2"
+    }
+  },
+  {
+    "input":"the.dark.knight.rises.2012.720p.bluray.x264-sparks.mkv",
+    "output":{
+      "title": "The Dark Knight Rises"
+    }
+  },
+  {
+    "input":"the.raid.redemption.2011.720p.bluray.x264-sparks/",
+    "output":{
+      "title": "The Raid"
+    }
+  },
+  {
+    "input":"the.social.network.2010.bdrip.xvid-imbt.avi",
+    "output":{
+      "title": "The Social Network"
+    }
+  },
+  {
+    "input":"to.the.wonder.2013.720p.hdtv.x264-2hd.mkv",
+    "output":{
+      "title": "To the Wonder"
+    }
+  },
+  {
+    "input":"twin.peaks.fire.walk.with.me.1992.the.missing.pieces.720p.bluray.x264-archivist.mkv",
+    "output":{
+      "title": "Twin Peaks: Fire Walk with Me"
+    }
+  },
+  {
+    "input":"waiting.for.superman.limited.dvdrip.x-lpd.avi",
+    "output":{
+      "title": "Waiting for Superman"
+    }
+  },
+  {
+    "input":"weekend.1967.720p.bluray.x264-geckos.mkv",
+    "output":{
+      "title": "Weekend"
+    }
+  },
+  {
+    "input":"winnebago.man.2009.dvdrip.xvid.avi",
+    "output":{
+      "title": "Winnebago Man"
+    }
+  },
+  {
+    "input":"(500).Days.of.Summer.2009.720p.BluRay.DTS.x264-WiKi.mkv",
+    "output":{
+      "title": "(500) Days of Summer"
+    }
+  },
+  {
+    "input":"12.Years.A.Slave.2013.720p.WEB-DL.H264-PublicHD/",
+    "output":{
+      "title": "12 Years a Slave"
+    }
+  },
+  {
+    "input":"127 Hours (2010)/",
+    "output":{
+      "title": "127 Hours"
+    }
+  },
+  {
+    "input":"13.Assassins.2010.720p.BluRay.x264.DTS-HDChina/",
+    "output":{
+      "title": "13 Assassins"
+    }
+  },
+  {
+    "input":"50.50.2011.DVDSCR.XviD-MC8.avi",
+    "output":{
+      "title": "50/50"
+    }
+  },
+  {
+    "input":"Ant.Man.2015.720p.HDRip.X264.AC3-EVO.mkv",
+    "output":{
+      "title": "Ant-Man"
+    }
+  },
+  {
+    "input":"Apocalypto.2006.720P.BDRip.X264-TLF/",
+    "output":{
+      "title": "Apocalypto"
+    }
+  },
+  {
+    "input":"Apollo.13.1995.REMASTERED.720p.BluRay.x264-SiNNERS/",
+    "output": {
+      "title": "Apollo 13"
+    }
+  }
+]
