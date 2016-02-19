@@ -54,7 +54,7 @@ let validateAndCleanFFProbeOutput = function(directory, metadata) {
   filename = filename.toLowerCase();
 
   ignoredPhrases.forEach(function(phrase) {
-    var returnValue = filename.split(phrase);
+    let returnValue = filename.split(phrase);
     if (returnValue.length > 1) {
       filename = returnValue[0];
     }
@@ -103,7 +103,8 @@ exports.transcode = function(collection, mediaId, fileIndex) {
               console.log('Processing: ' + progress.percent + '% done');
             })
             .on('error', function(err, stdout, stderr) {
-              console.log('Cannot process video: ' + err.message);
+              throw err;
+              //console.log('Cannot process video: ' + err.message);
             })
             .on('start', function() {
               console.log('Transcoding: ' + doc.filedata[fileIndex].filename);
