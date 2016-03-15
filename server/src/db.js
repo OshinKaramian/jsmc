@@ -34,14 +34,21 @@ module.exports = function(dbPath) {
         })
     },
 
-    getMedia: function(collectionName, mediaId) {
+    getMedia: function(mediaId) {
       return db.findOneAsync({ 'id' : parseInt(mediaId)})
         .catch(function(error) { 
           throw error; 
         });
     },
+    
+    findMedia: function(query) {
+      return db.findAsync({ 'title' : new RegExp(query, 'i')})
+        .catch(function(error) { 
+          throw error; 
+        });
+    },
 
-    getCollection: function(collectionCategory, collectionName) {
+    getCollection: function(collectionName) {
       return db.findAsync({ collection: collectionName });
     }
   };

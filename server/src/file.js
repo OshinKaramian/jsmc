@@ -60,13 +60,6 @@ let validateAndCleanFFProbeOutput = function(directory, metadata) {
     }
   });
 
-  filename = filename.split('.');
-  filename = filename.join('+');
-  filename = filename.split('_');
-  filename = filename.join('+');
-  filename = filename.split(' ');
-  filename = filename.join('+');
-
   return {'metadata': metadata,'filename' : filename};
 };
 

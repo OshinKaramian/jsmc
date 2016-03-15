@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 const assert = require('assert');
 const rewire = require('rewire');
 const Promise = require('bluebird');
@@ -98,6 +98,22 @@ describe('Controller', function() {
         });    
       });
   }); 
+  
+  describe('/collection?query GET', function () {
+    it('should return a list for a valid query', function(done) {
+      request.params.query = 'dark';
+      controller.media.search(request, mockReply).then(function(response) {
+        let mediaObjectList = response.body;
+        
+        assert.equal(mediaObjectList.length, 6);
+        mediaObjectList.forEach((media) => assert(media.title.indexOf('Dark') >= 0 || media.title.indexOf('dark') >= 0));
+        
+        done();
+      }).catch(function(error) {
+        done(error);
+      });
+    });
+  });
   
   describe('/collection/{collectionName} GET', function () {
     it('should return the correct collection', function (done) {

@@ -8,6 +8,12 @@ server.register(inert, function () {
 
   server.connection({ port: 3000, routes: { cors: true}});
 
+  server.route({
+    method: 'GET',
+    path: '/media',
+    handler: controller.media.search
+  });
+
   server.route( {
     method: 'POST',
     path: '/media/{mediaId}/file/{fileIndex}/transcode',

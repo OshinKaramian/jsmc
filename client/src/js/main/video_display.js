@@ -4,6 +4,7 @@ window.$ = window.jQuery = require('jquery')
 var React = require('react');
 var Slick = require('slick-carousel');
 var ReactDOM = require('react-dom');
+var Modal = require('react-modal');
 var Row = require('react-bootstrap').Row;
 var Col = require('react-bootstrap').Col;
 var Bootstrap = require('bootstrap');
@@ -160,39 +161,65 @@ var VideoItem = React.createClass({
   }
 });
 
-var TopBanner = React.createClass({
+var SearchWindow = React.createClass({
   getInitialState: function() {
     return {
-      config: {},
+       searchResults: null,
+       isModalOpen: true
     };
   },
-
-  componentDidMount: function() {
-    var self = this;
-    let config = new api.Config();
-    config.get().then(function(data) {
-      self.setState({ config: data});
-    }.bind(this));
+  
+  closeModal: function() {
+    this.setState({isModalOpen: false});
   },
-
-  render: function() {
-    console.log(this.state.config);
-    var nodes = Object.keys(this.state.config).map(function(value) {
-      return <Col md={2}><h4>{value}</h4></Col>
+  
+  handleOnChange: function(event) {
+    let media = new api.Media();
+    console.log(event.target.value);
+    media.search(event.target.value).then((data) => {
+      this.setState({searchResults: data});
     });
+  },
+  
+  render: function() {
     return (
-        <Row className="top-banner">
-          {nodes}
-        </Row>
+      <Modal isOpen={this.state.isModalOpen} onRequestClose={this.closeModal}>
+        Search: <input type="text" onChange={this.handleOnChange}/>
+        <SearchVideoList searchItems={this.state.searchResults} />
+      </Modal>
     );
   }
 });
 
+var SearchVideoList = React.createClass({
+  render: function() {
+    let self = this;
+    let nodes = [];
+    if (this.props.searchItems) {
+      nodes = this.props.searchItems.map(function(movie, index) {
+        return <SearchVideoItem {... movie}></SearchVideoItem>
+      });
+    }
+    return (<div>{nodes}</div>);
+  }
+});
+
+var SearchVideoItem = React.createClass({
+  render: function() {
+    console.log(this.props.title);
+    return (<div><img src={this.props.poster_path} height="100px"/>{this.props.title}</div>)
+  }
+})
+
 var App = React.createClass({
   render: function() {
     return (
+      <div>
+       <SearchWindow />
       <div className="container-full">
         <VideoDisplay />
+       
+      </div>
       </div>
     );
   }

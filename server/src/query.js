@@ -12,7 +12,7 @@ let movieDbQuery = function(filename, category, year) {
     queryUrl += '&year=' + year;
   }
 
-  console.info('filename: ' + queryUrl);
+  //console.info('filename: ' + queryUrl);
 
   return request(queryUrl);
 };
@@ -32,7 +32,7 @@ let queryForValidObject = function(filename, category, year) {
         return queryTranslator.findValidObject(parsedResponse);
       }
     } else if (response.statusCode == 429) {
-      console.error('Too many retries, waiting 10 seconds');
+      //console.error('Too many retries, waiting 10 seconds');
       sleep.sleep(10);
       return queryForValidObject(filename, category, year);
     } else {
@@ -49,7 +49,7 @@ let omdbQuery = function(matchedResponse) {
   let omdbQueryUrl = 'http://www.omdbapi.com/?t=' + searchTitle + '&tomatoes=true&plot=short&r=json&y=' + releaseYear;
 
   //correctMatch = matchedResponse;
-  console.info(fileData.filename + ': ' + omdbQueryUrl);
+  //console.info(fileData.filename + ': ' + omdbQueryUrl);
 
   return request(omdbQueryUrl);
 },
@@ -74,13 +74,22 @@ formatQueryOutput = function(data) {
 
 module.exports = function(fileData, category, year) {
   let correctMatch;
-  return queryForValidObject(fileData.filename, category, year).then(function(matchedResponse) {
+  let filename = fileData.filename;
+  
+  filename = filename.split('.');
+  filename = filename.join('+');
+  filename = filename.split('_');
+  filename = filename.join('+');
+  filename = filename.split(' ');
+  filename = filename.join('+');
+  
+  return queryForValidObject(filename, category, year).then(function(matchedResponse) {
     let releaseYear = queryTranslator[category].getReleaseYear(matchedResponse);
     let searchTitle = queryTranslator[category].getTitle(matchedResponse);
     let omdbQueryUrl = 'http://www.omdbapi.com/?t=' + searchTitle + '&tomatoes=true&plot=short&r=json&y=' + releaseYear;
 
     correctMatch = matchedResponse;
-    console.info(fileData.filename + ': ' + omdbQueryUrl);
+    //console.info(filename + ': ' + omdbQueryUrl);
 
     return request(omdbQueryUrl);
   }).then(function(response) {

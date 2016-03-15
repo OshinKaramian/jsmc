@@ -15,7 +15,7 @@ module.exports.media = {
   },
 
   get: function(request, reply) {
-    return db.getMedia('movies', request.params.mediaId).then(function(media) {
+    return db.getMedia(request.params.mediaId).then(function(media) {
       if (!media) {
         return reply(`Media ID ${request.params.mediaId} does not exist.`).code(404);
       }
@@ -23,6 +23,14 @@ module.exports.media = {
     })
     .catch(function(error) {
       throw error;
+    });
+  },
+  
+  search: function(request, reply) {
+    let query = request.query.query;
+    console.log(query);
+    return db.findMedia(query).then(function(mediaList) {
+      return reply(mediaList).header('Content-Type', 'application/json');
     });
   }
 }
@@ -40,7 +48,7 @@ module.exports.collection = {
     let name = request.params.collection;
 
     if (name) {
-      return db.getCollection('movies', name).then(function(docs) {
+      return db.getCollection(name).then(function(docs) {
         return reply(docs).header('Content-Type', 'application/json');
       });
     } else {
