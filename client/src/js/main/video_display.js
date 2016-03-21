@@ -82,7 +82,7 @@ var VideoDisplay = React.createClass({
     let movies = this.props.movies || [];
     let nodes = this.props.movies.map(function(movie, index) {
       return <VideoItem onItemClick={this.onChildClick} key={index} movie={movie} poster={movie.poster_path} title={movie.title} videoid={movie.id}></VideoItem>
-    }).bind(this);
+    }.bind(this));
     let currentMovie = this.state.currentMovie || {};
     let rowStyle = { height: "500px", top:"0px"};
       
