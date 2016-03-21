@@ -1,17 +1,16 @@
 "use strict";
-var $ = require('jquery');
+const $ = require('jquery');
 window.$ = window.jQuery = require('jquery')
-var jquery = require('jquery');
-var React = require('react');
-var Modal = require('react-modal');
-var Grid = require('react-bootstrap').Grid;
-var Row = require('react-bootstrap').Row;
-var Col = require('react-bootstrap').Col;
+const jquery = require('jquery');
+const React = require('react');
+const Grid = require('react-bootstrap').Grid;
+const Row = require('react-bootstrap').Row;
+const Col = require('react-bootstrap').Col;
 
 class ModalItemInfo extends React.Component {
   render() {
-    var titleClass = this.props.className + "-title";
-    var contentClass = this.props.className + "-content";
+    let titleClass = this.props.className + "-title";
+    let contentClass = this.props.className + "-content";
     return (
       <Row className={this.props.className}>
         <Col md={1} className={titleClass}><h4>{this.props.title}</h4></Col>
@@ -63,26 +62,6 @@ class VideoItemModal extends React.Component {
   }
 
   generalInfoContent() {
-     
-       /*<Col md={4} sm={12} className="movie-info-backdrop-column">
-          <Row>
-            <Col md={12}>
-              <img className="backdrop-img" src={this.props.backdrop_path} />
-            </Col>
-          </Row>
-          <VideoOptionBar openInfo={this.openInfoPanel} videoId={this.props.id} />
-        </Col>*/
-            /*     <h4>{this.props.movie.title}</h4>
-              <h6>IMDB: <small>{this.props.movie.tomato_user_rating}</small></h6>
-          <h6>Metacritc: <small>{this.props.movie.metacritic_rating}</small></h6>
-          <h6>RT: <small>{this.props.movie.tomato_meter}/{this.props.movie.tomato_user_rating}</small></h6>
-          */
-        
-        //document.body.style.background = "url(" + this.props.backdrop_path + ")";
-         // document.body.style.-webkit-background-size = 'cover';
-        //document.body.style.-moz-background-size = 'cover';
-        //document.body.style.-o-background-size = 'cover';
-        //document.body.style.background-size = 'cover';
     return (
       <Row >      
         <Col className="modal-video-info" md={4} sm={4} >
@@ -104,7 +83,7 @@ class VideoItemModal extends React.Component {
   }
 
   fileInfoContent() {
-    var files = this.props.filedata.map(function(file, index) {
+    let files = this.props.filedata.map(function(file, index) {
       return (
         <Row>
           <Col md={1} className="video-option-bar" onClick={self.playFile.bind(this, file, index)}><center><span className="glyphicon glyphicon-play" /></center></Col>
@@ -123,7 +102,7 @@ class VideoItemModal extends React.Component {
   }
 
   render() {
-     var modalStyle = {
+     let modalStyle = {
         content: {
           padding: "0px",
           left:"0px",
@@ -135,14 +114,10 @@ class VideoItemModal extends React.Component {
       };
 
     if (this.props.isModalOpen) {
-
       return (
-
           <Grid className="movie-info-content" fluid={true}>
-         
             {this.state.currentPanel()}
           </Grid>
- 
       );
     } else {
       return null;

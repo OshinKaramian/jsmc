@@ -13,7 +13,11 @@ module.exports.Media = class Media {
   }
   
   transcode({mediaId: mediaId, fileIndex: fileIndex = 0}) {
-    return $.post(baseApiUrl + 'media/' + mediaId + '/file/' + fileIndex + '/transcode')
+    return $.post(baseApiUrl + 'media/' + mediaId + '/file/' + fileIndex + '/transcode');
+  }
+  
+  search(query) {
+    return $.get(baseApiUrl + 'media?query=' + query);
   }
 }
 

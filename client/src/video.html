@@ -1,17 +1,19 @@
 <head>
-    <link href="http://vjs.zencdn.net/4.12/video-js.css" rel="stylesheet">
     <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script src="src/video.dev.js"></script>
-    <script src="src/videojs-media-sources.js"></script>
-    <script src="src/videojs.hls.min.js"></script>
-
-   
+    <link href="style/videojs/video-js.min.css" rel="stylesheet">
+    <link href="style/videojs/video-js.flat.custom.css" rel="stylesheet">
+    <script src="src/video.min.js"></script>
+    <script src="src/vjs-hls.min.js"></script>
     <style>
       .video-js {
         width: 100% !important;
         height: 100% !important;
       }
       .vjs-default-skin.vjs-paused .vjs-big-play-button
+      {
+        display: none;
+      }
+      .vjs-sublime-skin.vjs-paused .vjs-big-play-button
       {
         display: none;
       }
@@ -24,7 +26,7 @@
 <body>
   <div id="video-container" >
   <div id="myvideo_videojs1" >
-  <video id="my-video" class="video-js vjs-default-skin" controls preload="auto" >
+  <video id="my-video" class="video-js vjs-sublime-skin" controls preload="auto" >
     <p class="vjs-no-js">
       To view this video please enable JavaScript, and consider upgrading to a web browser that
     <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>

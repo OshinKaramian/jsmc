@@ -1,12 +1,10 @@
 "use strict";
 var $ = require('jquery');
-window.$ = window.jQuery = require('jquery')
+window.$ = window.jQuery = require('jquery');
 var React = require('react');
 var Slick = require('slick-carousel');
-var ReactDOM = require('react-dom');
 var Row = require('react-bootstrap').Row;
 var Col = require('react-bootstrap').Col;
-var Bootstrap = require('bootstrap');
 var VideoItemModal = require('./video_item_modal.js');
 var api = require('../common/api.js');
 
@@ -14,17 +12,8 @@ var VideoDisplay = React.createClass({
   getInitialState: function() {
     return {
       currentMovie: null,
-      isModalOpen: false,
-      data: []
+      isModalOpen: false
     };
-  },
-
-  componentDidMount: function() {
-    var self = this;
-    let collection = new api.Collection('movies');
-    collection.get('Movies').then(function(data) {
-      self.setState({ data: data});
-    }.bind(this));
   },
 
   onChildClick: function(movie, event) {
@@ -86,30 +75,24 @@ var VideoDisplay = React.createClass({
             settings: "unslick" // destroys slick
 
             }]
-        });
+        });    
   },
 
   render: function() {
-    var
-      self = this,
-      movies = this.state.data || [],
-      nodes = this.state.data.map(function(movie, index) {
-        return <VideoItem onItemClick={self.onChildClick} key={index} movie={movie} poster={movie.poster_path} title={movie.title} videoid={movie.id}></VideoItem>
-      }),
-      currentMovie = this.state.currentMovie || {};
-      var rowStyle = { height: "500px", top:"0px"};
+    let movies = this.props.movies || [];
+    let nodes = this.props.movies.map(function(movie, index) {
+      return <VideoItem onItemClick={this.onChildClick} key={index} movie={movie} poster={movie.poster_path} title={movie.title} videoid={movie.id}></VideoItem>
+    }.bind(this));
+    let currentMovie = this.state.currentMovie || {};
+    let rowStyle = { height: "500px", top:"0px"};
       
     return (
         <div>    
           <Row style={rowStyle}>
             <Col md={12}>
-            <div >
-             <VideoItemModal
-            {... currentMovie}
-            isModalOpen={this.state.isModalOpen}
-            onRequestClose={this.onRequestClose}
-            />
-            </div>
+              <div >
+                <VideoItemModal {... currentMovie} isModalOpen={this.state.isModalOpen} onRequestClose={this.onRequestClose} />
+              </div>
             </Col>
           </Row>
           <center>
@@ -136,66 +119,27 @@ var VideoDisplay = React.createClass({
   }
 });
 
-var VideoItem = React.createClass({
+let VideoItem = React.createClass({
   handleClick: function(event) {
-    var itemStyle = { 
-        'background': "url(" + this.props.movie.backdrop_path + ")", 
-        '-webkit-background-size': 'cover',
+   let itemStyle = { 
+      'background': "url(" + this.props.movie.backdrop_path + ")", 
+      '-webkit-background-size': 'cover',
     };
     $('body').css(itemStyle);
     this.props.onItemClick(this.props.movie);
   },
 
   render: function() {
-    var self = this;
-    var divStyle = {
-        display: 'inline-block'
+    let divStyle = {
+      display: 'inline-block'
     };
           
     return (     
-        <div onClick={this.handleClick}>
-          <img height="100%" src={this.props.poster}/>
-        </div>
-    )
-  }
-});
-
-var TopBanner = React.createClass({
-  getInitialState: function() {
-    return {
-      config: {},
-    };
-  },
-
-  componentDidMount: function() {
-    var self = this;
-    let config = new api.Config();
-    config.get().then(function(data) {
-      self.setState({ config: data});
-    }.bind(this));
-  },
-
-  render: function() {
-    console.log(this.state.config);
-    var nodes = Object.keys(this.state.config).map(function(value) {
-      return <Col md={2}><h4>{value}</h4></Col>
-    });
-    return (
-        <Row className="top-banner">
-          {nodes}
-        </Row>
-    );
-  }
-});
-
-var App = React.createClass({
-  render: function() {
-    return (
-      <div className="container-full">
-        <VideoDisplay />
+      <div onClick={this.handleClick}>
+        <img height="100%" src={this.props.poster} data-fileid={this.props.movie.id}/>
       </div>
-    );
-  }
+    )
+  } 
 });
 
-ReactDOM.render(<App />, document.getElementById('content'));
+module.exports = VideoDisplay;
