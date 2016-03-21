@@ -18,7 +18,7 @@ var path = {
   SERVER: './src/server.js',
   ELECTRON: './src/main.js',
   VIDEOJS: './src/js/video/video.dev.js',
-  VIDEOJSHLS: './src/js/video/videojs.hls.min.js',
+  VIDEOJSHLS: './src/js/video/videojs.contrib.hls.min.js',
   VIDEOJSMSE: './src/js/video/videojs-media-sources.js',
   MINIFIED_OUT: 'build.min.js',
   MINIFIED_OUT_VIDEO: 'video.build.min.js',

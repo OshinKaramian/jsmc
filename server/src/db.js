@@ -8,8 +8,11 @@ let db;
 
 module.exports = function(dbPath) {
   dbPath = dbPath ? dbPath : defaultDbPath;
-  db = new Database({ filename: dbPath, autoload: true});
-  db = Promise.promisifyAll(db);
+  
+  if (!db) {
+    db = new Database({ filename: dbPath, autoload: true});
+    db = Promise.promisifyAll(db);
+  }
   
   return {
     insertQuery: function(collectionName, data) {
@@ -43,13 +46,44 @@ module.exports = function(dbPath) {
     
     findMedia: function(query) {
       return db.findAsync({ 'title' : new RegExp(query, 'i')})
-        .catch(function(error) { 
-          throw error; 
-        });
+      .then(function(items) {
+        items.sort(function(a,b) {
+          
+          if(a.title > b.title) {
+            return 1;
+          }
+           
+          if (a.title < b.title) {
+            return -1;
+          } 
+          
+          return 0;
+        })
+        
+        return items;
+      })
+      .catch(function(error) { 
+        throw error; 
+      });
     },
 
     getCollection: function(collectionName) {
-      return db.findAsync({ collection: collectionName });
+      return db.findAsync({ collection: collectionName }).then(function(items) {
+        items.sort(function(a,b) {
+          
+          if(a.title > b.title) {
+            return 1;
+          }
+           
+          if (a.title < b.title) {
+            return -1;
+          } 
+          
+          return 0;
+        });
+        
+        return items;
+      });
     }
   };
 }

@@ -11,7 +11,9 @@ module.exports.media = {
     let fileIndex = request.params.fileIndex || 0;
     file.transcode('movies', mediaId, fileIndex).then(function(filePath) {
       return reply(filePath);
-    });
+    }).catch(function(error) {
+      console.log(error);
+    });;
   },
 
   get: function(request, reply) {

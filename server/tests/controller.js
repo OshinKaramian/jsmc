@@ -31,6 +31,7 @@ describe('Controller', function() {
   
   beforeEach(function(done) {
     request.params = {};
+    request.query = {};
     done();
   });
   
@@ -101,7 +102,7 @@ describe('Controller', function() {
   
   describe('/collection?query GET', function () {
     it('should return a list for a valid query', function(done) {
-      request.params.query = 'dark';
+      request.query.query = 'dark';
       controller.media.search(request, mockReply).then(function(response) {
         let mediaObjectList = response.body;
         
@@ -120,8 +121,8 @@ describe('Controller', function() {
       request.params.collection = 'Movies';
       controller.collection.get(request, mockReply).then(function(collection) {
         assert(collection.body.length, 514);
-        assert.equal(collection.body[0].title, 'A Prophet');
-        assert.equal(collection.body[513].title, 'I\'m Not There.')
+        assert.equal(collection.body[0].title, '(500) Days of Summer');
+        assert.equal(collection.body[513].title, 'Zodiac')
         done();
       })
       .catch(function(error) {
@@ -143,6 +144,5 @@ describe('Controller', function() {
     it('should return the config if no collection name is given', function (done) {
       done();
     });
-  }); 
-  
+  });  
 });
