@@ -13,6 +13,7 @@ module.exports = function(dbPath) {
     db = new Database({ filename: dbPath, autoload: true});
     db = Promise.promisifyAll(db);
   }
+
   
   return {
     insertQuery: function(collectionName, data) {
@@ -46,6 +47,7 @@ module.exports = function(dbPath) {
     
     findMedia: function(query) {
       return db.findAsync({ 'title' : new RegExp(query, 'i')})
+
       .then(function(items) {
         items.sort(function(a,b) {
           
