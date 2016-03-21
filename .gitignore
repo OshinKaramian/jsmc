@@ -35,3 +35,5 @@ node_modules
 .node_repl_history
 *.ts
 server/db/jsmc.db
+*.m3u8
+server/db/jsmc.db

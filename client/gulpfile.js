@@ -17,9 +17,8 @@ var path = {
   CSS: './src/style/**/*',
   SERVER: './src/server.js',
   ELECTRON: './src/main.js',
-  VIDEOJS: './src/js/video/video.dev.js',
-  VIDEOJSHLS: './src/js/video/videojs.contrib.hls.min.js',
-  VIDEOJSMSE: './src/js/video/videojs-media-sources.js',
+  VIDEOJS: './src/js/video/video.min.js',
+  VIDEOJSHLS: './src/js/video/vjs-hls.min.js',
   MINIFIED_OUT: 'build.min.js',
   MINIFIED_OUT_VIDEO: 'video.build.min.js',
   OUT: 'build.js',
@@ -53,7 +52,6 @@ gulp.task('copyJS', function(){
   return gulp.src([
     path.VIDEOJS,
     path.VIDEOJSHLS,
-    path.VIDEOJSMSE,
     path.OUT,
     path.OUT_VIDEO
   ])
