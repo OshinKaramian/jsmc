@@ -3,7 +3,7 @@ const $ = require('jquery');
 window.$ = window.jQuery = require('jquery');
 const React = require('react');
 const VideoDisplay = require('./video_display.js');
-const SearchWindow = require('./search_window.js');
+const VideoSearchBox = require('./video_search_box.js');
 const ReactDOM = require('react-dom');
 const Bootstrap = require('bootstrap');
 const api = require('../common/api.js');
@@ -70,7 +70,7 @@ let App = React.createClass({
       <div>    
         <div style={buttonStyle} style={buttonStyle}>
           <i className="fa fa-search fa-2x" onClick={this.openModal}></i> &nbsp;&nbsp;
-          <SearchWindow onSearchBoxChange={this.searchBoxChange} />
+          <VideoSearchBox onSearchBoxChange={this.searchBoxChange} />
         </div>
         <div className="container-full">
           <VideoDisplay movies={this.state.data}/>

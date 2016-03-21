@@ -5,7 +5,7 @@ const React = require('react');
 const ReactDOM = require('react-dom');
 const api = require('../common/api.js');
 
-var SearchWindow = React.createClass({
+var SearchBox = React.createClass({
   getInitialState: function() {
     return {
        searchResults: null
@@ -37,4 +37,4 @@ var SearchWindow = React.createClass({
   }
 });
 
-module.exports = SearchWindow;
+module.exports = SearchBox;
