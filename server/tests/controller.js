@@ -144,5 +144,5 @@ describe('Controller', function() {
     it('should return the config if no collection name is given', function (done) {
       done();
     });
-  });  
+  }); 
 });

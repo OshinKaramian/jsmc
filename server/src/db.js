@@ -83,7 +83,10 @@ module.exports = function(dbPath) {
         });
         
         return items;
+      })
+      .catch(function(error) { 
+        throw error; 
       });
     }
-  };
-}
+  }
+};

@@ -13,7 +13,7 @@ module.exports.media = {
       return reply(filePath);
     }).catch(function(error) {
       console.log(error);
-    });;
+    });
   },
 
   get: function(request, reply) {
