@@ -14,7 +14,6 @@ module.exports = function(dbPath) {
     db = Promise.promisifyAll(db);
   }
 
-  
   return {
     insertQuery: function(collectionName, data) {
       return db.findOneAsync({ "title": data.title  })
@@ -47,7 +46,6 @@ module.exports = function(dbPath) {
     
     findMedia: function(query) {
       return db.findAsync({ 'title' : new RegExp(query, 'i')})
-
       .then(function(items) {
         items.sort(function(a,b) {
           
