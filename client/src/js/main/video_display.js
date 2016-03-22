@@ -32,47 +32,42 @@ var VideoDisplay = React.createClass({
         infinite: false,
         dots: false,
         speed: 500,
-        slidesToShow: 6,
+        slidesToShow: 9,
         slidesToScroll: 1,
         prevArrow: $('.slider-button-left'),
         nextArrow: $('.slider-button-right'),
         // the magic
         responsive: [{
-            breakpoint: 1500,
+            breakpoint: 1700,
             settings: {
-                slidesToShow: 4,
+                slidesToShow: 8,
                 infinite: true
             }
 
             },{
 
-            breakpoint: 1280,
+            breakpoint: 1450,
             settings: {
-                slidesToShow: 3,
+                slidesToShow: 7,
+                infinite: true
+            }
+
+            },{
+
+            breakpoint: 1200,
+            settings: {
+                slidesToShow: 6,
                 infinite: true
             }
 
             },
             {
 
-            breakpoint: 1024,
+            breakpoint: 950,
             settings: {
-                slidesToShow: 2,
+                slidesToShow: 5,
                 infinite: true
             }
-
-            }, {
-
-            breakpoint: 600,
-            settings: {
-                slidesToShow: 1,
-                dots: true
-            }
-
-            }, {
-
-            breakpoint: 300,
-            settings: "unslick" // destroys slick
 
             }]
         });    

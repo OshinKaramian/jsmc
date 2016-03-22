@@ -64,7 +64,7 @@ class VideoItemModal extends React.Component {
   generalInfoContent() {
     return (
       <Row >      
-        <Col className="modal-video-info" md={4} sm={4} >
+        <Col className="modal-video-info" lg={4} md={6} sm={8} xs={8}>
           <Row className="modal-movie-title"><h1>{this.props.title}</h1></Row>
           <Col md={12}>           
             <ModalItemInfo className="modal-grid-row-right" title="Plot:" content={this.props.long_plot} />
