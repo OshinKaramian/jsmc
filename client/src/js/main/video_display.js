@@ -33,7 +33,7 @@ var VideoDisplay = React.createClass({
         dots: false,
         speed: 500,
         slidesToShow: 9,
-        slidesToScroll: 1,
+        slidesToScroll: 8,
         prevArrow: $('.slider-button-left'),
         nextArrow: $('.slider-button-right'),
         // the magic
@@ -41,6 +41,7 @@ var VideoDisplay = React.createClass({
             breakpoint: 1700,
             settings: {
                 slidesToShow: 8,
+                slidesToScroll: 7,
                 infinite: true
             }
 
@@ -49,6 +50,7 @@ var VideoDisplay = React.createClass({
             breakpoint: 1450,
             settings: {
                 slidesToShow: 7,
+                slidesToScroll: 6,
                 infinite: true
             }
 
@@ -57,6 +59,7 @@ var VideoDisplay = React.createClass({
             breakpoint: 1200,
             settings: {
                 slidesToShow: 6,
+                slidesToScroll: 5,
                 infinite: true
             }
 
@@ -66,6 +69,37 @@ var VideoDisplay = React.createClass({
             breakpoint: 950,
             settings: {
                 slidesToShow: 5,
+                 slidesToScroll: 4,
+                infinite: true
+            }
+
+            },
+            {
+
+            breakpoint: 700,
+            settings: {
+                slidesToShow: 4,
+                 slidesToScroll: 3,
+                infinite: true
+            }
+
+            },
+            {
+
+            breakpoint: 450,
+            settings: {
+                slidesToShow: 3,
+                 slidesToScroll: 2,
+                infinite: true
+            }
+
+            },
+            {
+
+            breakpoint: 200,
+            settings: {
+                slidesToShow: 2,
+                 slidesToScroll: 2,
                 infinite: true
             }
 

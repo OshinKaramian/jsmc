@@ -10,7 +10,7 @@ module.exports.media = {
     let mediaId = request.params.mediaId;
     let fileIndex = request.params.fileIndex || 0;
     file.transcode('movies', mediaId, fileIndex).then(function(filePath) {
-      return reply(filePath);
+      return reply('http://' + address + ':3000/' + filePath);
     }).catch(function(error) {
       console.log(error);
     });

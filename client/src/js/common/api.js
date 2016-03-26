@@ -1,8 +1,18 @@
 "use strict";
 var $ = require('jquery');
-var baseApiUrl = 'http://localhost:3000/';
-
+var baseApiUrl = 'http://' + location.host.split(':')[0] + ':3000/';
 window.$ = window.jQuery = require('jquery');
+
+if (typeof window !== 'undefined' && window.process && window.process.type === "renderer"){
+  var polo = require('polo');
+  var apps = polo();
+  apps.once('up', function(name, service) {     
+    if (name === 'jsmc') {
+      let appInfo = apps.get(name);
+      baseApiUrl = 'http://' + appInfo.address + ':' + appInfo.port + '/';
+    }                      
+  });
+}
 
 module.exports.Media = class Media {
   constructor() {

@@ -21,6 +21,7 @@
     "hls.js": "^0.5.15",
     "inert": "^3.1.0",
     "jquery": "^2.1.4",
+    "polo": "^0.8.1",
     "query-string": "^3.0.0",
     "react": "^0.14.0",
     "react-bootstrap": "^0.27.3",

@@ -6,6 +6,7 @@ const React = require('react');
 const Grid = require('react-bootstrap').Grid;
 const Row = require('react-bootstrap').Row;
 const Col = require('react-bootstrap').Col;
+const Modal = require('react-modal');
 
 class ModalItemInfo extends React.Component {
   render() {
@@ -33,10 +34,49 @@ class VideoOptionBar extends React.Component {
   render() {
     return (
       <Row className="video-option-bar">
-        <Col md={3}><button className="btn btn-default btn-lg" onClick={this.openInfo.bind(this)}><span className="glyphicon glyphicon-info-sign"></span> Info</button></Col>
-        <Col md={3}><button className="btn btn-default btn-lg" onClick={this.playVideo.bind(this)}><span  className="glyphicon glyphicon-play"></span> Play</button></Col>
+        <Col md={12}><button className="btn btn-default btn-lg" onClick={this.openInfo.bind(this)}><span className="glyphicon glyphicon-info-sign"></span></button>
+        <button className="btn btn-default btn-lg" onClick={this.playVideo.bind(this)}><span  className="glyphicon glyphicon-play"></span></button></Col>
       </Row>
     );
+  }
+}
+
+class VideoInfoModal extends React.Component {
+  playFile(index) {
+    window.location = 'video.html?mediaId=' + this.props.id + '&fileIndex=' + index;
+  }
+  
+  render() {
+    let contentStyle = {
+      padding:'10px'
+    };
+    let rowStyle = {
+      padding: '0px 0px 20px 0px'
+    };
+    let columnStyle = {
+      height: '24px',
+      overflow: 'none'
+    };
+    let textBottom = {
+      position: 'absolute',
+      bottom: '0'
+    }
+
+    let nodes = this.props.filedata.map(function(filedata, index) {
+      return (
+        <Row  key={index} style={rowStyle}>
+          <Col md={1} style={columnStyle}>
+            <button className="btn btn-default btn-sm" onClick={this.playFile.bind(this, index)}>
+              <span  className="glyphicon glyphicon-play"></span>
+            </button>
+          </Col>
+          <Col md={9} style={columnStyle}>
+            <div >{filedata.filename}</div>
+          </Col>
+        </Row>
+      );
+    }.bind(this));
+    return (<div style={contentStyle}>{nodes}</div>);
   }
 }
 
@@ -52,28 +92,60 @@ class VideoItemModal extends React.Component {
   }
 
   closeModal() {
-    $("body").removeClass("modal-open");
-    this.props.onRequestClose();
-    this.setState({ currentPanel: this.generalInfoContent.bind(this) });
+    this.setState({ isModalOpen: false });
   }
 
   openInfoPanel() {
-    this.setState({ currentPanel: this.fileInfoContent.bind(this) });
+    this.setState({ isModalOpen: true });
   }
 
   generalInfoContent() {
+    let modalStyle = {
+      overlay : {
+        position          : 'fixed',
+        top               : 0,
+        left              : 0,
+        right             : 0,
+        bottom            : 0,
+        backgroundColor   : 'rgba(255, 255, 255, 0.75)'
+      },
+      content : {
+        position                   : 'absolute',
+        top                        : '40px',
+        left                       : '15%',
+        right                      : '15%',
+        bottom                     : '40px',
+        border                     : '1px solid #ccc',
+        background                 : '#fff',
+        overflow                   : 'auto',
+        WebkitOverflowScrolling    : 'touch',
+        borderRadius               : '4px',
+        outline                    : 'none',
+        padding                    : '0px'
+
+      }
+    };
+    
+    let modalTitleStyle = {
+      margin: '5px'
+    }
+    
     return (
       <Row >      
-        <Col className="modal-video-info" lg={4} md={6} sm={8} xs={8}>
+        <Col className="modal-video-info" lg={4} md={6} sm={12} xs={12}>
           <Row className="modal-movie-title"><h1>{this.props.title}</h1></Row>
-          <Col md={12}>           
-            <ModalItemInfo className="modal-grid-row-right" title="Plot:" content={this.props.long_plot} />
+          <Col md={12}>        
+          <VideoOptionBar openInfo={this.openInfoPanel.bind(this)} videoId={this.props.id} />   
+            <ModalItemInfo className="modal-grid-row-right" title="Plot:" content={this.props.short_plot} />
             <ModalItemInfo className="modal-grid-row-right" title="Director:" content={this.props.director} />
             <ModalItemInfo className="modal-grid-row-right" title="Writer:" content={this.props.writer} />
-            <ModalItemInfo className="modal-grid-row-right" title="Actors:" content={this.props.actors} />
-            <VideoOptionBar openInfo={this.openInfoPanel} videoId={this.props.id} />
+            <ModalItemInfo className="modal-grid-row-right" title="Actors:" content={this.props.actors} />            
           </Col>
         </Col>
+        <Modal isOpen={this.state.isModalOpen} onRequestClose={this.closeModal.bind(this)} style={modalStyle}>
+          <Row className="modal-movie-title" style={modalTitleStyle}><h1>File Details</h1></Row>    
+          <VideoInfoModal { ...this.props}/>                          
+        </Modal>
       </Row>
     );
   }
