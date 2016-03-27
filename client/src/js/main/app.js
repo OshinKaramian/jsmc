@@ -80,4 +80,12 @@ let App = React.createClass({
   }
 });
 
-ReactDOM.render(<App />, document.getElementById('content'));
+if (window && window.process && window.process.type === "renderer") {
+  var ipc = require('electron').ipcRenderer;
+  
+  ipc.on('data-loaded', function(event, message) {
+    ReactDOM.render(<App />, document.getElementById('content')); 
+  });
+} else {
+  ReactDOM.render(<App />, document.getElementById('content'));
+}

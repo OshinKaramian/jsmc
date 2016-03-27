@@ -74,6 +74,8 @@ gulp.task('watchMain', function() {
     entries: [path.ENTRY_POINT],
     transform: [['babelify', {presets: ['es2015', 'react']}]],
     require: dependencies,
+    ignoreMissing: true,
+    //detectGlobals: false,
     debug: true,
     verbose: true,
     cache: {},
@@ -108,6 +110,8 @@ gulp.task('watchVideo', function() {
     entries: [path.ENTRY_POINT_VIDEO],
     require: dependencies,
      transform: [['babelify', {presets: ['es2015', 'react']}]],
+     ignoreMissing: true,
+    //detectGlobals: false,
     debug: true,
     cache: {},
     packageCache: {},
@@ -142,6 +146,8 @@ gulp.task('build', function(){
   browserify({
     entries: [path.ENTRY_POINT],
     transform: [babelify],
+    ignoreMissing: true,
+    //detectGlobals: false,
     debug: true,
     cache: {},
     packageCache: {},
@@ -155,6 +161,8 @@ gulp.task('build', function(){
   browserify({
     entries: [path.ENTRY_POINT_VIDEO],
     transform: [babelify],
+    ignoreMissing: true,
+   // detectGlobals: false,
   })
   .bundle()
     .pipe(source(path.MINIFIED_OUT_VIDEO))

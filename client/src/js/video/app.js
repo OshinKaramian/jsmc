@@ -27,7 +27,14 @@ var transcodeAndRun = function() {
       }, 15000);
     });
 };
-
-$(document).ready(function() {
-  transcodeAndRun();
-});
+if (window && window.process && window.process.type) {
+  var ipc = require('electron').ipcRenderer;
+  
+  ipc.on('data-loaded', function(event, message) {
+    transcodeAndRun();
+  });
+}  else {
+  $(document).ready(function() {
+    transcodeAndRun();
+  });
+}

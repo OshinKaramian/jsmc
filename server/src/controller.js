@@ -4,6 +4,18 @@ const fs = Promise.promisifyAll(require('fs-extra'));
 const path = require('path');
 const file = require('./file.js');
 let db = require('./db.js')();
+let os = require('os');
+let address;
+let ifaces = os.networkInterfaces();
+for (let dev in ifaces) {
+  let iface = ifaces[dev].filter(function(details) {
+      return details.family === 'IPv4' && details.internal === false;
+  });
+
+  if (iface.length > 0) {
+    address = iface[0].address;
+  }
+}
 
 module.exports.media = {
   transcode: function(request, reply) {

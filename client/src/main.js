@@ -3,6 +3,11 @@
 const electron = require('electron');
 const app = electron.app;  // Module to control application life.
 const BrowserWindow = electron.BrowserWindow;  // Module to create native browser window.
+var polo = require('polo');
+var ipc = require('ipc');
+const remote = require('electron').remote;
+var apps = polo();
+var baseApiUrl;
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -17,9 +22,14 @@ app.on('window-all-closed', function() {
   }
 });
 
+
+
+
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 app.on('ready', function() {
+  
   // Create the browser window.
   mainWindow = new BrowserWindow({height: 1200, width: 1200, minHeight: 800, minWidth: 1200, autoHideMenuBar: true });
 
@@ -35,5 +45,16 @@ app.on('ready', function() {
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     mainWindow = null;
+  });
+  
+  ipc.on('request-api-url', function(event, arg) {
+    event.sender.send('api-url', baseApiUrl);
+  });
+  
+  mainWindow.webContents.on('did-finish-load', function() {     
+    let appInfo = apps.get('jsmc');
+    baseApiUrl = 'http://' + appInfo.address + '/';
+    mainWindow.webContents.send('updateJsmcUrl', baseApiUrl);
+    mainWindow.webContents.send('data-loaded');
   });
 });
