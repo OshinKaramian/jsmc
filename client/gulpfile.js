@@ -6,6 +6,7 @@ var source = require('vinyl-source-stream');
 var browserify = require('browserify');
 var watchify = require('watchify');
 var streamify = require('gulp-streamify');
+var winInstaller = require('electron-windows-installer');
 var buffer = require('vinyl-buffer');
 var babelify = require('babelify');
 var fs = require('fs');
@@ -19,6 +20,7 @@ var path = {
   ELECTRON: './src/main.js',
   VIDEOJS: './src/js/video/video.min.js',
   VIDEOJSHLS: './src/js/video/vjs-hls.min.js',
+  VIDEOJSOVERLAY: './src/js/video/videojs-overlay.min.js',
   MINIFIED_OUT: 'build.min.js',
   MINIFIED_OUT_VIDEO: 'video.build.min.js',
   OUT: 'build.js',
@@ -52,6 +54,7 @@ gulp.task('copyJS', function(){
   return gulp.src([
     path.VIDEOJS,
     path.VIDEOJSHLS,
+    path.VIDEOJSOVERLAY,
     path.OUT,
     path.OUT_VIDEO
   ])
@@ -168,6 +171,16 @@ gulp.task('build', function(){
     .pipe(source(path.MINIFIED_OUT_VIDEO))
     .pipe(streamify(uglify(path.MINIFIED_OUT_VIDEO)))
     .pipe(gulp.dest(path.DEST_BUILD));
+});
+
+gulp.task('create-windows-installer', function(done) {
+  winInstaller({
+    appDirectory: './jsmc-win32-x64',
+    outputDirectory: './release',
+    arch: 'x64',
+    iconUrl: 'http://www.iconarchive.com/download/i43635/treetog/junior/folder-public-movies.ico',
+    authors: "Oshin Karamian"
+  }).then(done).catch(done);
 });
 
 gulp.task('replaceHTML', function(){

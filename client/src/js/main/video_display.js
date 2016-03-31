@@ -9,10 +9,13 @@ var VideoItemModal = require('./video_item_modal.js');
 var api = require('../common/api.js');
 
 var VideoDisplay = React.createClass({
+  slickSet: false,
+  
   getInitialState: function() {
     return {
       currentMovie: null,
-      isModalOpen: false
+      isModalOpen: false,
+      
     };
   },
 
@@ -27,13 +30,37 @@ var VideoDisplay = React.createClass({
     this.setState({ isModalOpen: false });
   },
   
+  setControlEventListeners: function() {
+    if (!this.slickSet) {
+      this.slickSet = true;
+      document.addEventListener('keydown', function(event) {
+        if (document.querySelectorAll('.movies-search-box')[0] !== document.activeElement) {
+          let totalSlides = $('.carousel').slick('getOption', 'slidesToShow');
+          // left
+          if (event.keyCode === 37) {
+            document.querySelectorAll('.slider-button-left')[0].click();
+          //right
+          } else if (event.keyCode === 39) {
+            document.querySelectorAll('.slider-button-right')[0].click();       
+          // A number
+          } else if (event.keyCode >= 49 && event.keyCode < (49 + totalSlides)) {
+            let index = event.keyCode - 49;
+            document.querySelectorAll('.slick-active')[index].click();
+          }
+        }
+      });
+    }
+  },
+  
   componentDidUpdate: function() {
+    if (document.querySelectorAll('.slick-active').length === 0) {
       $('.carousel').slick({    
         infinite: false,
         dots: false,
         speed: 500,
         slidesToShow: 9,
         slidesToScroll: 8,
+        lazyLoad: 'ondemand',
         prevArrow: $('.slider-button-left'),
         nextArrow: $('.slider-button-right'),
         // the magic
@@ -104,7 +131,14 @@ var VideoDisplay = React.createClass({
             }
 
             }]
-        });    
+        });
+
+        $('.carousel').on('afterChange', function(event, slick, currentSlide){
+          document.querySelectorAll('.slick-current')[0].click();
+        });
+        
+        this.setControlEventListeners(); 
+      }
   },
 
   render: function() {
@@ -151,10 +185,19 @@ var VideoDisplay = React.createClass({
 let VideoItem = React.createClass({
   handleClick: function(event) {
    let itemStyle = { 
-      'background': "url(" + this.props.movie.backdrop_path + ")", 
-      '-webkit-background-size': 'cover',
+      'background-image': "url(" + this.props.movie.backdrop_path + ")", 
+      '-webkit-backface-visibility': 'hidden',
+      '-webkit-transition': 'background 2s',
+      '-moz-transition': 'background 2s',
+      '-o-transition': 'background 2s',
+      'transition': 'background 2s'
+      //'-webkit-transform-style': 'preserve-3d',
+      //'-webkit-transform': 'translate3d(0,0,0)'
     };
+   
     $('body').css(itemStyle);
+    $(".slick-current-selection").removeClass("slick-current-selection");
+    $('[data-fileid="' + this.props.movie.id +'"]').addClass('slick-current-selection');
     this.props.onItemClick(this.props.movie);
   },
 
@@ -162,10 +205,15 @@ let VideoItem = React.createClass({
     let divStyle = {
       display: 'inline-block'
     };
-          
+    
+    let divHidden = {
+      'display': 'none'
+    }
+    
     return (     
       <div onClick={this.handleClick}>
         <img height="100%" src={this.props.poster} data-fileid={this.props.movie.id}/>
+        <img src={this.props.movie.backdrop_path} style={divHidden} alt="" />
       </div>
     )
   } 

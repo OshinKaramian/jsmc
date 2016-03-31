@@ -23,6 +23,16 @@ class ModalItemInfo extends React.Component {
 }
 
 class VideoOptionBar extends React.Component {
+  
+  setEventListeners() {        
+      document.addEventListener('keydown', function(event) {
+        var keyPressed = String.fromCharCode(event.keyCode);
+        if (keyPressed === 'P') {
+          this.playVideo();
+        }
+      }.bind(this)); 
+  }
+  
   playVideo() {
     window.location = 'video.html?mediaId=' + this.props.videoId;
   }
@@ -30,11 +40,15 @@ class VideoOptionBar extends React.Component {
   openInfo() {
     this.props.openInfo();
   }
+  
+  componentDidMount() {
+    this.setEventListeners();
+  }
 
   render() {
     return (
       <Row className="video-option-bar">
-        <Col md={12}><button className="btn btn-default btn-lg" onClick={this.openInfo.bind(this)}><span className="glyphicon glyphicon-info-sign"></span></button>
+        <Col md={12}><button className="btn btn-default btn-lg btn=movie-play" onClick={this.openInfo.bind(this)}><span className="glyphicon glyphicon-info-sign"></span></button>
         <button className="btn btn-default btn-lg" onClick={this.playVideo.bind(this)}><span  className="glyphicon glyphicon-play"></span></button></Col>
       </Row>
     );
@@ -42,6 +56,7 @@ class VideoOptionBar extends React.Component {
 }
 
 class VideoInfoModal extends React.Component {
+  
   playFile(index) {
     window.location = 'video.html?mediaId=' + this.props.id + '&fileIndex=' + index;
   }

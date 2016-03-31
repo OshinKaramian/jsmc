@@ -82,6 +82,8 @@ module.exports = function(fileData, category, year) {
   filename = filename.join('+');
   filename = filename.split(' ');
   filename = filename.join('+');
+  filename = filename.split('-');
+  filename = filename.join('+');
   
   return queryForValidObject(filename, category, year).then(function(matchedResponse) {
     let releaseYear = queryTranslator[category].getReleaseYear(matchedResponse);

@@ -3,8 +3,8 @@ var $ = require('jquery');
 window.$ = window.jQuery = require('jquery')
 var api = require('../common/api.js');
 var myPlayer =  videojs('my-video');
-
 var queryString = require('query-string');
+var backButton = $('.vjs-back-button');
 var initialPlayback = false;
 
 var transcodeAndRun = function() {
@@ -27,6 +27,30 @@ var transcodeAndRun = function() {
       }, 15000);
     });
 };
+
+(function(window, videojs) {
+  backButton.click(function(event) {
+    window.history.back();
+  });
+  
+  backButton.mouseover(function(event) {
+    backButton.addClass('glow');
+    backButton.show();
+  });
+  
+  backButton.mouseout(function(event) {
+    backButton.removeClass('glow');
+  });
+  
+  myPlayer.on('mouseover', function() {
+    backButton.show();
+  });
+  
+  myPlayer.on('mouseout', function() {
+    backButton.hide()
+  });
+}(window, window.videojs));
+
 if (window && window.process && window.process.type) {
   var ipc = require('electron').ipcRenderer;
   
@@ -38,3 +62,4 @@ if (window && window.process && window.process.type) {
     transcodeAndRun();
   });
 }
+

@@ -45,7 +45,12 @@ module.exports = function(dbPath) {
     },
     
     findMedia: function(query) {
-      return db.findAsync({ 'title' : new RegExp(query, 'i')})
+      return db.findAsync({$or: [
+        { 'title' : new RegExp(query, 'i')},
+        { 'director' : new RegExp(query, 'i')},
+        { 'writer' : new RegExp(query, 'i')},
+        { 'actors' : new RegExp(query, 'i')}
+      ]})
       .then(function(items) {
         items.sort(function(a,b) {
           
