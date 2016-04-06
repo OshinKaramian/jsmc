@@ -4,6 +4,7 @@
 "use strict";
 const Promise = require('bluebird');
 const path = require('path');
+const os = require('os');
 const ffmpeg = require('fluent-ffmpeg');
 const fs = Promise.promisifyAll(require('fs-extra'));
 const query = require('./query.js');
@@ -41,12 +42,12 @@ const validExtensions = [
   '.mp4'
 ];
 
-ffmpeg.setFfmpegPath(path.join('ffmpeg','win','bin','ffmpeg.exe'));
-ffmpeg.setFfprobePath(path.join('ffmpeg','win','bin','ffprobe.exe'));
+ffmpeg.setFfmpegPath(path.join('ffmpeg', os.platform(), 'bin','ffmpeg.exe'));
+ffmpeg.setFfprobePath(path.join('ffmpeg', os.platform(), 'bin','ffprobe.exe'));
 
-/** 
+/**
  * Takes output from ffprobe and evaluates whether the file is valid
- * 
+ *
  * @param {string} directory - root directory of file
  * @param {object} metadata - file metadata, such as duration, format
  * @return {object} object with metadata and the extracted filename
@@ -73,9 +74,9 @@ let validateAndCleanFFProbeOutput = function(directory, metadata) {
   return { 'metadata': metadata,'filename' : filename };
 };
 
-/** 
+/**
  * Takes a file and creates a database record
- * 
+ *
  * @param {string} rootDir - root directory of where all files are searched from
  * @param {string} fileName - name of file
  * @param {string} baseDir - base directory of file (file directory)
@@ -96,9 +97,9 @@ module.exports.createRecord = function(rootDir, fileName, baseDir, category, col
     .then(db.insertQuery.bind(this, collectionName));
 };
 
-/** 
+/**
  * Kicks off process to transcode a file to HLS
- * 
+ *
  * @param {string} collection - collection file is stored under
  * @param {string} mediaId - database id of a given file
  * @param {integer} fileIndex - file index as set in the database

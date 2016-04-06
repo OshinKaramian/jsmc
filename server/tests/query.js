@@ -8,47 +8,50 @@ const sinon = require('sinon');
 const queryData = require('./data/file_system.json');
 
 describe('Query', function() {
-  
+
   before(function(done) {
     done();
   });
-  
+
   beforeEach(function(done) {
     done();
   });
-  
-  describe('movie', function () {
-    
-    this.timeout(120000);
-    
-    it('should return a correct values for searches', function (done) {      
-      let queryPromise = function(data) {
-        let queryObject = {
-          filename: data.input,
-          metadata: {
-            format: {
-              filename: "",
-              format_name: "",
-              format_long_name: "",
-              duration: ""
-            }
-          }
-        };
-        
-        return query(queryObject, 'movie', null)
-        .then((queryOutput) => {
-          assert.equal(queryOutput.title, data.output.title);
-          return queryOutput;
-        });
-      };
-      
-      let tests = Promise.resolve(queryData).map(queryPromise,{concurrency: 1 });  
 
-      tests.then((allFileContents) => { 
-         done();
-      }).catch((err) => done(err));     
+  describe('movie', function () {
+
+    this.timeout(20000);
+
+    queryData.forEach(function(queryDataItem) {
+      it(`should return a correct values for search on ${queryDataItem.input}`, function (done) {
+        let queryPromise = function(data) {
+          let queryObject = {
+            filename: data.input,
+            metadata: {
+              format: {
+                filename: "",
+                format_name: "",
+                format_long_name: "",
+                duration: ""
+              }
+            }
+          };
+
+          return query(queryObject, 'movie', null)
+          .then((queryOutput) => {
+            assert.equal(queryOutput.title, data.output.title);
+            return queryOutput;
+          });
+        };
+
+        //let tests = Promise.resolve(queryData).map(queryPromise,{concurrency: 1 });
+
+        queryPromise(queryDataItem).then((queryOutput) => {
+        //tests.then((allFileContents) => {
+           done();
+        }).catch((err) => done(err));
+      });
     });
-    
+
     it('should return an error for non existent records', function (done) {
       let queryObject = {
         filename: 'xyzoiujdpu',
@@ -61,7 +64,7 @@ describe('Query', function() {
           }
         }
       };
-       
+
       query(queryObject, 'movie', null)
         .then((queryOutput) => {
           done('Query returned data when it should not have: ' + queryOutput);
