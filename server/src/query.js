@@ -1,10 +1,42 @@
+/**
+ * @file Queries both omdbapi and moviedb to generate an object based on the filename
+ */
 "use strict"
 const Promise = require('bluebird');
 const sleep = require('sleep');
+const fs = Promise.promisifyAll(require('fs-extra'));
+const path = require('path');
 const request = Promise.promisify(require('request'));
+const cbRequest = require('request');
 const config = require('../config/config.json');
 const queryTranslator = require('./query_translator.js');
 
+/** 
+ * Queries themoviedb.org for movie information return format is:
+ * "results": [
+ *  {
+ *     "adult"
+ *     "backdrop_path"
+ *     "genre_ids"
+ *     "id"
+ *     "original_language"
+ *     "original_title"
+ *     "overview"
+ *     "release_date"
+ *     "poster_path"
+ *     "popularity"
+ *     "title"
+ *     "video"
+ *     "vote_average"
+ *     "vote_count"
+ *  }
+ * ]
+ * 
+ * @param {string} filename - File name that is being queried
+ * @param {string} category - Type of query, options are 'movie' and 'tv'
+ * @param {string} year - Year to attach to query (not required)
+ * @return {object} moviedb response
+ */
 let movieDbQuery = function(filename, category, year) {
   let queryUrl = 'http://api.themoviedb.org/3/search/'+ category +'?api_key=' + config.apiKey + '&query=' + filename;
 
@@ -12,11 +44,36 @@ let movieDbQuery = function(filename, category, year) {
     queryUrl += '&year=' + year;
   }
 
-  //console.info('filename: ' + queryUrl);
-
   return request(queryUrl);
 };
 
+/** 
+ * Prepares filename to be queried after a failed search
+ * 
+ * @param {string} filename - File name that is being queried
+ * @return {string} Modified file name for the next search
+ */
+let modifyFilenameForNextSearch = function(filename) {
+  let lastIndex;
+
+  filename = filename.split('+');
+  lastIndex  = filename.pop();
+  filename = filename.join('+');
+
+  return {
+    filename: filename,
+    year: +lastIndex
+  };
+};
+
+/** 
+ * Queries moviedb repeatedly until finding a match or determining no match exists
+ * 
+ * @param {string} filename - File name that is being queried
+ * @param {string} category - Type of query, options are 'movie' and 'tv'
+ * @param {string} year - Year to attach to query (not required)
+ * @return {object} matching moviedb response, no filename exception if query fails
+ */
 let queryForValidObject = function(filename, category, year) {
   if (!filename) {
     throw new Error('No Filename for Query');
@@ -26,13 +83,12 @@ let queryForValidObject = function(filename, category, year) {
     if (response.statusCode == 200) {
       let parsedResponse = JSON.parse(response.body);
       if (parsedResponse.total_results == 0) {
-        let newQueryInfo = queryTranslator.modifyFilenameForNextSearch(filename);
+        let newQueryInfo = modifyFilenameForNextSearch(filename);
         return queryForValidObject(newQueryInfo.filename, category, newQueryInfo.year);
       } else {
         return queryTranslator.findValidObject(parsedResponse);
       }
     } else if (response.statusCode == 429) {
-      //console.error('Too many retries, waiting 10 seconds');
       sleep.sleep(10);
       return queryForValidObject(filename, category, year);
     } else {
@@ -43,18 +99,60 @@ let queryForValidObject = function(filename, category, year) {
   });
 };
 
-let omdbQuery = function(matchedResponse) {
-  let releaseYear = queryTranslator[category].getReleaseYear(matchedResponse);
-  let searchTitle = queryTranslator[category].getTitle(matchedResponse);
+/** 
+ * Queries omdbapi.com for movie information return format is:
+ *
+ * {
+ *   "Title"
+ *   "Year"
+ *   "Rated"
+ *   "Released"
+ *   "Runtime"
+ *   "Genre"
+ *   "Director"
+ *   "Writer"
+ *   "Actors"
+ *   "Plot"
+ *   "Language"
+ *   "Country"
+ *   "Awards"
+ *   "Poster"
+ *   "Metascore"
+ *   "imdbRating"
+ *   "imdbVotes"
+ *   "imdbID"
+ *   "Type"
+ *   "Response"
+ * }
+ * 
+ * @param {string} category - Type of query, options are 'movie' and 'tv'
+ * @param {string} year - Year to attach to query (not required)
+ * @return {object} moviedb response
+ */
+let omdbQuery = function(category, movieDbMatch) {
+  let releaseYear = queryTranslator[category].getReleaseYear(movieDbMatch);
+  let searchTitle = queryTranslator[category].getTitle(movieDbMatch);
   let omdbQueryUrl = 'http://www.omdbapi.com/?t=' + searchTitle + '&tomatoes=true&plot=short&r=json&y=' + releaseYear;
 
-  //correctMatch = matchedResponse;
-  //console.info(fileData.filename + ': ' + omdbQueryUrl);
+  return request(omdbQueryUrl).then((response) => {
+    if (response.statusCode < 400) {
+      let omdbParsedResponse = JSON.parse(response.body);
+      let newObject = queryTranslator[category].convertResponsesToMediaObject(movieDbMatch, omdbParsedResponse);  
+      
+      return newObject;
+    } else {
+      return movieDbMatch;
+    }      
+  });
+};
 
-  return request(omdbQueryUrl);
-},
-
-formatQueryOutput = function(data) {
+/** 
+ * Takes output from both queries and adds file info to object
+ * 
+ * @param {object} data - fileInfo object
+ * @return {object} appending fileInfo object
+ */
+let formatQueryOutput = function(data) {
   let filedata = [];
 
   if (data.queryInfo) {
@@ -72,40 +170,83 @@ formatQueryOutput = function(data) {
   }
 };
 
+/** 
+ * Downloads image assets to a folder
+ * 
+ * @param {object} movieDbResponse - Response from moviedbquery
+ * @return {object} returns moviedbresponse that was passed in (for use on future promises)
+ */
+let downloadAndSaveAssets = function(movieDbResponse) {  
+  let writeImage = function(image_url) {
+    let imageBaseUrl = 'http://image.tmdb.org/t/p/original';
+    let imageFsPath = path.join(__dirname, '..', 'assets', image_url);
+    let downloadImage = cbRequest(imageBaseUrl + image_url).pipe(fs.createWriteStream(imageFsPath));
+    
+    return new Promise(function(resolve, reject){
+      return fs.existsAsync(imageFsPath).then((exists) => {
+        downloadImage.on("close",function(){        
+          resolve();
+        });        
+      }).catch((exception) => resolve()); 
+    });
+  }
+
+  return writeImage(movieDbResponse.poster_path)
+    .then(() => writeImage(movieDbResponse.backdrop_path))
+    .then(() => {
+      if (movieDbResponse.poster_path) {
+        movieDbResponse.poster_path = 'assets' + movieDbResponse.poster_path;
+      } 
+  
+      if (movieDbResponse.backdrop_path) {
+        movieDbResponse.backdrop_path = 'assets' + movieDbResponse.backdrop_path;
+      }
+  
+      return movieDbResponse
+    });
+};
+
+/** 
+ * Sanitizes filename so that it's queryable
+ * 
+ * @param {string} filename - Filename that is to be sanitized for querying
+ * @return {string} sanitized filename, safe for queries
+ */
+let sanitizeFilenameForSearch = function(filename) {
+  let sanitizedFilename = filename;
+  
+  sanitizedFilename = sanitizedFilename.split('.');
+  sanitizedFilename = sanitizedFilename.join('+');
+  sanitizedFilename = sanitizedFilename.split('_');
+  sanitizedFilename = sanitizedFilename.join('+');
+  sanitizedFilename = sanitizedFilename.split(' ');
+  sanitizedFilename = sanitizedFilename.join('+');
+  sanitizedFilename = sanitizedFilename.split('-');
+  sanitizedFilename = sanitizedFilename.join('+');
+  
+  return sanitizedFilename;
+};
+
+/** 
+ * Sanitizes filename so that it's queryable
+ * 
+ * @param {string} filename - File name that is being queried
+ * @param {string} category - Type of query, options are 'movie' and 'tv'
+ * @param {string} year - Year to attach to query (not required)
+ * @return {return} queried object with data from moviedb and omdb, file system data appended as well
+ */
 module.exports = function(fileData, category, year) {
-  let correctMatch;
-  let filename = fileData.filename;
-  
-  filename = filename.split('.');
-  filename = filename.join('+');
-  filename = filename.split('_');
-  filename = filename.join('+');
-  filename = filename.split(' ');
-  filename = filename.join('+');
-  filename = filename.split('-');
-  filename = filename.join('+');
-  
-  return queryForValidObject(filename, category, year).then(function(matchedResponse) {
-    let releaseYear = queryTranslator[category].getReleaseYear(matchedResponse);
-    let searchTitle = queryTranslator[category].getTitle(matchedResponse);
-    let omdbQueryUrl = 'http://www.omdbapi.com/?t=' + searchTitle + '&tomatoes=true&plot=short&r=json&y=' + releaseYear;
+  let filename = sanitizeFilenameForSearch(fileData.filename);
 
-    correctMatch = matchedResponse;
-    //console.info(filename + ': ' + omdbQueryUrl);
-
-    return request(omdbQueryUrl);
-  }).then(function(response) {
-    if (response.statusCode < 400) {
-      let omdbParsedResponse = JSON.parse(response.body);
-      let newObject = queryTranslator[category].convertResponsesToMediaObject(correctMatch, omdbParsedResponse);
-
-      fileData.queryInfo = newObject;
-    }
-
-    return fileData;
-  }).then(formatQueryOutput)
-  .catch(function(error) {
+  return queryForValidObject(filename, category, year)
+    .then(downloadAndSaveAssets)
+    .then(omdbQuery.bind(this, category))
+    .then((updateQueryObject) => {
+      fileData.queryInfo = updateQueryObject;
+      return fileData;
+    })
+    .then(formatQueryOutput)
+  .catch((error) => {
     throw error;
   });
 };
-
