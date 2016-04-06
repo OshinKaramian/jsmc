@@ -1,3 +1,6 @@
+/**
+ * @file Handles all database operations
+ */
 "use strict";
 const Promise = require('bluebird');
 const path = require('path');
@@ -5,6 +8,13 @@ const config = require('../config/config.json');
 const Database = require('nedb');
 const defaultDbPath = path.join(__dirname,'..', 'db', 'jsmc.db');
 let db;
+
+let mediaSort = function(a,b) {         
+  if(a.title > b.title) return 1;  
+  if (a.title < b.title) return -1;
+  
+  return 0;
+};
 
 module.exports = function(dbPath) {
   dbPath = dbPath ? dbPath : defaultDbPath;
@@ -15,28 +25,36 @@ module.exports = function(dbPath) {
   }
 
   return {
+    
+    /** 
+     * Inserts entry into database
+     * 
+     * @param {string} collectionName - collection to add entry to
+     * @param {object} data - data to insert into database
+     * @return {object} database response
+     */
     insertQuery: function(collectionName, data) {
       return db.findOneAsync({ "title": data.title  })
         .then(function(item) {
           if (!item) {
-          //  console.log('Inserted new item for: ' + data.title);
             data.collection = collectionName;
-           // console.log(data);
-
             return db.insertAsync(data);
           } else {
-          //  console.log('Appending new file for: ' + data.title + ' filename: ' + data.filedata[0].filename);
             item.filedata.push(data.filedata[0]);
-
             return db.updateAsync({ "title" : data.title }, item);
           }
         })
         .catch(function(err) {
-        //  console.error(err);
           throw err;
         })
     },
 
+    /** 
+     * Gets a media object from the database
+     * 
+     * @param {string} mediaId - id of entry to pull
+     * @return {object} database response
+     */
     getMedia: function(mediaId) {
       return db.findOneAsync({ 'id' : parseInt(mediaId)})
         .catch(function(error) { 
@@ -44,22 +62,22 @@ module.exports = function(dbPath) {
         });
     },
     
+    /** 
+     * Queries for media
+     * 
+     * @param {string} query - data to query off of
+     * @return {array} media objects based on query
+     */
     findMedia: function(query) {
-      return db.findAsync({ 'title' : new RegExp(query, 'i')})
+      return db.findAsync({ 
+        $or: [
+          { 'title' : new RegExp(query, 'i')},
+          { 'director' : new RegExp(query, 'i')},
+          { 'writer' : new RegExp(query, 'i')},
+          { 'actors' : new RegExp(query, 'i')}
+        ]})
       .then(function(items) {
-        items.sort(function(a,b) {
-          
-          if(a.title > b.title) {
-            return 1;
-          }
-           
-          if (a.title < b.title) {
-            return -1;
-          } 
-          
-          return 0;
-        })
-        
+        items.sort(mediaSort);
         return items;
       })
       .catch(function(error) { 
@@ -67,21 +85,15 @@ module.exports = function(dbPath) {
       });
     },
 
+    /** 
+     * Gets all media objects from a given collection
+     * 
+     * @param {string} collectionName - collection to get media from
+     * @return {array} media objects based on query
+     */
     getCollection: function(collectionName) {
       return db.findAsync({ collection: collectionName }).then(function(items) {
-        items.sort(function(a,b) {
-          
-          if(a.title > b.title) {
-            return 1;
-          }
-           
-          if (a.title < b.title) {
-            return -1;
-          } 
-          
-          return 0;
-        });
-        
+        items.sort(mediaSort);
         return items;
       })
       .catch(function(error) { 

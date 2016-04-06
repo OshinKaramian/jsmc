@@ -8,7 +8,6 @@ const ReactDOM = require('react-dom');
 const Bootstrap = require('bootstrap');
 const api = require('../common/api.js');
 
-
 let App = React.createClass({
   getInitialState: function() {
     return {
@@ -53,8 +52,7 @@ let App = React.createClass({
       padding: '5px',
       position: 'fixed',
       top: '0',
-      right: '20px',
-      zIndex:'1' 
+      right: '20px'
     };
     
     let modalStyles = {
@@ -67,17 +65,26 @@ let App = React.createClass({
     };
     
     return (
-      <div>    
+      
+      <div>       
+        <div className="container-full">
+          <VideoDisplay movies={this.state.data}/>
+        </div>
         <div style={buttonStyle} style={buttonStyle}>
           <i className="fa fa-search fa-2x" onClick={this.openModal}></i> &nbsp;&nbsp;
           <VideoSearchBox onSearchBoxChange={this.searchBoxChange} />
-        </div>
-        <div className="container-full">
-          <VideoDisplay movies={this.state.data}/>
         </div>
       </div>
     );
   }
 });
 
-ReactDOM.render(<App />, document.getElementById('content'));
+if (window && window.process && window.process.type === "renderer") {
+  var ipc = require('electron').ipcRenderer;
+  
+  ipc.on('data-loaded', function(event, message) {
+    ReactDOM.render(<App />, document.getElementById('content')); 
+  });
+} else {
+  ReactDOM.render(<App />, document.getElementById('content'));
+}
