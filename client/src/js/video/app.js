@@ -1,11 +1,10 @@
 "use strict";
-var $ = require('jquery');
-window.$ = window.jQuery = require('jquery')
-var api = require('../common/api.js');
-var myPlayer =  videojs('my-video');
-var queryString = require('query-string');
-var backButton = $('.vjs-back-button');
-var initialPlayback = false;
+const $ = require('jquery');
+window.$ = window.jQuery = require('jquery');
+const api = require('../common/api.js');
+const myPlayer =  videojs('my-video');
+const queryString = require('query-string');
+const backButton = $('.vjs-back-button');
 
 var transcodeAndRun = function() {
   var media = new api.Media();
@@ -14,8 +13,7 @@ var transcodeAndRun = function() {
   media.get(transcodeRequestObject.mediaId)
     .then(function(data) {
       console.log(data.backdrop_path);
-      //myPlayer.setAttribute('poster', data.backdrop_path);
-      myPlayer.poster(data.backdrop_path);
+      myPlayer.poster(api.BaseApiUrl + data.backdrop_path);
       return media.transcode(transcodeRequestObject);
     })
     .then(function(data) {
@@ -52,7 +50,7 @@ var transcodeAndRun = function() {
 }(window, window.videojs));
 
 if (window && window.process && window.process.type) {
-  var ipc = require('electron').ipcRenderer;
+  let ipc = require('electron').ipcRenderer;
   
   ipc.on('data-loaded', function(event, message) {
     transcodeAndRun();

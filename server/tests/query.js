@@ -19,7 +19,7 @@ describe('Query', function() {
   
   describe('movie', function () {
     
-    this.timeout(60000);
+    this.timeout(120000);
     
     it('should return a correct values for searches', function (done) {      
       let queryPromise = function(data) {

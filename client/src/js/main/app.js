@@ -8,7 +8,6 @@ const ReactDOM = require('react-dom');
 const Bootstrap = require('bootstrap');
 const api = require('../common/api.js');
 
-
 let App = React.createClass({
   getInitialState: function() {
     return {
@@ -66,8 +65,8 @@ let App = React.createClass({
     };
     
     return (
-      <div>    
-        
+      
+      <div>       
         <div className="container-full">
           <VideoDisplay movies={this.state.data}/>
         </div>

@@ -1,3 +1,6 @@
+/**
+ * @file Handles all filesystem level operations on media files
+ */
 "use strict";
 const Promise = require('bluebird');
 const path = require('path');
@@ -41,6 +44,13 @@ const validExtensions = [
 ffmpeg.setFfmpegPath(path.join('ffmpeg','win','bin','ffmpeg.exe'));
 ffmpeg.setFfprobePath(path.join('ffmpeg','win','bin','ffprobe.exe'));
 
+/** 
+ * Takes output from ffprobe and evaluates whether the file is valid
+ * 
+ * @param {string} directory - root directory of file
+ * @param {object} metadata - file metadata, such as duration, format
+ * @return {object} object with metadata and the extracted filename
+ */
 let validateAndCleanFFProbeOutput = function(directory, metadata) {
   let filename;
 
@@ -60,10 +70,20 @@ let validateAndCleanFFProbeOutput = function(directory, metadata) {
     }
   });
 
-  return {'metadata': metadata,'filename' : filename};
+  return { 'metadata': metadata,'filename' : filename };
 };
 
-exports.createRecord = function(rootDir, fileName, baseDir, category, collectionName) {
+/** 
+ * Takes a file and creates a database record
+ * 
+ * @param {string} rootDir - root directory of where all files are searched from
+ * @param {string} fileName - name of file
+ * @param {string} baseDir - base directory of file (file directory)
+ * @param {string} category - type of record ('movie' or 'tv')
+ * @param {string} collectionName - name of collection to store file under
+ * @return {object} a promise that has created a db record for the given file
+ */
+module.exports.createRecord = function(rootDir, fileName, baseDir, category, collectionName) {
   let filePath = path.join(rootDir, fileName);
 
   if (validExtensions.indexOf(path.extname(fileName)) === -1) {
@@ -71,12 +91,20 @@ exports.createRecord = function(rootDir, fileName, baseDir, category, collection
   }
 
   return ffprobe(filePath)
-    .then(validateAndCleanFFProbeOutput.bind(this,baseDir))
+    .then(validateAndCleanFFProbeOutput.bind(this, baseDir))
     .then(data => query(data, category, null))
     .then(db.insertQuery.bind(this, collectionName));
 };
 
-exports.transcode = function(collection, mediaId, fileIndex) {
+/** 
+ * Kicks off process to transcode a file to HLS
+ * 
+ * @param {string} collection - collection file is stored under
+ * @param {string} mediaId - database id of a given file
+ * @param {integer} fileIndex - file index as set in the database
+ * @return {string} location of the transcoded asset
+ */
+module.exports.transcode = function(collection, mediaId, fileIndex) {
   return fs.existsAsync('tmp/' + mediaId + '_'+ fileIndex + '.m3u8')
     .then(function(exists) {
       if (!exists) {

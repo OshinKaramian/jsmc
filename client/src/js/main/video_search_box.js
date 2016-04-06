@@ -1,6 +1,5 @@
 "use strict";
 const $ = require('jquery');
-window.$ = window.jQuery = require('jquery');
 const React = require('react');
 const ReactDOM = require('react-dom');
 const api = require('../common/api.js');

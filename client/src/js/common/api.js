@@ -1,7 +1,6 @@
 "use strict";
 var $ = require('jquery');
 var baseApiUrl = 'http://' + location.host.split(':')[0] + ':3000/';
-window.$ = window.jQuery = require('jquery');
 
 if (window && window.process && window.process.type) {
   var ipc = require('electron').ipcRenderer;
@@ -16,6 +15,8 @@ if (window && window.process && window.process.type) {
   
   ipc.send('request-api-url', '');
 }
+
+module.exports.BaseUrl = baseApiUrl;
 
 module.exports.Media = class Media {
   constructor() {

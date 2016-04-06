@@ -37,3 +37,4 @@ node_modules
 server/db/jsmc.db
 *.m3u8
 server/db/jsmc.db
+*.jpg

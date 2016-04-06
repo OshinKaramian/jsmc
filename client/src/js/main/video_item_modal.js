@@ -1,6 +1,5 @@
 "use strict";
 const $ = require('jquery');
-window.$ = window.jQuery = require('jquery')
 const jquery = require('jquery');
 const React = require('react');
 const Grid = require('react-bootstrap').Grid;
@@ -151,7 +150,7 @@ class VideoItemModal extends React.Component {
           <Row className="modal-movie-title"><h1>{this.props.title}</h1></Row>
           <Col md={12}>        
           <VideoOptionBar openInfo={this.openInfoPanel.bind(this)} videoId={this.props.id} />   
-            <ModalItemInfo className="modal-grid-row-right" title="Plot:" content={this.props.short_plot} />
+            <ModalItemInfo className="modal-grid-row-right" title="Plot:" content={this.props.short_plot || this.props.long_plot} />
             <ModalItemInfo className="modal-grid-row-right" title="Director:" content={this.props.director} />
             <ModalItemInfo className="modal-grid-row-right" title="Writer:" content={this.props.writer} />
             <ModalItemInfo className="modal-grid-row-right" title="Actors:" content={this.props.actors} />            

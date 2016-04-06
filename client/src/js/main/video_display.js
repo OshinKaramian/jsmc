@@ -1,6 +1,5 @@
 "use strict";
 var $ = require('jquery');
-window.$ = window.jQuery = require('jquery');
 var React = require('react');
 var Slick = require('slick-carousel');
 var Row = require('react-bootstrap').Row;
@@ -184,21 +183,30 @@ var VideoDisplay = React.createClass({
 
 let VideoItem = React.createClass({
   handleClick: function(event) {
-   let itemStyle = { 
-      'background-image': "url(" + this.props.movie.backdrop_path + ")", 
-      '-webkit-backface-visibility': 'hidden',
-      '-webkit-transition': 'background 2s',
-      '-moz-transition': 'background 2s',
-      '-o-transition': 'background 2s',
-      'transition': 'background 2s'
-      //'-webkit-transform-style': 'preserve-3d',
-      //'-webkit-transform': 'translate3d(0,0,0)'
-    };
-   
-    $('body').css(itemStyle);
-    $(".slick-current-selection").removeClass("slick-current-selection");
-    $('[data-fileid="' + this.props.movie.id +'"]').addClass('slick-current-selection');
-    this.props.onItemClick(this.props.movie);
+   let newBackground = new Image();
+   newBackground.src = api.BaseUrl + this.props.movie.backdrop_path;
+   newBackground.onload = function() {
+    let itemStyle = { 
+        'background-image': "url(" + api.BaseUrl + this.props.movie.backdrop_path + ")", 
+        '-webkit-backface-visibility': 'hidden',
+        '-webkit-transition': 'background 2s ease-in-out',
+        '-moz-transition': 'background 2s ease-in-out',
+        '-o-transition': 'background 2s ease-in-out',
+        'transition': 'background 2s ease-in-out',
+        '-webkit-transform-style': 'preserve-3d',
+        '-webkit-transform': 'translate3d(0,0,0)',
+        '-webkit-background-size': 'cover',
+        '-moz-background-size': 'cover',
+        '-o-background-size': 'cover',
+        'background-size': 'cover'
+      };
+    
+      //$('body').css(itemStyle);
+      $('#container-background .front').css(itemStyle);
+      $(".slick-current-selection").removeClass("slick-current-selection");
+      $('[data-fileid="' + this.props.movie.id +'"]').addClass('slick-current-selection');
+      this.props.onItemClick(this.props.movie);
+   }.bind(this);
   },
 
   render: function() {
@@ -212,8 +220,7 @@ let VideoItem = React.createClass({
     
     return (     
       <div onClick={this.handleClick}>
-        <img height="100%" src={this.props.poster} data-fileid={this.props.movie.id}/>
-        <img src={this.props.movie.backdrop_path} style={divHidden} alt="" />
+        <img height="100%" src={api.BaseUrl + this.props.poster} data-fileid={this.props.movie.id}/>
       </div>
     )
   } 
