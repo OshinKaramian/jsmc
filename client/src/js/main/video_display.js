@@ -9,12 +9,12 @@ var api = require('../common/api.js');
 
 var VideoDisplay = React.createClass({
   slickSet: false,
-  
+
   getInitialState: function() {
     return {
       currentMovie: null,
       isModalOpen: false,
-      
+
     };
   },
 
@@ -28,7 +28,7 @@ var VideoDisplay = React.createClass({
   onRequestClose: function(event) {
     this.setState({ isModalOpen: false });
   },
-  
+
   setControlEventListeners: function() {
     if (!this.slickSet) {
       this.slickSet = true;
@@ -40,7 +40,7 @@ var VideoDisplay = React.createClass({
             document.querySelectorAll('.slider-button-left')[0].click();
           //right
           } else if (event.keyCode === 39) {
-            document.querySelectorAll('.slider-button-right')[0].click();       
+            document.querySelectorAll('.slider-button-right')[0].click();
           // A number
           } else if (event.keyCode >= 49 && event.keyCode < (49 + totalSlides)) {
             let index = event.keyCode - 49;
@@ -50,10 +50,10 @@ var VideoDisplay = React.createClass({
       });
     }
   },
-  
+
   componentDidUpdate: function() {
     if (document.querySelectorAll('.slick-active').length === 0) {
-      $('.carousel').slick({    
+      $('.carousel').slick({
         infinite: false,
         dots: false,
         speed: 500,
@@ -135,8 +135,8 @@ var VideoDisplay = React.createClass({
         $('.carousel').on('afterChange', function(event, slick, currentSlide){
           document.querySelectorAll('.slick-current')[0].click();
         });
-        
-        this.setControlEventListeners(); 
+
+        this.setControlEventListeners();
       }
   },
 
@@ -147,9 +147,9 @@ var VideoDisplay = React.createClass({
     }.bind(this));
     let currentMovie = this.state.currentMovie || {};
     let rowStyle = { height: "500px", top:"0px"};
-      
+
     return (
-        <div>    
+        <div>
           <Row style={rowStyle}>
             <Col md={12}>
               <div >
@@ -183,11 +183,11 @@ var VideoDisplay = React.createClass({
 
 let VideoItem = React.createClass({
   handleClick: function(event) {
-   let newBackground = new Image();
-   newBackground.src = api.BaseUrl + this.props.movie.backdrop_path;
-   newBackground.onload = function() {
-    let itemStyle = { 
-        'background-image': "url(" + api.BaseUrl + this.props.movie.backdrop_path + ")", 
+    let newBackground = new Image();
+    newBackground.src = api.BaseUrl + this.props.movie.backdrop_path;
+    newBackground.onload = function() {
+      let itemStyle = {
+        'background-image': "url(" + api.BaseUrl + this.props.movie.backdrop_path + ")",
         '-webkit-backface-visibility': 'hidden',
         '-webkit-transition': 'background 2s ease-in-out',
         '-moz-transition': 'background 2s ease-in-out',
@@ -200,30 +200,30 @@ let VideoItem = React.createClass({
         '-o-background-size': 'cover',
         'background-size': 'cover'
       };
-    
+
       //$('body').css(itemStyle);
-      $('#container-background .front').css(itemStyle);
+      $('.container-background-front').css(itemStyle);
       $(".slick-current-selection").removeClass("slick-current-selection");
       $('[data-fileid="' + this.props.movie.id +'"]').addClass('slick-current-selection');
       this.props.onItemClick(this.props.movie);
-   }.bind(this);
+    }.bind(this);
   },
 
   render: function() {
     let divStyle = {
       display: 'inline-block'
     };
-    
+
     let divHidden = {
       'display': 'none'
     }
-    
-    return (     
+
+    return (
       <div onClick={this.handleClick}>
         <img height="100%" src={api.BaseUrl + this.props.poster} data-fileid={this.props.movie.id}/>
       </div>
     )
-  } 
+  }
 });
 
 module.exports = VideoDisplay;

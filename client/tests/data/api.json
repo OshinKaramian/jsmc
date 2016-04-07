@@ -1,0 +1,62 @@
+[
+    {
+      "title:": "(500) Days of Summer",
+     "media_type": "movie",
+    "id": 19913,
+   "long_plot": "Tom (Joseph Gordon-Levitt), greeting-card writer and hopeless romantic, is caught completely off-guard when his girlfriend, Summer (Zooey Deschanel), suddenly dumps him. He reflects on their 500 days together to try to figure out where their love affair went sour, and in doing so, Tom rediscovers his true passions in life.",
+  "release_date": "2009-07-17",
+ "poster_path": "assets/5SjtNPD1bb182vzQccvEUpXHFjN.jpg",
+"backdrop_path": "assets/yYw9cVdRJ4zzwxM2cTDXfT6JI6E.jpg",
+"rated": "PG-13",
+"director": "Marc Webb",
+"writer": "Scott Neustadter, Michael H. Weber",
+"actors": "Joseph Gordon-Levitt, Zooey Deschanel, Geoffrey Arend, Chloë Grace Moretz",
+"metacritic_rating": "76",
+"awards": "Nominated for 2 Golden Globes. Another 18 wins & 51 nominations.",
+"short_plot": "An offbeat romantic comedy about a woman who doesn't believe true love exists, and the young man who falls for her.",
+"imdb_rating": "7.8",
+"imdb_id": "tt1022603",
+"tomato_meter": "86",
+"tomato_user_rating": "84",
+"tomato_image": "certified",
+"filedata": [
+{
+  "filename": "Z:\\Movies\\(500).Days.of.Summer.2009.720p.BluRay.DTS.x264-WiKi.mkv",
+  "codecShort": "matroska,webm",
+  "codecLong": "Matroska / WebM"
+}
+],
+  "collection": "Movies",
+  "_id": "xoXUuIrw5LM1OzI6"
+  },
+{
+  "title": "12 Years a Slave",
+  "media_type": "movie",
+  "id": 76203,
+  "long_plot": "In the pre-Civil War United States, Solomon Northup, a free black man from upstate New York, is abducted and sold into slavery. Facing cruelty as well as unexpected kindnesses Solomon struggles not only to stay alive, but to retain his dignity. In the twelfth year of his unforgettable odyssey, Solomon’s chance meeting with a Canadian abolitionist will forever alter his life.",
+  "release_date": "2013-10-18",
+  "poster_path": "assets/kb3X943WMIJYVg4SOAyK0pmWL5D.jpg",
+  "backdrop_path": "assets/xnRPoFI7wzOYviw3PmoG94X2Lnc.jpg",
+  "rated": "R",
+  "director": "Steve McQueen",
+  "writer": "John Ridley (screenplay), Solomon Northup (based on \"Twelve Years a Slave\" by)",
+  "actors": "Chiwetel Ejiofor, Dwight Henry, Dickie Gravois, Bryan Batt",
+  "metacritic_rating": "97",
+  "awards": "Won 3 Oscars. Another 231 wins & 305 nominations.",
+  "short_plot": "In the antebellum United States, Solomon Northup, a free black man from upstate New York, is abducted and sold into slavery.",
+  "imdb_rating": "8.1",
+  "imdb_id": "tt2024544",
+  "tomato_meter": "96",
+  "tomato_user_rating": "90",
+  "tomato_image": "certified",
+  "filedata": [
+  {
+    "filename": "Z:\\Movies\\12.Years.A.Slave.2013.720p.WEB-DL.H264-PublicHD\\12.Years.A.Slave.2013.720p.WEB-DL.H264-PublicHD.mkv",
+    "codecShort": "matroska,webm",
+    "codecLong": "Matroska / WebM"
+  }
+  ],
+  "collection": "Movies",
+  "_id": "JbvGZRJav6sPEXg5"
+}
+    ]
