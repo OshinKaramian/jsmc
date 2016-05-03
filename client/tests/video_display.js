@@ -1,36 +1,42 @@
 "use strict";
-var React = require('react/addons'),
-    assert = require('assert'),
-    VideoDisplay = require('../src/js/main/video_display'),
-    movieList = require('./data/api.json'),
-    TestUtils = React.addons.TestUtils;
+let React = require('react');
+let  TestUtils = require('react-addons-test-utils');
+let  assert = require('assert');
+let  VideoDisplay = require('../src/js/main/video_display');
+let  movieList = require('./data/api.json');
 
-
-describe('VideoDisplay component', function(){
+describe('<VideoDisplay />', function(){
+  this.timeout(20000);
   let detachedVideoDisplay;
-  before(function() {
-    var backgroundContainer = document.createElement('div');
+  
+  before(function(done) {
+    let backgroundContainer = document.createElement('div');
     backgroundContainer.id = 'container-background';
     backgroundContainer.className = 'container-background-front';
     document.body.appendChild(backgroundContainer);
     detachedVideoDisplay = TestUtils.renderIntoDocument(<VideoDisplay movies={movieList} />);
+    done()
   });
 
-  it('should render correctly', function() {
-    var posterImages = TestUtils.scryRenderedDOMComponentsWithTag(detachedVideoDisplay, 'img');
-
+  it('should have 2 <VideoItem />s', function(done) {
+    let posterImages = TestUtils.scryRenderedDOMComponentsWithTag(detachedVideoDisplay, 'img');
     assert.equal(posterImages.length, 2);
+    done()
+  });
+  
+  it('<VideoItem />s should have the correct information', function(done) {
+    let posterImages = TestUtils.scryRenderedDOMComponentsWithTag(detachedVideoDisplay, 'img');
     assert.equal(posterImages[0].getAttribute('data-fileid'), movieList[0].id);
     assert.equal(posterImages[1].getAttribute('data-fileid'), movieList[1].id);
     assert(posterImages[0].getAttribute('src').indexOf(movieList[0].poster_path) > 0);
     assert(posterImages[1].getAttribute('src').indexOf(movieList[1].poster_path) > 0);
+    done();
   });
 
-  it('should change the background onclick', function() {
-    var posterImages = TestUtils.scryRenderedDOMComponentsWithTag(detachedVideoDisplay, 'img');
-    
-    posterImages[0].click();
-    console.log(document.getElementById('container-background').style);
-
+  it('should have the correct background image when clicked', function(done) {
+    let posterImages = TestUtils.scryRenderedDOMComponentsWithTag(detachedVideoDisplay, 'img');
+    TestUtils.Simulate.click(posterImages[0].parentElement);
+    assert((window.getComputedStyle(document.querySelector('.container-background-front')).backgroundImage).indexOf(movieList[0].backdrop_path) >= 0);
+    done();
   });
 });
