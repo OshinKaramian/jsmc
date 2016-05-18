@@ -10,7 +10,7 @@ const defaultDbPath = path.join(__dirname,'..', 'db', 'jsmc.db');
 let db;
 
 let mediaSort = function(a,b) {         
-  if(a.title > b.title) return 1;  
+  if (a.title > b.title) return 1;  
   if (a.title < b.title) return -1;
   
   return 0;

@@ -1,3 +1,6 @@
+/**
+ * @file Controller for all server operations
+ */
 "use strict";
 const Promise = require('bluebird');
 const fs = Promise.promisifyAll(require('fs-extra'));
@@ -5,22 +8,28 @@ const path = require('path');
 const file = require('./file.js');
 let db = require('./db.js')();
 let os = require('os');
-let address;
 let ifaces = os.networkInterfaces();
-for (let dev in ifaces) {
-  let iface = ifaces[dev].filter(function(details) {
-      return details.family === 'IPv4' && details.internal === false;
-  });
-
-  if (iface.length > 0) {
-    address = iface[0].address;
-  }
-}
 
 module.exports.media = {
+   /** 
+    * Sends a request to transcode a file and returns a path to the manifest file
+    */
   transcode: function(request, reply) {
     let mediaId = request.params.mediaId;
     let fileIndex = request.params.fileIndex || 0;
+    let address;
+    
+    // Get current IP
+    for (let dev in ifaces) {
+      let iface = ifaces[dev].filter(function(details) {
+          return details.family === 'IPv4' && details.internal === false;
+      });
+
+      if (iface.length > 0) {
+        address = iface[0].address;
+      }
+    }
+    
     file.transcode('movies', mediaId, fileIndex).then(function(filePath) {
       return reply('http://' + address + ':3000/' + filePath);
     }).catch(function(error) {
@@ -28,6 +37,9 @@ module.exports.media = {
     });
   },
 
+  /** 
+   * Gets a media object by ID
+   */
   get: function(request, reply) {
     return db.getMedia(request.params.mediaId).then(function(media) {
       if (!media) {
@@ -40,6 +52,9 @@ module.exports.media = {
     });
   },
   
+  /** 
+   * Gets a media object by query information
+   */
   search: function(request, reply) {
     let query = request.query.query;
     console.log(query);
@@ -49,6 +64,9 @@ module.exports.media = {
   }
 }
 
+ /** 
+  * Gets config information for the server
+  */
 module.exports.config = {    
   get: function(request, reply) {
     return fs.readJsonAsync('config/files_config.json').then(function(json) {
@@ -57,6 +75,9 @@ module.exports.config = {
   }
 }
 
+/** 
+ * Gets collection information by collection name
+ */
 module.exports.collection = {    
   get: function(request, reply) {
     let name = request.params.collection;
@@ -73,6 +94,9 @@ module.exports.collection = {
   }
 }
 
+/** 
+ * Gets static files
+ */
 module.exports.static = {
   get: function(request, reply) {
     if (path.extname(request.params.file) === '.ts') {

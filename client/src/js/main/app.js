@@ -6,7 +6,7 @@ const VideoDisplay = require('./video_display.js');
 const VideoSearchBox = require('./video_search_box.js');
 const ReactDOM = require('react-dom');
 const Bootstrap = require('bootstrap');
-const api = require('../common/api.js');
+let api = require('../common/api.js');
 
 let App = React.createClass({
   getInitialState: function() {
@@ -38,6 +38,7 @@ let App = React.createClass({
   
   componentDidMount: function() { 
     let collection = new api.Collection('movies');
+    console.log(api.BaseUrl);
     collection.get('Movies').then(function(data) {
       this.setState({ data: data});    
       var item = $('div[data-slick-index="0"').children().first();
@@ -83,6 +84,8 @@ if (window && window.process && window.process.type === "renderer") {
   var ipc = require('electron').ipcRenderer;
   
   ipc.on('data-loaded', function(event, message) {
+    console.log('loaded');
+    console.log(message);
     ReactDOM.render(<App />, document.getElementById('content')); 
   });
 } else {
