@@ -69,7 +69,7 @@ if (handleStartupEvent()) {
 app.on('ready', function() {
   
   // Create the browser window.
-  mainWindow = new BrowserWindow({height: 1200, width: 1200, minHeight: 800, minWidth: 1200, autoHideMenuBar: true });
+  mainWindow = new BrowserWindow({height: 1200, width: 1200, minHeight: 800, minWidth: 1200, autoHideMenuBar: false });
 
   // and load the index.html of the app.
   mainWindow.loadURL('file://' + __dirname + '/index.html');

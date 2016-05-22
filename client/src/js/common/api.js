@@ -1,19 +1,17 @@
 "use strict";
-var $ = require('jquery');
-var baseApiUrl = 'http://' + location.host.split(':')[0] + ':3000/';
+let baseApiUrl = 'http://' + location.host.split(':')[0] + ':3000/';
 
 module.exports.BaseUrl = baseApiUrl;
 
 if (window && window.process && window.process.type) {
-  var ipc = require('electron').ipcRenderer;
+  let ipc = require('electron').ipcRenderer;
+  
   ipc.on('updateJsmcUrl', function(event, message) {
-    console.log(message);
     baseApiUrl = message;
     module.exports.BaseUrl = baseApiUrl;  
   });
   
   ipc.on('api-url', function(event, message) {
-    console.log(message);
     baseApiUrl = message;
     module.exports.BaseUrl = baseApiUrl;
   });
@@ -26,15 +24,21 @@ module.exports.Media = class Media {
   }
   
   get(mediaId) {
-    return $.get(baseApiUrl + 'media/' + mediaId);
+    return fetch(baseApiUrl + 'media/' + mediaId).then(function(response) {
+      return response.json();
+    });
   }
   
   transcode({mediaId: mediaId, fileIndex: fileIndex = 0}) {
-    return $.post(baseApiUrl + 'media/' + mediaId + '/file/' + fileIndex + '/transcode');
+    return fetch(baseApiUrl + 'media/' + mediaId + '/file/' + fileIndex + '/transcode', { method: 'post'}).then(function(response) {
+      return response.json();
+    });
   }
   
   search(query) {
-    return $.get(baseApiUrl + 'media?query=' + query);
+    return fetch(baseApiUrl + 'media?query=' + query).then(function(response) {
+      return response.json();
+    });
   }
 }
 
@@ -47,8 +51,10 @@ module.exports.Collection = class Collection {
     if (!collectionName) {
       collectionName = this.name;
     }
-
-    return $.get(baseApiUrl + 'collections/' + collectionName);
+    
+    return fetch(baseApiUrl + 'collections/' + collectionName).then(function(response) {
+      return response.json();
+    });
   }
 }
 
@@ -57,6 +63,8 @@ module.exports.Config = class Config {
   }
 
   get() {
-    return $.get(baseApiUrl + 'config/');
+    return fetch(baseApiUrl + 'config/').then(function(response) {
+      return response.json();
+    });
   }
 }

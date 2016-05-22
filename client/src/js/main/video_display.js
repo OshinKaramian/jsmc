@@ -51,99 +51,102 @@ var VideoDisplay = React.createClass({
   },
   
   componentDidUpdate: function() {
-    if (document.querySelectorAll('.slick-active').length === 0) {
-      $('.carousel').slick({    
-        infinite: false,
-        dots: false,
-        speed: 500,
-        slidesToShow: 9,
-        slidesToScroll: 8,
-        lazyLoad: 'ondemand',
-        prevArrow: $('.slider-button-left'),
-        nextArrow: $('.slider-button-right'),
-        // the magic
-        responsive: [{
-            breakpoint: 1700,
-            settings: {
-                slidesToShow: 8,
-                slidesToScroll: 7,
-                infinite: true
-            }
+    if (document.querySelectorAll('.slick-active').length === 0 && this.props.movies) {
 
-            },{
+        $('.carousel').slick({    
+          infinite: false,
+          dots: false,
+          speed: 500,
+          slidesToShow: 9,
+          slidesToScroll: 8,
+          lazyLoad: 'ondemand',
+          prevArrow: $('.slider-button-left'),
+          nextArrow: $('.slider-button-right'),
+          // the magic
+          responsive: [{
+              breakpoint: 1700,
+              settings: {
+                  slidesToShow: 8,
+                  slidesToScroll: 7,
+                  infinite: true
+              }
 
-            breakpoint: 1450,
-            settings: {
-                slidesToShow: 7,
-                slidesToScroll: 6,
-                infinite: true
-            }
+              },{
 
-            },{
+              breakpoint: 1450,
+              settings: {
+                  slidesToShow: 7,
+                  slidesToScroll: 6,
+                  infinite: true
+              }
 
-            breakpoint: 1200,
-            settings: {
-                slidesToShow: 6,
-                slidesToScroll: 5,
-                infinite: true
-            }
+              },{
 
-            },
-            {
+              breakpoint: 1200,
+              settings: {
+                  slidesToShow: 6,
+                  slidesToScroll: 5,
+                  infinite: true
+              }
 
-            breakpoint: 950,
-            settings: {
-                slidesToShow: 5,
-                 slidesToScroll: 4,
-                infinite: true
-            }
+              },
+              {
 
-            },
-            {
+              breakpoint: 950,
+              settings: {
+                  slidesToShow: 5,
+                  slidesToScroll: 4,
+                  infinite: true
+              }
 
-            breakpoint: 700,
-            settings: {
-                slidesToShow: 4,
-                 slidesToScroll: 3,
-                infinite: true
-            }
+              },
+              {
 
-            },
-            {
+              breakpoint: 700,
+              settings: {
+                  slidesToShow: 4,
+                  slidesToScroll: 3,
+                  infinite: true
+              }
 
-            breakpoint: 450,
-            settings: {
-                slidesToShow: 3,
-                 slidesToScroll: 2,
-                infinite: true
-            }
+              },
+              {
 
-            },
-            {
+              breakpoint: 450,
+              settings: {
+                  slidesToShow: 3,
+                  slidesToScroll: 2,
+                  infinite: true
+              }
 
-            breakpoint: 200,
-            settings: {
-                slidesToShow: 2,
-                 slidesToScroll: 2,
-                infinite: true
-            }
+              },
+              {
 
-            }]
-        });
+              breakpoint: 200,
+              settings: {
+                  slidesToShow: 2,
+                  slidesToScroll: 2,
+                  infinite: true
+              }
 
-        $('.carousel').on('afterChange', function(event, slick, currentSlide){
-          document.querySelectorAll('.slick-current')[0].click();
-        });
-        
-        this.setControlEventListeners(); 
+              }]
+          });
+
+          $('.carousel').on('afterChange', function(event, slick, currentSlide){
+            document.querySelectorAll('.slick-current')[0].click();
+          });
+          
+          this.setControlEventListeners(); 
+
       }
   },
 
   render: function() {
     let movies = this.props.movies || [];
-    let nodes = this.props.movies.map(function(movie, index) {
+    let nodes = movies.map(function(movie, index) {
       return <VideoItem onItemClick={this.onChildClick} key={index} movie={movie} poster={movie.poster_path} title={movie.title} videoid={movie.id}></VideoItem>
     }.bind(this));
+    
     let currentMovie = this.state.currentMovie || {};
     let rowStyle = { height: "500px", top:"0px"};
       
@@ -182,10 +185,10 @@ var VideoDisplay = React.createClass({
 
 let VideoItem = React.createClass({
   handleClick: function(event) {
-   let newBackground = new Image();
-    
-   newBackground.onload = function() { 
-    let itemStyle = { 
+    let newBackground = new Image();
+      
+    newBackground.onload = function() { 
+      let itemStyle = { 
         'background-image': "url(" + api.BaseUrl + this.props.movie.backdrop_path + ")", 
         '-webkit-backface-visibility': 'hidden',
         '-webkit-transition': 'background 2s ease-in-out',
