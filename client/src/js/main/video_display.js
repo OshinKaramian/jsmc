@@ -5,6 +5,7 @@ var Slick = require('slick-carousel');
 var Row = require('react-bootstrap').Row;
 var Col = require('react-bootstrap').Col;
 var VideoItemModal = require('./video_item_modal.js');
+const slider = require('./slider.js');
 var api = require('../common/api.js');
 
 var VideoDisplay = React.createClass({
@@ -52,93 +53,9 @@ var VideoDisplay = React.createClass({
   
   componentDidUpdate: function() {
     if (document.querySelectorAll('.slick-active').length === 0 && this.props.movies) {
-
-        $('.carousel').slick({    
-          infinite: false,
-          dots: false,
-          speed: 500,
-          slidesToShow: 9,
-          slidesToScroll: 8,
-          lazyLoad: 'ondemand',
-          prevArrow: $('.slider-button-left'),
-          nextArrow: $('.slider-button-right'),
-          // the magic
-          responsive: [{
-              breakpoint: 1700,
-              settings: {
-                  slidesToShow: 8,
-                  slidesToScroll: 7,
-                  infinite: true
-              }
-
-              },{
-
-              breakpoint: 1450,
-              settings: {
-                  slidesToShow: 7,
-                  slidesToScroll: 6,
-                  infinite: true
-              }
-
-              },{
-
-              breakpoint: 1200,
-              settings: {
-                  slidesToShow: 6,
-                  slidesToScroll: 5,
-                  infinite: true
-              }
-
-              },
-              {
-
-              breakpoint: 950,
-              settings: {
-                  slidesToShow: 5,
-                  slidesToScroll: 4,
-                  infinite: true
-              }
-
-              },
-              {
-
-              breakpoint: 700,
-              settings: {
-                  slidesToShow: 4,
-                  slidesToScroll: 3,
-                  infinite: true
-              }
-
-              },
-              {
-
-              breakpoint: 450,
-              settings: {
-                  slidesToShow: 3,
-                  slidesToScroll: 2,
-                  infinite: true
-              }
-
-              },
-              {
-
-              breakpoint: 200,
-              settings: {
-                  slidesToShow: 2,
-                  slidesToScroll: 2,
-                  infinite: true
-              }
-
-              }]
-          });
-
-          $('.carousel').on('afterChange', function(event, slick, currentSlide){
-            document.querySelectorAll('.slick-current')[0].click();
-          });
-          
-          this.setControlEventListeners(); 
-
-      }
+      slider.construct();
+      this.setControlEventListeners(); 
+    }
   },
 
   render: function() {
@@ -186,10 +103,18 @@ var VideoDisplay = React.createClass({
 let VideoItem = React.createClass({
   handleClick: function(event) {
     let newBackground = new Image();
-      
+    let backdropImage;
+    
+    if (this.props.movie.backdrop_path) {
+      backdropImage = this.props.movie.backdrop_path;
+    } else {
+      backdropImage = 'staticassets/blank.jpg';
+    }
+    
     newBackground.onload = function() { 
+      
       let itemStyle = { 
-        'background-image': "url(" + api.BaseUrl + this.props.movie.backdrop_path + ")", 
+        'background-image': "url(" + api.BaseUrl + backdropImage + ")", 
         '-webkit-backface-visibility': 'hidden',
         '-webkit-transition': 'background 2s ease-in-out',
         '-moz-transition': 'background 2s ease-in-out',
@@ -209,16 +134,22 @@ let VideoItem = React.createClass({
       this.props.onItemClick(this.props.movie);
    }.bind(this);
    
-   newBackground.src = api.BaseUrl + this.props.movie.backdrop_path;
+   newBackground.src = api.BaseUrl + backdropImage;
   },
 
   render: function() {
     let divStyle = { 'display': 'inline-block' };   
     let divHidden = { 'display': 'none' };
+    let posterImage;
     
+    if (this.props.movie.poster_path) {
+      posterImage = this.props.movie.poster_path;
+    } else {
+      posterImage = 'staticassets/blank.jpg';
+    }
     return (     
       <div onClick={this.handleClick} className="video-item">
-        <img height="100%" src={api.BaseUrl + this.props.poster} data-fileid={this.props.movie.id}/>
+        <img height="100%" src={api.BaseUrl + posterImage} data-fileid={this.props.movie.id}/>
       </div>
     )
   } 

@@ -13,10 +13,15 @@ var transcodeAndRun = function() {
   media.get(transcodeRequestObject.mediaId)
     .then(function(data) {
       console.log(data.backdrop_path);
-      myPlayer.poster(api.BaseApiUrl + data.backdrop_path);
+      try { 
+        myPlayer.poster(api.BaseUrl + data.backdrop_path);
+      } catch (exception) {
+        console.log(exception);
+      }
       return media.transcode(transcodeRequestObject);
     })
     .then(function(data) {
+      console.log(data);
       setTimeout(function() {
         console.log(data);
         myPlayer.src({"src": data, "type":"application/x-mpegURL"});

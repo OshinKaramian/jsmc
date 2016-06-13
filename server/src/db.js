@@ -19,12 +19,18 @@ let mediaSort = function(a,b) {
 module.exports = function(dbPath) {
   dbPath = dbPath ? dbPath : defaultDbPath;
   
-  if (!db) {
-    db = new Database({ filename: dbPath, autoload: true});
-    db = Promise.promisifyAll(db);
-  }
+  let initDb = function() {
+    if (!db) {
+      db = new Database({ filename: dbPath, autoload: true});
+      db = Promise.promisifyAll(db);
+    }
+  };
+
+  initDb();
 
   return {
+
+    initDb: initDb,
     
     /** 
      * Inserts entry into database
@@ -79,6 +85,26 @@ module.exports = function(dbPath) {
       .then(function(items) {
         items.sort(mediaSort);
         return items;
+      })
+      .catch(function(error) { 
+        throw error; 
+      });
+    },
+
+    /** 
+     * Checks to see if a file exists, if one does throw an exception
+     * 
+     * @param {string} filename - file that is being searched for
+     */
+    findFile: function(filename) {
+      return db.findAsync({
+        'filedata.filename': filename 
+      })
+      .then(function(item) {
+        if (item && item.length > 0) {
+          throw new Error('File already indexed: ' + filename);
+        }
+        return filename;
       })
       .catch(function(error) { 
         throw error; 

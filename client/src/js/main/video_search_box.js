@@ -13,11 +13,12 @@ var SearchBox = React.createClass({
   
   handleOnChange: function(event) {
     let media = new api.Media();
+    let searchBoxValue = event.target.value;
     if (!event.target.value) {
-      this.props.onSearchBoxChange();
+      this.props.onSearchBoxChange({searchContents: null});
     } else {
       media.search(event.target.value).then((data) => {
-        this.props.onSearchBoxChange(data);
+        this.props.onSearchBoxChange({searchContents: searchBoxValue, data: data});
         this.setState({searchResults: data});
       });
     }

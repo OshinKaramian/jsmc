@@ -1,0 +1,32 @@
+[
+  {
+    "input": "Hannibal.S02E12.Tome.Wan.720p.WEB-DL.DD5.1.H.264-NTb.mkv",
+    "output": {
+      "title": "Hannibal"
+    }
+  },
+  {
+    "input": "hannibal.213.hdtv-lol.mp4",
+    "output": {
+      "title": "Hannibal"
+    }
+  },
+  {
+    "input": "Game.of.Thrones.S03E09.HDTV.x264-EVOLVE.mp4",
+    "output":{
+      "title": "Game of Thrones"
+    }
+  },
+  {
+    "input": "Z:\\TV\\Game of Thrones S05\\Game.of.Thrones.S5.1080p.BATV.xcode265\\Game.of.Thrones.S05E02.1080p.HDTV.x264.x265-BATV.mkv",
+    "output":{
+      "title": "Game of Thrones"
+    }
+  },
+  {
+    "input": "mad.men.707.hdtv-lol.mp4",
+    "output":{
+      "title": "Mad Men"
+    }
+  }
+]

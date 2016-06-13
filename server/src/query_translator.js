@@ -87,7 +87,74 @@ module.exports.tv = {
       tomato_user_rating: omdbResponse.tomatoUserMeter,
       tomato_image: omdbResponse.tomatoImage
     };
+    
     return mediaObject;
+  },
+  
+  getFileInfo: function(filename) {
+    let episodeRegExp = new RegExp('(S[0-9][0-9]E[0-9][0-9])', 'i');
+    let episodeNumbersRegExp = new RegExp('\\b[0-9]?[0-9][0-9][0-9]\\b', 'i');
+    let episodeNumbersRegExpWithX = new RegExp('\\b[0-9]?[0-9]x[0-9][0-9]\\b', 'i');
+    let episodeNumbersRegExpWithDash = new RegExp('\\b[0-9]?[0-9]-[0-9][0-9]\\b', 'i');
+    let regExOutput = episodeRegExp.exec(filename);
+    let episodeObject;
+    
+    if (!regExOutput) {
+      regExOutput = episodeNumbersRegExp.exec(filename);
+    } else {
+      let splitObject = regExOutput[0].toLowerCase().slice(1).split('e');
+      episodeObject = {
+        episode: {
+          season_number: parseInt(splitObject[0]),
+          episode_number: parseInt(splitObject[1])
+        }
+      };
+      return episodeObject;
+    }
+    
+    if (!regExOutput) {
+      regExOutput = episodeNumbersRegExpWithX.exec(filename);
+    } else {
+      let episodeNumber = regExOutput[0].slice(regExOutput[0].length - 2, regExOutput[0].length);
+      let seasonNumber = regExOutput[0].substr(0, regExOutput[0].length - 2);
+
+      episodeObject = {
+        episode: {
+          season_number: parseInt(seasonNumber),
+          episode_number: parseInt(episodeNumber)
+        }
+      };
+      
+      return episodeObject;
+    }
+    
+    if (!regExOutput) {
+      regExOutput = episodeNumbersRegExpWithDash.exec(filename);
+    } else {
+      let splitObject = regExOutput[0].toLowerCase().slice(1).split('x');
+      episodeObject = {
+        episode: {
+          season_number: parseInt(splitObject[0]),
+          episode_number: parseInt(splitObject[1])
+        }
+      };
+      
+      return episodeObject;
+    }
+    
+    if (regExOutput) {
+      let splitObject = regExOutput[0].toLowerCase().slice(1).split('-');
+      episodeObject = {
+        episode: {
+          season_number: parseInt(splitObject[0]),
+          episode_number: parseInt(splitObject[1])
+        }
+      };
+      
+      return episodeObject;
+    }
+    
+    return null;
   }
 };
 

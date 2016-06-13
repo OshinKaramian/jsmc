@@ -1,9 +1,9 @@
 "use strict";
 let React = require('react');
-let  TestUtils = require('react-addons-test-utils');
-let  assert = require('assert');
-let  VideoDisplay = require('../src/js/main/video_display');
-let  movieList = require('./data/api.json');
+let TestUtils = require('react-addons-test-utils');
+let assert = require('assert');
+let VideoDisplay = require('../src/js/main/video_display');
+let movieList = require('./data/api.json');
 
 describe('<VideoDisplay />', function(){
   this.timeout(20000);

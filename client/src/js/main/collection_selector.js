@@ -44,10 +44,8 @@ let CollectionSelector = React.createClass({
       paddingRight: '20px',
       fontSize: '26px',
       backgroundColor: 'black',
-      color: 'white',
-        
+      color: 'white',   
       outline: 'none'
-    
     }
        
     return ( 

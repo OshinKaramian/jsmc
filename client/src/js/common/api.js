@@ -31,7 +31,7 @@ module.exports.Media = class Media {
   
   transcode({mediaId: mediaId, fileIndex: fileIndex = 0}) {
     return fetch(baseApiUrl + 'media/' + mediaId + '/file/' + fileIndex + '/transcode', { method: 'post'}).then(function(response) {
-      return response.json();
+      return response.text();
     });
   }
   

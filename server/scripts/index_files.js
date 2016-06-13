@@ -7,6 +7,7 @@ const console = require('better-console');
 const config = require('../config/config.json');
 const indexConfig = require('../config/files_config.json');
 const file = require('../src/file.js');
+const db = require('../src/db.js');
 
 let indexAllFiles = function(collectionName, searchInfo) {
   let walker;
@@ -37,6 +38,7 @@ let indexAllFiles = function(collectionName, searchInfo) {
   });
 
   walker.on("end", function() {
+    db.initDb();
   });
 }
 

@@ -47,6 +47,22 @@ let movieDbQuery = function(filename, category, year) {
   return request(queryUrl);
 };
 
+let movieDbQueryEpisodeInfo = function(id, episodeInfo) {
+  let queryUrl = 'http://api.themoviedb.org/3/tv/'+ id +
+    '/season/' + episodeInfo.season_number + 
+    '/episode/' + episodeInfo.episode_number +
+    '?api_key=' + config.apiKey;
+
+  return request(queryUrl).then(function(response) {
+    if (response.statusCode === 429) {
+      sleep.sleep(10);
+      return movieDbQueryEpisodeInfo(id, episodeInfo);
+    } else {
+      return response;
+    }
+  });
+};
+
 /** 
  * Prepares filename to be queried after a failed search
  * 
@@ -152,19 +168,49 @@ let omdbQuery = function(category, movieDbMatch) {
  * @param {object} data - fileInfo object
  * @return {object} appending fileInfo object
  */
-let formatQueryOutput = function(data) {
+let formatQueryOutput = function(category, data) {
   let filedata = [];
 
   if (data.queryInfo) {
-    filedata.push({
+    let fileInfo = {
       filename: data.metadata.format.filename,
       codecShort: data.metadata.format.format_name,
       codecLong: data.metadata.format.format_long_name,
       duration: data.metadata.format.duration,
-    });
+    };
+    
+    if (queryTranslator[category].getFileInfo) {
+      let output = queryTranslator[category].getFileInfo(data.metadata.format.filename);
+      if (output) {
+        fileInfo = Object.assign(fileInfo, output); 
+      }
+      
+      if (!fileInfo.episode) {
+        filedata.push(fileInfo);
+        data.queryInfo.filedata = filedata;
+        return data.queryInfo;
+      }
 
-    data.queryInfo.filedata = filedata;
-    return data.queryInfo;
+      return movieDbQueryEpisodeInfo(data.queryInfo.id, fileInfo.episode).then(function(response) {
+        let jsonParsed = {};
+        try {
+          jsonParsed = JSON.parse(response.body);
+        } catch (exception) {
+        }
+        
+        fileInfo.episode = Object.assign(fileInfo.episode, jsonParsed);
+        if (fileInfo.episode.still_path) {
+          fileInfo.episode.still_path = 'http://image.tmdb.org/t/p/original' + fileInfo.episode.still_path;
+        }
+        filedata.push(fileInfo);
+        data.queryInfo.filedata = filedata;
+        return data.queryInfo;
+      });
+    } else {
+      filedata.push(fileInfo);
+      data.queryInfo.filedata = filedata;
+      return data.queryInfo;
+    }    
   } else {
     throw new Error('No Query Info for ' + data.filename);
   }
@@ -178,17 +224,24 @@ let formatQueryOutput = function(data) {
  */
 let downloadAndSaveAssets = function(movieDbResponse) {  
   let writeImage = function(image_url) {
-    let imageBaseUrl = 'http://image.tmdb.org/t/p/original';
-    let imageFsPath = path.join(__dirname, '..', 'assets', image_url);
-    let downloadImage = cbRequest(imageBaseUrl + image_url).pipe(fs.createWriteStream(imageFsPath));
-    
-    return new Promise(function(resolve, reject){
-      return fs.existsAsync(imageFsPath).then((exists) => {
-        downloadImage.on("close",function(){        
-          resolve();
-        });        
-      }).catch((exception) => resolve()); 
-    });
+    if (!image_url) {
+      console.log(movieDbResponse);
+      return new Promise(function(resolve, reject) {
+        resolve();
+      });
+    } else {
+      let imageBaseUrl = 'http://image.tmdb.org/t/p/original';
+      let imageFsPath = path.join(__dirname, '..', 'assets', image_url);
+      let downloadImage = cbRequest(imageBaseUrl + image_url).pipe(fs.createWriteStream(imageFsPath));
+      
+      return new Promise(function(resolve, reject){
+        return fs.existsAsync(imageFsPath).then((exists) => {
+          downloadImage.on("close",function(){        
+            resolve();
+          });        
+        }).catch((exception) => resolve()); 
+      });
+    }
   }
 
   return writeImage(movieDbResponse.poster_path)
@@ -245,7 +298,7 @@ module.exports = function(fileData, category, year) {
       fileData.queryInfo = updateQueryObject;
       return fileData;
     })
-    .then(formatQueryOutput)
+    .then(formatQueryOutput.bind(this, category))
   .catch((error) => {
     throw error;
   });

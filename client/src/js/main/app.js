@@ -7,6 +7,7 @@ const VideoDisplay = require('./video_display.js');
 const VideoSearchBox = require('./video_search_box.js');
 const CollectionSelector = require('./collection_selector.js');
 const Bootstrap = require('bootstrap');
+const slider = require('./slider.js');
 let api = require('../common/api.js');
 
 let App = React.createClass({
@@ -17,33 +18,25 @@ let App = React.createClass({
     };
   },
   
-  searchBoxChange: function(values) {
-    try {
-      $('.carousel').slick('unslick');
-    } catch (ex) {
-      console.log(ex);
-    }
+  searchBoxChange: function(searchInfo) {
+    slider.deconstruct();
     
-    if (values) {
-      this.setState({ data: values});
-      let item = $('div[data-slick-index="0"').children().first();
+    if (searchInfo.searchContents || searchInfo.data) {
+      this.setState({ data: searchInfo.data});
+      let item = slider.findByIndex('0');
       item.click();
     } else {
       let collection = new api.Collection(this.state.currentCollection);
       collection.get(this.state.currentCollection).then((data) => {
         this.setState({ data: data});
-        var item = $('div[data-slick-index="0"').children().first();
+        var item = slider.findByIndex('0');
         item.click();
       });
     }
   },
   
   selectChange: function(value) {
-    try {
-      $('.carousel').slick('unslick');
-    } catch (ex) {
-      console.log(ex);
-    }
+    slider.deconstruct();
     
     this.setState({ 
       data: null
@@ -56,7 +49,7 @@ let App = React.createClass({
         currentCollection: value 
       });
       
-      let item = $('div[data-slick-index="0"').children().first();
+      let item = slider.findByIndex('0');
       item.click();
     });
   },
@@ -75,7 +68,7 @@ let App = React.createClass({
       return collection.get();
     }).then((data) => {
       this.setState({ data: data});    
-      var item = $('div[data-slick-index="0"').children().first();
+      var item = slider.findByIndex('0');
       item.click();
     });    
   },
@@ -108,7 +101,7 @@ let App = React.createClass({
         </div>
         <div style={controlStyle}>
           <div style={selectStyle}>
-             &nbsp;&nbsp;<i className="fa fa-film fa-2x"></i> &nbsp;&nbsp;
+             &nbsp;&nbsp;<i className="fa fa-film fa-2x"></i>
             <CollectionSelector collections={this.state.collectionInfo} onSelectChange={this.selectChange} />
           </div>
           <div style={buttonStyle}>
@@ -125,8 +118,6 @@ if (window && window.process && window.process.type === "renderer") {
   var ipc = require('electron').ipcRenderer;
   
   ipc.on('data-loaded', function(event, message) {
-    console.log('loaded');
-    console.log(message);
     ReactDOM.render(<App />, document.getElementById('content')); 
   });
 } else {

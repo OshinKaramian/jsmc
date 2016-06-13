@@ -5,7 +5,8 @@ const path = require('path');
 const fs = Promise.promisifyAll(require('fs-extra'));
 const query = require('../src/query.js');
 const sinon = require('sinon');
-const queryData = require('./data/file_system.json');
+const queryDataMovie = require('./data/file_system_movie.json');
+const queryDataTv = require('./data/file_system_tv.json');
 
 describe('Query', function() {
 
@@ -16,13 +17,48 @@ describe('Query', function() {
   beforeEach(function(done) {
     done();
   });
+    
+  describe.only('tv', function () {
+    this.timeout(20000);
+ 
+    queryDataTv.forEach(function(queryDataItem) {
+      it(`should return a correct value for search on ${queryDataItem.input}`, function (done) {
+        let queryPromise = function(data) {
+          let queryObject = {
+            filename: data.input,
+            metadata: {
+              format: {
+                filename: data.input,
+                format_name: "",
+                format_long_name: "",
+                duration: ""
+              }
+            }
+          };
 
+          return query(queryObject, 'tv', null)
+          .then((queryOutput) => {
+            assert.equal(queryOutput.title, data.output.title);
+            return queryOutput;
+          });
+        };
+
+        //let tests = Promise.resolve(queryData).map(queryPromise,{concurrency: 1 });
+
+        queryPromise(queryDataItem).then((queryOutput) => {
+        //tests.then((allFileContents) => {
+           done();
+        }).catch((err) => done(err));
+      });
+    });
+  });
+    
   describe('movie', function () {
 
     this.timeout(20000);
 
-    queryData.forEach(function(queryDataItem) {
-      it(`should return a correct values for search on ${queryDataItem.input}`, function (done) {
+    queryDataMovie.forEach(function(queryDataItem) {
+      it(`should return a correct value for search on ${queryDataItem.input}`, function (done) {
         let queryPromise = function(data) {
           let queryObject = {
             filename: data.input,
@@ -43,14 +79,12 @@ describe('Query', function() {
           });
         };
 
-        //let tests = Promise.resolve(queryData).map(queryPromise,{concurrency: 1 });
-
         queryPromise(queryDataItem).then((queryOutput) => {
-        //tests.then((allFileContents) => {
            done();
         }).catch((err) => done(err));
       });
     });
+
 
     it('should return an error for non existent records', function (done) {
       let queryObject = {

@@ -39,7 +39,9 @@ const ignoredPhrases = [
 const validExtensions = [
   '.mkv',
   '.avi',
-  '.mp4'
+  '.mp4',
+  '.ogm',
+  '.m4v'
 ];
 
 ffmpeg.setFfmpegPath(path.join('ffmpeg', os.platform(), 'bin','ffmpeg.exe'));
@@ -91,10 +93,12 @@ module.exports.createRecord = function(rootDir, fileName, baseDir, category, col
     return Promise.reject(new Error('File extension invalid'));
   }
 
-  return ffprobe(filePath)
-    .then(validateAndCleanFFProbeOutput.bind(this, baseDir))
-    .then(data => query(data, category, null))
-    .then(db.insertQuery.bind(this, collectionName));
+  return db.findFile(filePath).then(function(filePath) {
+    return ffprobe(filePath);
+  })
+  .then(validateAndCleanFFProbeOutput.bind(this, baseDir))
+  .then(data => query(data, category, null))
+  .then(db.insertQuery.bind(this, collectionName));
 };
 
 /**
@@ -115,7 +119,7 @@ module.exports.transcode = function(collection, mediaId, fileIndex) {
           ffmpeg(doc.filedata[fileIndex].filename)
             .videoCodec('copy')
             .audioCodec('aac')
-            .addOption('-b:a', '50k')
+            .addOption('-b:a', '200k')
             .addOption('-bsf:v', 'h264_mp4toannexb')
             .addOption('-strict', 'experimental')
             .addOption('-f', 'segment')

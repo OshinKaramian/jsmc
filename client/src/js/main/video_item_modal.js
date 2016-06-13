@@ -24,12 +24,13 @@ class ModalItemInfo extends React.Component {
 class VideoOptionBar extends React.Component {
   
   setEventListeners() {        
-      document.addEventListener('keydown', function(event) {
+      /*document.addEventListener('keydown', function(event) {
         var keyPressed = String.fromCharCode(event.keyCode);
         if (keyPressed === 'P') {
           this.playVideo();
         }
       }.bind(this)); 
+      */
   }
   
   playVideo() {
@@ -55,17 +56,37 @@ class VideoOptionBar extends React.Component {
 }
 
 class VideoInfoModal extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      currentFile: null,  
+    };
+  }
   
   playFile(index) {
     window.location = 'video.html?mediaId=' + this.props.id + '&fileIndex=' + index;
   }
   
+  setFileInfo(index, fileinfo) {
+    fileinfo.id = this.props.id;
+    fileinfo.index = index;
+    this.setState({currentFile: fileinfo});
+  }
+  
+  componentDidMount() {
+    let fileinfo = this.props.filedata[0];
+    fileinfo.id = this.props.id;
+    fileinfo.index = 0;
+    this.setState({currentFile: fileinfo});
+  }
+  
   render() {
     let contentStyle = {
-      padding:'10px'
+      padding:'15px'
+     
     };
     let rowStyle = {
-      padding: '0px 0px 20px 0px'
+      padding: '0px 0px 20px 0px',
     };
     let columnStyle = {
       height: '24px',
@@ -75,22 +96,144 @@ class VideoInfoModal extends React.Component {
       position: 'absolute',
       bottom: '0'
     }
+    
+    let filesArray = this.props.filedata;
+    console.log(this.props);
+    if (filesArray[0].episode) {
+      filesArray.sort(function(a, b) {
+        if (!a.episode || !b.episode) {
+          return -1
+        }
+        
+         if (a.episode.season_number > b.episode.season_number) {
+          return 1;
+        }
+        
+        if (a.episode.season_number < b.episode.season_number) {
+          return -1;
+        }
+        
+        if (a.episode.episode_number > b.episode.episode_number) {
+          return 1;
+        }
+        
+        if (a.episode.episode_number < b.episode.episode_number) {
+          return -1;
+        }
 
-    let nodes = this.props.filedata.map(function(filedata, index) {
+        // a must be equal to b
+        return 0;
+      });
+    }
+    let nodes = filesArray.map(function(filedata, index) {
+      
+      let title = filedata.episode && filedata.episode.name ? filedata.episode.name : filedata.filename;
+      let playbutton;
+      
+      if (!filedata.episode) {
+        playbutton = (
+          <Col md={1} style={columnStyle}>
+          <button className="btn btn-default btn-sm" onClick={this.playFile.bind(this, index)}>
+            <span  className="glyphicon glyphicon-play"></span>
+          </button>
+          </Col>);
+      }
       return (
         <Row  key={index} style={rowStyle}>
-          <Col md={1} style={columnStyle}>
-            <button className="btn btn-default btn-sm" onClick={this.playFile.bind(this, index)}>
-              <span  className="glyphicon glyphicon-play"></span>
-            </button>
-          </Col>
-          <Col md={9} style={columnStyle}>
-            <div >{filedata.filename}</div>
+          {playbutton}
+          <Col onClick={this.setFileInfo.bind(this, index, filedata)} md={10} style={columnStyle} >
+            <div>{title}</div>
           </Col>
         </Row>
       );
     }.bind(this));
-    return (<div style={contentStyle}>{nodes}</div>);
+
+    let leftStyle = { overflowY: 'auto'};
+    let rightStyle = { overflowY: 'none'};
+    if (this.props.media_type === 'movie') {
+      return( <div>
+        <Col md={9}>
+          <div style={contentStyle}>{nodes}</div>
+        </Col>
+      </div>)
+    } else {
+     return( <div>
+        <Col md={4} style={leftStyle}>
+          <div style={contentStyle}>{nodes}</div>
+        </Col>
+        <Col md={8} style={rightStyle}>
+          <VideoFileDetail file={this.state.currentFile} />
+        </Col>
+      </div>
+    );
+    }
+  }
+}
+
+class VideoFileDetail extends React.Component {
+  playFile() {
+    window.location = 'video.html?mediaId=' + this.props.file.id + '&fileIndex=' + this.props.file.index;
+  }
+  
+  render() {
+    if (!this.props.file || !this.props.file.episode) {
+      return <div></div>;
+    }
+    
+    let rowStyle = { paddingBottom: '10px' };
+    
+    let backgroundImage = { 
+      backgroundImage: 'url(' + this.props.file.episode.still_path + ')',
+      minHeight : '55%',
+      backgroundSize: 'cover',
+      padding:'10px'
+    };
+    let playButton = {
+      'color':'white'
+    }
+    console.log(this.props);
+    
+    return (
+      <div>
+        <Row style={rowStyle}>
+          <Col md={12}>
+            <div style={backgroundImage}>
+              <i style={playButton} onClick={this.playFile.bind(this)} className="fa fa-play-circle fa-5x" aria-hidden="true"></i>
+            </div>
+          </Col>
+        </Row>
+        <Row style={rowStyle}>
+          <Col md={1}>
+            <b>Season: </b>
+          </Col>
+          <Col md={2}>
+            {this.props.file.episode.season_number}
+          </Col>
+          <Col md={1}>
+            <b>Episode: </b>
+          </Col>
+          <Col md={2}>
+            {this.props.file.episode.episode_number}
+          </Col>
+        </Row>
+        <Row style={rowStyle}>
+          <Col md={2}>
+            <b>File: </b>
+          </Col>
+          <Col md={9}>
+            {this.props.file.filename}
+          </Col>
+        </Row>
+        <Row style={rowStyle}>
+          <Col md={2}>
+            <b>Overview: </b>
+          </Col>
+          <Col md={9}>
+            {this.props.file.episode.overview}
+          </Col>
+        </Row>
+      </div>
+    )
   }
 }
 
@@ -131,11 +274,13 @@ class VideoItemModal extends React.Component {
         bottom                     : '40px',
         border                     : '1px solid #ccc',
         background                 : '#fff',
-        overflow                   : 'auto',
+        overflow                   : 'none',
         WebkitOverflowScrolling    : 'touch',
         borderRadius               : '4px',
         outline                    : 'none',
-        padding                    : '0px'
+        padding                    : '0px',
+        paddingLeft: '5px',
+        paddingRight: '5px'
 
       }
     };
