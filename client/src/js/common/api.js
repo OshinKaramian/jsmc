@@ -19,50 +19,65 @@ if (window && window.process && window.process.type) {
   ipc.send('request-api-url', '');
 }
 
-module.exports.Media = class Media {
-  constructor() {
-  }
-  
-  get(mediaId) {
+module.exports.media = {
+  /**
+   * Given a media ID gets the media object
+   * 
+   * @param {number} mediaId
+   * @returns media object
+   */
+  get: function(mediaId) {
     return fetch(baseApiUrl + 'media/' + mediaId).then(function(response) {
       return response.json();
     });
-  }
+  },
   
-  transcode({mediaId: mediaId, fileIndex: fileIndex = 0}) {
+  /**
+   * Starts transcoding given file if not yet transcoded
+   * 
+   * @param {number} {mediaId: mediaId, fileIndex: fileIndex = 0} id of media object and optional index of file
+   * @returns URL of transcoded media resource (as an HLS manifest)
+   */
+  transcode: function({mediaId: mediaId, fileIndex: fileIndex = 0}) {
     return fetch(baseApiUrl + 'media/' + mediaId + '/file/' + fileIndex + '/transcode', { method: 'post'}).then(function(response) {
       return response.text();
     });
-  }
+  },
   
-  search(query) {
+  /**
+   * Queries media database for matching entries
+   * 
+   * @param {string} query search term querying the database
+   * @returns Array of matching media objects
+   */
+  search: function(query) {
     return fetch(baseApiUrl + 'media?query=' + query).then(function(response) {
       return response.json();
     });
   }
 }
 
-module.exports.Collection = class Collection {
-  constructor(name) {
-    this.name = name; 
-  }
-
-  get(collectionName) {
-    if (!collectionName) {
-      collectionName = this.name;
-    }
-    
+module.exports.collection = {
+  /**
+   * Gets all media for a given collection
+   * 
+   * @param {string} collectionName Id of collection to get information of
+   * @returns Array of values matching collectionName
+   */
+  get: function(collectionName) {    
     return fetch(baseApiUrl + 'collections/' + collectionName).then(function(response) {
       return response.json();
     });
   }
 }
 
-module.exports.Config = class Config {
-  contructor() {
-  }
-
-  get() {
+module.exports.config = {
+  /**
+   * 
+   * 
+   * @returns
+   */
+  get: function() {
     return fetch(baseApiUrl + 'config/').then(function(response) {
       return response.json();
     });

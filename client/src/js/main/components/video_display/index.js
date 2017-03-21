@@ -4,9 +4,9 @@ var React = require('react');
 var Slick = require('slick-carousel');
 var Row = require('react-bootstrap').Row;
 var Col = require('react-bootstrap').Col;
-var VideoItemModal = require('./video_item_modal.js');
-const slider = require('./slider.js');
-var api = require('../common/api.js');
+var VideoItemModal = require('../video_item_modal');
+const slider = require('../slider');
+var api = require('../../../common/api.js');
 
 var VideoDisplay = React.createClass({
   slickSet: false,

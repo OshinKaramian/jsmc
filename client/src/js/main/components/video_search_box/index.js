@@ -2,9 +2,9 @@
 const $ = require('jquery');
 const React = require('react');
 const ReactDOM = require('react-dom');
-const api = require('../common/api.js');
+const api = require('../../../common/api.js');
 
-var SearchBox = React.createClass({
+let SearchBox = React.createClass({
   getInitialState: function() {
     return {
        searchResults: null
@@ -12,12 +12,11 @@ var SearchBox = React.createClass({
   },
   
   handleOnChange: function(event) {
-    let media = new api.Media();
     let searchBoxValue = event.target.value;
     if (!event.target.value) {
       this.props.onSearchBoxChange({searchContents: null});
     } else {
-      media.search(event.target.value).then((data) => {
+      api.media.search(event.target.value).then((data) => {
         this.props.onSearchBoxChange({searchContents: searchBoxValue, data: data});
         this.setState({searchResults: data});
       });

@@ -38,8 +38,11 @@ let indexAllFiles = function(collectionName, searchInfo) {
   });
 
   walker.on("end", function() {
-    db.initDb();
-  });
+    try {
+      db.initDb();
+    } catch(ex) {
+    }
+  }); 
 }
 
 process.on('uncaughtException', function (err) {

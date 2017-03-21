@@ -7,10 +7,9 @@ const queryString = require('query-string');
 const backButton = $('.vjs-back-button');
 
 var transcodeAndRun = function() {
-  var media = new api.Media();
   var transcodeRequestObject = queryString.parse(location.search);
   
-  media.get(transcodeRequestObject.mediaId)
+  api.media.get(transcodeRequestObject.mediaId)
     .then(function(data) {
       console.log(data.backdrop_path);
       try { 
@@ -18,7 +17,7 @@ var transcodeAndRun = function() {
       } catch (exception) {
         console.log(exception);
       }
-      return media.transcode(transcodeRequestObject);
+      return api.media.transcode(transcodeRequestObject);
     })
     .then(function(data) {
       console.log(data);

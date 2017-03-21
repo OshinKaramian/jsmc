@@ -3,11 +3,11 @@ const $ = require('jquery');
 window.$ = window.jQuery = require('jquery');
 const React = require('react');
 const ReactDOM = require('react-dom');
-const VideoDisplay = require('./video_display.js');
-const VideoSearchBox = require('./video_search_box.js');
-const CollectionSelector = require('./collection_selector.js');
+const VideoDisplay = require('./components/video_display');
+const VideoSearchBox = require('./components/video_search_box');
+const CollectionSelector = require('./components/collection_selector');
 const Bootstrap = require('bootstrap');
-const slider = require('./slider.js');
+const slider = require('./components/slider');
 let api = require('../common/api.js');
 
 let App = React.createClass({
@@ -26,8 +26,7 @@ let App = React.createClass({
       let item = slider.findByIndex('0');
       item.click();
     } else {
-      let collection = new api.Collection(this.state.currentCollection);
-      collection.get(this.state.currentCollection).then((data) => {
+      api.collection.get(this.state.currentCollection).then((data) => {
         this.setState({ data: data});
         var item = slider.findByIndex('0');
         item.click();
@@ -42,8 +41,7 @@ let App = React.createClass({
       data: null
     });
     
-    let collection = new api.Collection(value);
-    collection.get(value).then((data) => {
+    api.collection.get(value).then((data) => {
       this.setState({ 
         data: data,
         currentCollection: value 
@@ -55,17 +53,16 @@ let App = React.createClass({
   },
   
   componentDidMount: function() { 
-    let configApi = new api.Config();
- 
-    configApi.get().then((config) => {
+    api.config.get().then((config) => {
       let firstKey = Object.keys(config)[0];
+      console.log(firstKey);
+  
       this.setState({
-        currentCollection: firstKey
+        currentCollection: 'Movies'
       }); 
-      return firstKey;
+      return 'Movies';
     }).then((firstKey) => {
-      let collection = new api.Collection(firstKey);
-      return collection.get();
+      return api.collection.get(firstKey);
     }).then((data) => {
       this.setState({ data: data});    
       var item = slider.findByIndex('0');

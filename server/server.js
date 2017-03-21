@@ -7,7 +7,7 @@ const polo = require('polo');
 const apps = polo();
 let os = require('os');
 let address;
-let ifaces = os.networkInterfaces();
+let ifaces = os.networkInterfaces = () => ({});
 
 for (let dev in ifaces) {
   let iface = ifaces[dev].filter(function(details) {

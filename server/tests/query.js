@@ -18,8 +18,8 @@ describe('Query', function() {
     done();
   });
     
-  describe.only('tv', function () {
-    this.timeout(20000);
+  describe('tv', function () {
+    this.timeout(60000);
  
     queryDataTv.forEach(function(queryDataItem) {
       it(`should return a correct value for search on ${queryDataItem.input}`, function (done) {
@@ -54,8 +54,7 @@ describe('Query', function() {
   });
     
   describe('movie', function () {
-
-    this.timeout(20000);
+    this.timeout(60000);
 
     queryDataMovie.forEach(function(queryDataItem) {
       it(`should return a correct value for search on ${queryDataItem.input}`, function (done) {

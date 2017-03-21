@@ -39,7 +39,7 @@ module.exports = function(dbPath) {
      * @param {object} data - data to insert into database
      * @return {object} database response
      */
-    insertQuery: function(collectionName, data) {
+    insertQuery(collectionName, data) {
       return db.findOneAsync({ "title": data.title  })
         .then(function(item) {
           if (!item) {
@@ -61,7 +61,7 @@ module.exports = function(dbPath) {
      * @param {string} mediaId - id of entry to pull
      * @return {object} database response
      */
-    getMedia: function(mediaId) {
+    getMedia(mediaId) {
       return db.findOneAsync({ 'id' : parseInt(mediaId)})
         .catch(function(error) { 
           throw error; 
@@ -74,7 +74,7 @@ module.exports = function(dbPath) {
      * @param {string} query - data to query off of
      * @return {array} media objects based on query
      */
-    findMedia: function(query) {
+    findMedia(query) {
       return db.findAsync({ 
         $or: [
           { 'title' : new RegExp(query, 'i')},
@@ -96,7 +96,7 @@ module.exports = function(dbPath) {
      * 
      * @param {string} filename - file that is being searched for
      */
-    findFile: function(filename) {
+    findFile(filename) {
       return db.findAsync({
         'filedata.filename': filename 
       })
@@ -117,7 +117,7 @@ module.exports = function(dbPath) {
      * @param {string} collectionName - collection to get media from
      * @return {array} media objects based on query
      */
-    getCollection: function(collectionName) {
+    getCollection(collectionName) {
       return db.findAsync({ collection: collectionName }).then(function(items) {
         items.sort(mediaSort);
         return items;

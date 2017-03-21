@@ -1,9 +1,7 @@
 "use strict";
-const $ = require('jquery');
-window.$ = window.jQuery = require('jquery');
 const React = require('react');
 const ReactDOM = require('react-dom');
-let api = require('../common/api.js');
+let api = require('../../../common/api.js');
 
 let CollectionSelector = React.createClass({
   getInitialState: function() {
@@ -13,9 +11,7 @@ let CollectionSelector = React.createClass({
   },
   
   componentDidMount: function() { 
-    let configApi = new api.Config();
- 
-    configApi.get().then((config) => {
+    api.config.get().then((config) => {
       this.setState({
         collections: config
       }); 

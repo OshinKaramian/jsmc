@@ -9,7 +9,6 @@ Installation
 * [NodeJS](https://nodejs.org/en/)
 * [Gulp](http://gulpjs.com/)
 * [FFMPEG](https://www.ffmpeg.org/)
-* [MongoDB](https://www.mongodb.org/)
 
 ### Install a bunch of stuff
 ```
@@ -35,7 +34,6 @@ server/config/files_config.json
 
 Starting it up
 --------------
-* Start up Mongo
 * Index files that are in files_config.json
 
 ```
