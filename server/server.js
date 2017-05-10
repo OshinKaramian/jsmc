@@ -5,6 +5,8 @@ const server = new hapi.Server();
 const controller = require('./src/controller.js');
 const polo = require('polo');
 const apps = polo();
+const schedule = require('node-schedule');
+
 let os = require('os');
 let address;
 let ifaces = os.networkInterfaces = () => ({});
@@ -18,6 +20,9 @@ for (let dev in ifaces) {
     address = iface[0].address;
   }
 }
+//schedule.scheduleJob('10 * * * * *', () => {
+//  console.log('checking temp dir');
+//});
 
 server.register(inert, function () {
 

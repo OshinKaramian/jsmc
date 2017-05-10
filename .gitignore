@@ -40,3 +40,4 @@ server/db/jsmc.db
 *.jpg
 
 client/jsmc-win32-x64
+assets
