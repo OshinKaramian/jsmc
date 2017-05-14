@@ -2,13 +2,13 @@
 let React = require('react');
 let TestUtils = require('react-addons-test-utils');
 let assert = require('assert');
-let VideoDisplay = require('../src/js/main/video_display');
+let VideoDisplay = require('../src/js/main/components/video_display');
 let movieList = require('./data/api.json');
 
 describe('<VideoDisplay />', function(){
   this.timeout(20000);
   let detachedVideoDisplay;
-  
+
   before(function(done) {
     let backgroundContainer = document.createElement('div');
     backgroundContainer.id = 'container-background';
@@ -23,7 +23,7 @@ describe('<VideoDisplay />', function(){
     assert.equal(posterImages.length, 2);
     done()
   });
-  
+
   it('<VideoItem />s should have the correct information', function(done) {
     let posterImages = TestUtils.scryRenderedDOMComponentsWithTag(detachedVideoDisplay, 'img');
     assert.equal(posterImages[0].getAttribute('data-fileid'), movieList[0].id);
