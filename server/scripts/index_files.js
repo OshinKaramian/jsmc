@@ -55,5 +55,5 @@ console.log(indexConfig);
 for (var collectionName in indexConfig) {
   console.log(collectionName);
   console.log(indexConfig[collectionName]);
-  indexAllFiles(collectionName, indexConfig[collectionName]);
+  file.indexAllFiles(collectionName, indexConfig[collectionName]);
 }

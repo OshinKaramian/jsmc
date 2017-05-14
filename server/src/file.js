@@ -6,6 +6,7 @@ const Promise = require('bluebird');
 const path = require('path');
 const os = require('os');
 const ffmpeg = require('fluent-ffmpeg');
+const walk = require('walk');
 const fs = Promise.promisifyAll(require('fs-extra'));
 const query = require('./query.js');
 const db = require('./db.js')();
@@ -86,7 +87,7 @@ let validateAndCleanFFProbeOutput = function(directory, metadata) {
  * @param {string} collectionName - name of collection to store file under
  * @return {object} a promise that has created a db record for the given file
  */
-module.exports.createRecord = function(rootDir, fileName, baseDir, category, collectionName) {
+const createRecord = (rootDir, fileName, baseDir, category, collectionName)  => {
   let filePath = path.join(rootDir, fileName);
 
   if (validExtensions.indexOf(path.extname(fileName)) === -1) {
@@ -101,6 +102,8 @@ module.exports.createRecord = function(rootDir, fileName, baseDir, category, col
   .then(db.insertQuery.bind(this, collectionName));
 };
 
+module.exports.createRecord = createRecord;
+
 /**
  * Kicks off process to transcode a file to HLS
  *
@@ -109,7 +112,7 @@ module.exports.createRecord = function(rootDir, fileName, baseDir, category, col
  * @param {integer} fileIndex - file index as set in the database
  * @return {string} location of the transcoded asset
  */
-module.exports.transcode = function(collection, mediaId, fileIndex) {
+module.exports.transcode = (collection, mediaId, fileIndex) => {
   return fs.existsAsync('tmp/' + mediaId + '_'+ fileIndex + '.m3u8')
     .then(function(exists) {
       if (!exists) {
@@ -148,4 +151,45 @@ module.exports.transcode = function(collection, mediaId, fileIndex) {
       console.log(error);
       return 'tmp/'+ mediaId + '_' + fileIndex +'.m3u8';
     });
+};
+
+module.exports.indexAllFiles = (collectionName, searchInfo) => {
+  let walker;
+  let returnArray = [];
+  let options = {
+     followLinks: false
+    };
+  let directory = searchInfo.directory;
+  let category = searchInfo.type;
+
+  walker = walk.walk(directory, options);
+
+  walker.on("directories", function (root, dirStatsArray, next) {
+    next();
+  });
+
+  walker.on("file", function (root, fileStats, next) {
+    console.log(fileStats.name);
+
+    createRecord(root, fileStats.name, directory, category, collectionName)
+   
+    .finally(function() {
+      return next();
+    });
+  });
+
+  walker.on("errors", function (root, nodeStatsArray, next) {
+    return next();
+  });
+
+  walker.on("end", function() {
+    try {
+      db.initDb();
+    } catch(ex) {
+    }
+  }); 
+
+
+
+
 };
