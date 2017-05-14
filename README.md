@@ -1,4 +1,4 @@
-JSMC - JavaScript Media Center
+JSMC - JavaScript Media Center [![Build Status](https://travis-ci.org/OshinKaramian/jsmc.svg?branch=master)](https://travis-ci.org/OshinKaramian/jsmc)
 ==============================
 
 A Media Center application built to be run in the browser.
