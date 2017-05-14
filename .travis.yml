@@ -3,7 +3,7 @@ sudo: false
 node_js:
   - "6"
 install:
-  - cd server && npm install
+  - cd server && npm install && cd ..
 script:
   - cd server && npm test
 env:
