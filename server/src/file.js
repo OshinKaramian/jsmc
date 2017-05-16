@@ -87,7 +87,7 @@ let validateAndCleanFFProbeOutput = function(directory, metadata) {
  * @param {string} collectionName - name of collection to store file under
  * @return {object} a promise that has created a db record for the given file
  */
-const createRecord = (rootDir, fileName, baseDir, category, collectionName)  => {
+module.exports.createRecord = (rootDir, fileName, baseDir, category, collectionName)  => {
   let filePath = path.join(rootDir, fileName);
 
   if (validExtensions.indexOf(path.extname(fileName)) === -1) {
@@ -101,8 +101,6 @@ const createRecord = (rootDir, fileName, baseDir, category, collectionName)  => 
   .then(data => query(data, category, null))
   .then(db.insertQuery.bind(this, collectionName));
 };
-
-module.exports.createRecord = createRecord;
 
 /**
  * Kicks off process to transcode a file to HLS
@@ -154,15 +152,14 @@ module.exports.transcode = (collection, mediaId, fileIndex) => {
 };
 
 module.exports.indexAllFiles = (collectionName, searchInfo) => {
-  let walker;
   let returnArray = [];
   let options = {
-     followLinks: false
-    };
+    followLinks: false
+  };
   let directory = searchInfo.directory;
   let category = searchInfo.type;
 
-  walker = walk.walk(directory, options);
+  const walker = walk.walk(directory, options);
 
   walker.on("directories", function (root, dirStatsArray, next) {
     next();
@@ -171,11 +168,10 @@ module.exports.indexAllFiles = (collectionName, searchInfo) => {
   walker.on("file", function (root, fileStats, next) {
     console.log(fileStats.name);
 
-    createRecord(root, fileStats.name, directory, category, collectionName)
-   
-    .finally(function() {
-      return next();
-    });
+    module.exports.createRecord(root, fileStats.name, directory, category, collectionName)
+      .finally(function() {
+        return next();
+      });
   });
 
   walker.on("errors", function (root, nodeStatsArray, next) {
@@ -187,9 +183,5 @@ module.exports.indexAllFiles = (collectionName, searchInfo) => {
       db.initDb();
     } catch(ex) {
     }
-  }); 
-
-
-
-
+  });
 };
