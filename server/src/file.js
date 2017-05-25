@@ -5,12 +5,12 @@
 const Promise = require('bluebird');
 const path = require('path');
 const os = require('os');
-const ffmpeg = require('fluent-ffmpeg');
+let ffmpeg = require('fluent-ffmpeg');
 const walk = require('walk');
 const fs = Promise.promisifyAll(require('fs-extra'));
 const query = require('./query.js');
-const db = require('./db.js')();
-const ffprobe = Promise.promisify(ffmpeg.ffprobe);
+let db = require('./db.js')();
+let ffprobe = Promise.promisify(ffmpeg.ffprobe);
 const ignoredPhrases = [
   'bdrip',
   'brrip',
@@ -42,7 +42,8 @@ const validExtensions = [
   '.avi',
   '.mp4',
   '.ogm',
-  '.m4v'
+  '.m4v',
+  '.mpg'
 ];
 
 ffmpeg.setFfmpegPath(path.join('ffmpeg', os.platform(), 'bin','ffmpeg.exe'));
@@ -87,19 +88,16 @@ let validateAndCleanFFProbeOutput = function(directory, metadata) {
  * @param {string} collectionName - name of collection to store file under
  * @return {object} a promise that has created a db record for the given file
  */
-module.exports.createRecord = (rootDir, fileName, baseDir, category, collectionName)  => {
-  let filePath = path.join(rootDir, fileName);
-
-  if (validExtensions.indexOf(path.extname(fileName)) === -1) {
+module.exports.createRecord = (filePath, baseDir, category, collectionName)  => {
+  if (validExtensions.indexOf(path.extname(filePath)) === -1) {
     return Promise.reject(new Error('File extension invalid'));
   }
 
-  return db.findFile(filePath).then(function(filePath) {
-    return ffprobe(filePath);
-  })
-  .then(validateAndCleanFFProbeOutput.bind(this, baseDir))
-  .then(data => query(data, category, null))
-  .then(db.insertQuery.bind(this, collectionName));
+  return db.findFile(filePath)
+    .then(filePath => ffprobe(filePath))
+    .then(fileMetaData => validateAndCleanFFProbeOutput(baseDir, fileMetaData))
+    .then(data => query(data, category, null))
+    .then(queryData => db.insertQuery(collectionName, queryData));
 };
 
 /**
@@ -166,9 +164,9 @@ module.exports.indexAllFiles = (collectionName, searchInfo) => {
   });
 
   walker.on("file", function (root, fileStats, next) {
-    console.log(fileStats.name);
+    let filePath = path.join(rootDir, fileStats.name);
 
-    module.exports.createRecord(root, fileStats.name, directory, category, collectionName)
+    module.exports.createRecord(filePath, directory, category, collectionName)
       .finally(function() {
         return next();
       });

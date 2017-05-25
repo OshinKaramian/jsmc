@@ -13,20 +13,42 @@ let db = rewire('../src/db.js')(testDbPath);
 
 describe('file', function() {
 
-  before((done) => {
-    file.__set__('db', db);
-    done();
+  before(() => {
+    return file.__set__('db', db);
   });
 
-  beforeEach((done) => {
-    done();
+  afterEach(() => {
+    return fs.unlinkAsync(testDbPath);
   });
 
-  describe('createRecord', () => {
-    it('', () => {
+  describe.only('createRecord', () => {
+    const baseDir = path.join('tmp', 'baseDir');
 
-      file.indexAllFiles()
+    file.__set__('ffprobe', (filePath) => {
+      return Promise.resolve({
+        format: {
+          filename: filePath,
+          format_name: 'fnm',
+          format_long_name: 'format name long'
+        },
+        duration: 500
+      });
+    });
 
+    it('can create a proper record', () => {
+      const fileName = path.join(baseDir, 'Captain_America_The_Winter_Soldier.mpg');
+      const category = 'movie';
+      const collectionName = 'Movies';
+      return file.createRecord(fileName, baseDir, category, collectionName)
+        .then(queryOutput => {
+          console.log('your mother')
+          console.log(queryOutput);
+          return db.findMedia('Captain');
+        })
+        .then(queryOutput => {
+          console.log('------ is a nice lady -------');
+          console.log(queryOutput);
+        })
     });
   });
 });

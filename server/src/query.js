@@ -11,7 +11,7 @@ const cbRequest = require('request');
 const config = require('../config/config.json');
 const queryTranslator = require('./query_translator.js');
 
-/** 
+/**
  * Queries themoviedb.org for movie information return format is:
  * "results": [
  *  {
@@ -31,7 +31,7 @@ const queryTranslator = require('./query_translator.js');
  *     "vote_count"
  *  }
  * ]
- * 
+ *
  * @param {string} filename - File name that is being queried
  * @param {string} category - Type of query, options are 'movie' and 'tv'
  * @param {string} year - Year to attach to query (not required)
@@ -49,7 +49,7 @@ let movieDbQuery = function(filename, category, year) {
 
 let movieDbQueryEpisodeInfo = function(id, episodeInfo) {
   let queryUrl = 'http://api.themoviedb.org/3/tv/'+ id +
-    '/season/' + episodeInfo.season_number + 
+    '/season/' + episodeInfo.season_number +
     '/episode/' + episodeInfo.episode_number +
     '?api_key=' + config.apiKey;
 
@@ -63,9 +63,9 @@ let movieDbQueryEpisodeInfo = function(id, episodeInfo) {
   });
 };
 
-/** 
+/**
  * Prepares filename to be queried after a failed search
- * 
+ *
  * @param {string} filename - File name that is being queried
  * @return {string} Modified file name for the next search
  */
@@ -82,9 +82,9 @@ let modifyFilenameForNextSearch = function(filename) {
   };
 };
 
-/** 
+/**
  * Queries moviedb repeatedly until finding a match or determining no match exists
- * 
+ *
  * @param {string} filename - File name that is being queried
  * @param {string} category - Type of query, options are 'movie' and 'tv'
  * @param {string} year - Year to attach to query (not required)
@@ -115,7 +115,7 @@ let queryForValidObject = function(filename, category, year) {
   });
 };
 
-/** 
+/**
  * Queries omdbapi.com for movie information return format is:
  *
  * {
@@ -140,7 +140,7 @@ let queryForValidObject = function(filename, category, year) {
  *   "Type"
  *   "Response"
  * }
- * 
+ *
  * @param {string} category - Type of query, options are 'movie' and 'tv'
  * @param {string} year - Year to attach to query (not required)
  * @return {object} moviedb response
@@ -153,18 +153,18 @@ let omdbQuery = function(category, movieDbMatch) {
   return request(omdbQueryUrl).then((response) => {
     if (response.statusCode < 400) {
       let omdbParsedResponse = JSON.parse(response.body);
-      let newObject = queryTranslator[category].convertResponsesToMediaObject(movieDbMatch, omdbParsedResponse);  
-      
+      let newObject = queryTranslator[category].convertResponsesToMediaObject(movieDbMatch, omdbParsedResponse);
+
       return newObject;
     } else {
       return movieDbMatch;
-    }      
+    }
   });
 };
 
-/** 
+/**
  * Takes output from both queries and adds file info to object
- * 
+ *
  * @param {object} data - fileInfo object
  * @return {object} appending fileInfo object
  */
@@ -178,13 +178,13 @@ let formatQueryOutput = function(category, data) {
       codecLong: data.metadata.format.format_long_name,
       duration: data.metadata.format.duration,
     };
-    
+
     if (queryTranslator[category].getFileInfo) {
       let output = queryTranslator[category].getFileInfo(data.metadata.format.filename);
       if (output) {
-        fileInfo = Object.assign(fileInfo, output); 
+        fileInfo = Object.assign(fileInfo, output);
       }
-      
+
       if (!fileInfo.episode) {
         filedata.push(fileInfo);
         data.queryInfo.filedata = filedata;
@@ -197,7 +197,7 @@ let formatQueryOutput = function(category, data) {
           jsonParsed = JSON.parse(response.body);
         } catch (exception) {
         }
-        
+
         fileInfo.episode = Object.assign(fileInfo.episode, jsonParsed);
         if (fileInfo.episode.still_path) {
           fileInfo.episode.still_path = 'http://image.tmdb.org/t/p/original' + fileInfo.episode.still_path;
@@ -210,19 +210,19 @@ let formatQueryOutput = function(category, data) {
       filedata.push(fileInfo);
       data.queryInfo.filedata = filedata;
       return data.queryInfo;
-    }    
+    }
   } else {
     throw new Error('No Query Info for ' + data.filename);
   }
 };
 
-/** 
+/**
  * Downloads image assets to a folder
- * 
+ *
  * @param {object} movieDbResponse - Response from moviedbquery
  * @return {object} returns moviedbresponse that was passed in (for use on future promises)
  */
-let downloadAndSaveAssets = function(movieDbResponse) {  
+let downloadAndSaveAssets = function(movieDbResponse) {
   let writeImage = function(image_url) {
     if (!image_url) {
       console.log(movieDbResponse);
@@ -233,13 +233,13 @@ let downloadAndSaveAssets = function(movieDbResponse) {
       let imageBaseUrl = 'http://image.tmdb.org/t/p/original';
       let imageFsPath = path.join(__dirname, '..', 'assets', image_url);
       let downloadImage = cbRequest(imageBaseUrl + image_url).pipe(fs.createWriteStream(imageFsPath));
-      
+
       return new Promise(function(resolve, reject){
         return fs.existsAsync(imageFsPath).then((exists) => {
-          downloadImage.on("close",function(){        
+          downloadImage.on("close",function(){
             resolve();
-          });        
-        }).catch((exception) => resolve()); 
+          });
+        }).catch((exception) => resolve());
       });
     }
   }
@@ -249,25 +249,25 @@ let downloadAndSaveAssets = function(movieDbResponse) {
     .then(() => {
       if (movieDbResponse.poster_path) {
         movieDbResponse.poster_path = 'assets' + movieDbResponse.poster_path;
-      } 
-  
+      }
+
       if (movieDbResponse.backdrop_path) {
         movieDbResponse.backdrop_path = 'assets' + movieDbResponse.backdrop_path;
       }
-  
-      return movieDbResponse
+
+      return;
     });
 };
 
-/** 
+/**
  * Sanitizes filename so that it's queryable
- * 
+ *
  * @param {string} filename - Filename that is to be sanitized for querying
  * @return {string} sanitized filename, safe for queries
  */
 let sanitizeFilenameForSearch = function(filename) {
   let sanitizedFilename = filename;
-  
+
   sanitizedFilename = sanitizedFilename.split('.');
   sanitizedFilename = sanitizedFilename.join('+');
   sanitizedFilename = sanitizedFilename.split('_');
@@ -276,13 +276,13 @@ let sanitizeFilenameForSearch = function(filename) {
   sanitizedFilename = sanitizedFilename.join('+');
   sanitizedFilename = sanitizedFilename.split('-');
   sanitizedFilename = sanitizedFilename.join('+');
-  
+
   return sanitizedFilename;
 };
 
-/** 
+/**
  * Sanitizes filename so that it's queryable
- * 
+ *
  * @param {string} filename - File name that is being queried
  * @param {string} category - Type of query, options are 'movie' and 'tv'
  * @param {string} year - Year to attach to query (not required)
@@ -290,15 +290,19 @@ let sanitizeFilenameForSearch = function(filename) {
  */
 module.exports = function(fileData, category, year) {
   let filename = sanitizeFilenameForSearch(fileData.filename);
+  let movieDbData;
 
   return queryForValidObject(filename, category, year)
-    .then(downloadAndSaveAssets)
-    .then(omdbQuery.bind(this, category))
-    .then((updateQueryObject) => {
-      fileData.queryInfo = updateQueryObject;
+    .then(movieDbResponse => {
+      movieDbData = movieDbResponse;
+      return downloadAndSaveAssets(movieDbData);
+    })
+    .then(() => omdbQuery(category, movieDbData))
+    .then((movieDbObject) => {
+      fileData.queryInfo = movieDbObject;
       return fileData;
     })
-    .then(formatQueryOutput.bind(this, category))
+    .then((movieData) => formatQueryOutput(category, movieData))
   .catch((error) => {
     throw error;
   });
