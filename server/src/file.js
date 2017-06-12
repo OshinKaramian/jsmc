@@ -1,7 +1,7 @@
 /**
  * @file Handles all filesystem level operations on media files
  */
-"use strict";
+'use strict';
 const Promise = require('bluebird');
 const path = require('path');
 const os = require('os');
@@ -97,7 +97,11 @@ module.exports.createRecord = (filePath, baseDir, category, collectionName)  => 
     .then(filePath => ffprobe(filePath))
     .then(fileMetaData => validateAndCleanFFProbeOutput(baseDir, fileMetaData))
     .then(data => query(data, category, null))
-    .then(queryData => db.insertQuery(collectionName, queryData));
+    .then(mediaObject => {
+      // We do this so that the test code has a path to inject itself
+      mediaObject.db = db;
+      return mediaObject.save(collectionName);
+    });
 };
 
 /**
@@ -128,7 +132,7 @@ module.exports.transcode = (collection, mediaId, fileIndex) => {
             .on('progress', function(progress) {
               console.log('Processing: ' + progress.percent + '% done');
             })
-            .on('error', function(err, stdout, stderr) {
+            .on('error', function(err) {
               throw err;
               //console.log('Cannot process video: ' + err.message);
             })
@@ -150,7 +154,6 @@ module.exports.transcode = (collection, mediaId, fileIndex) => {
 };
 
 module.exports.indexAllFiles = (collectionName, searchInfo) => {
-  let returnArray = [];
   let options = {
     followLinks: false
   };
@@ -159,12 +162,12 @@ module.exports.indexAllFiles = (collectionName, searchInfo) => {
 
   const walker = walk.walk(directory, options);
 
-  walker.on("directories", function (root, dirStatsArray, next) {
+  walker.on('directories', function (root, dirStatsArray, next) {
     next();
   });
 
-  walker.on("file", function (root, fileStats, next) {
-    let filePath = path.join(rootDir, fileStats.name);
+  walker.on('file', function (root, fileStats, next) {
+    let filePath = path.join(root, fileStats.name);
 
     module.exports.createRecord(filePath, directory, category, collectionName)
       .finally(function() {
@@ -172,14 +175,15 @@ module.exports.indexAllFiles = (collectionName, searchInfo) => {
       });
   });
 
-  walker.on("errors", function (root, nodeStatsArray, next) {
+  walker.on('errors', function (root, nodeStatsArray, next) {
     return next();
   });
 
-  walker.on("end", function() {
+  walker.on('end', function() {
     try {
       db.initDb();
     } catch(ex) {
+      console.log(ex);
     }
   });
 };
