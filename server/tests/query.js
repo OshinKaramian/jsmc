@@ -4,6 +4,7 @@ const Promise = require('bluebird');
 const path = require('path');
 const fs = Promise.promisifyAll(require('fs-extra'));
 const query = require('../src/query.js');
+const expect = require('chai').expect;
 const sinon = require('sinon');
 const queryDataMovie = require('./data/file_system_movie.json');
 const queryDataTv = require('./data/file_system_tv.json');
@@ -17,10 +18,10 @@ describe('Query', function() {
   beforeEach(function(done) {
     done();
   });
-    
+
   describe('tv', function () {
     this.timeout(60000);
- 
+
     queryDataTv.forEach(function(queryDataItem) {
       it(`should return a correct value for search on ${queryDataItem.input}`, function (done) {
         let queryPromise = function(data) {
@@ -38,21 +39,23 @@ describe('Query', function() {
 
           return query(queryObject, 'tv', null)
           .then((queryOutput) => {
-            assert.equal(queryOutput.title, data.output.title);
+            expect(queryOutput.details.title).to.equal(data.output.title);
             return queryOutput;
           });
         };
 
         //let tests = Promise.resolve(queryData).map(queryPromise,{concurrency: 1 });
 
-        queryPromise(queryDataItem).then((queryOutput) => {
-        //tests.then((allFileContents) => {
-           done();
-        }).catch((err) => done(err));
+        queryPromise(queryDataItem)
+          .then((queryOutput) => {
+          //tests.then((allFileContents) => {
+            done();
+          })
+          .catch((err) => done(err));
       });
     });
   });
-    
+
   describe('movie', function () {
     this.timeout(60000);
 
@@ -73,7 +76,7 @@ describe('Query', function() {
 
           return query(queryObject, 'movie', null)
           .then((queryOutput) => {
-            assert.equal(queryOutput.title, data.output.title);
+            assert.equal(queryOutput.details.title, data.output.title);
             return queryOutput;
           });
         };
