@@ -39,14 +39,14 @@ module.exports = function(dbPath) {
      * @return {object} database response
      */
     insertQuery(collectionName, data) {
-      return db.findOneAsync({ 'title': data.title })
+      return db.findOneAsync({ 'id': data.id })
         .then(function(item) {
           if (!item) {
             data.collection = collectionName;
             return db.insertAsync(data);
           } else {
             item.filedata.push(data.filedata[0]);
-            return db.updateAsync({ 'title' : data.title }, item);
+            return db.updateAsync({ 'id' : data.id }, item);
           }
         })
         .catch(function(err) {

@@ -7,22 +7,30 @@ const polo = require('polo');
 const apps = polo();
 const schedule = require('node-schedule');
 
-let os = require('os');
-let address;
-let ifaces = os.networkInterfaces = () => ({});
-
-for (let dev in ifaces) {
-  let iface = ifaces[dev].filter(function(details) {
-      return details.family === 'IPv4' && details.internal === false;
-  });
-
-  if (iface.length > 0) {
-    address = iface[0].address;
-  }
-}
 //schedule.scheduleJob('10 * * * * *', () => {
 //  console.log('checking temp dir');
 //});
+
+const SSDP = require('node-ssdp').Server;
+const broadcast = new SSDP({
+  //unicastHost: '192.168.11.63',
+  location: require('ip').address() + '/desc.html',
+  sourcePort: 1900
+});
+
+broadcast.addUSN('upnp:rootdevice')
+broadcast.addUSN('urn:schemas-upnp-org:device:MediaServer:1')
+
+broadcast.on('advertise-alive', function (heads) {
+  //console.log('advertise-alive', heads)
+// Expire old devices from your cache.
+// Register advertising device somewhere (as designated in http headers heads)
+})
+
+broadcast.on('advertise-bye', function (heads) {
+//  console.log('advertise-bye', heads)
+// Remove specified device from cache.
+})
 
 server.register(inert, function () {
 
@@ -35,8 +43,8 @@ server.register(inert, function () {
   });
 
   server.route( {
-    method: 'POST',
-    path: '/media/{mediaId}/file/{fileIndex}/transcode',
+  method: 'POST',
+  path: '/media/{mediaId}/file/{fileIndex}/transcode',
     handler: controller.media.transcode
   });
 
@@ -66,9 +74,6 @@ server.register(inert, function () {
 
   server.start(function() { console.log('Visit: http://127.0.0.1:3000') });
   
-  apps.put({
-    name:'jsmc', 
-    host: address,
-    port: 3000        
-  });
+  // start server on all interfaces
+  broadcast.start()
 });

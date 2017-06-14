@@ -3,10 +3,12 @@
 const electron = require('electron');
 const app = electron.app;  // Module to control application life.
 const BrowserWindow = electron.BrowserWindow;  // Module to create native browser window.
-var polo = require('polo');
 var ipc = require('ipc');
 const remote = require('electron').remote;
-var apps = polo();
+const ssdp = require('node-ssdp').Client;
+const client =  new ssdp({
+//    unicastHost: '192.168.11.63'
+  });
 var baseApiUrl;
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -90,9 +92,14 @@ app.on('ready', function() {
   });
   
   mainWindow.webContents.on('did-finish-load', function() {     
-    let appInfo = apps.get('jsmc');
-    baseApiUrl = 'http://' + appInfo.address + '/';
-    mainWindow.webContents.send('updateJsmcUrl', baseApiUrl);
-    mainWindow.webContents.send('data-loaded');
+    client.on('notify', function () {})
+    client.on('response', function inResponse(headers, code, rinfo) {
+      //console.log('Got a response to an m-search:\n%d\n%s\n%s', code, JSON.stringify(headers, null, '  '), JSON.stringify(rinfo, null, '  '))
+      baseApiUrl = 'http://' + rinfo.address + ':3000' + '/';
+      mainWindow.webContents.send('updateJsmcUrl', baseApiUrl);
+      mainWindow.webContents.send('data-loaded');
+    })
+
+    client.search('urn:schemas-upnp-org:device:MediaServer:1')
   });
 });
