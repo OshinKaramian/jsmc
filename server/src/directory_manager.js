@@ -57,7 +57,6 @@ const directoryManager = class DirectoryManager {
     };
 
     const files = await getAllFiles(directory);
-    //const files = await fs.readdirAsync(directory);
     const fileInfoArray = files.map(file => fileStats(file));
     this.stats = await Promise.all(fileInfoArray);
     sortByDate(this.stats);
@@ -71,9 +70,6 @@ const directoryManager = class DirectoryManager {
   }
 
   async deleteToSize(desiredSize) {
-    console.log('delete stuff');
-    console.log(desiredSize);
-    console.log(this.totalSize());
     if(desiredSize >= this.totalSize()) {
       return this;
     }
@@ -82,16 +78,13 @@ const directoryManager = class DirectoryManager {
 
     this.stats.some(fileStat => {
       const deletedStat = this.stats.pop();
-      deleteFiles.push(deletedStat.filename);
-      console.log(desiredSize)
-      console.log(this.totalSize());
+      deleteFiles.push(fileStat.filename);
       return desiredSize >= this.totalSize();
     });
 
-    console.log('--------');
-    console.log(deleteFiles);
-    console.log('--------');
-    //await fs.unlinkAsync(deleteFiles);
+    const deletes = deleteFiles.map(file => fs.unlinkAsync(file));
+    await Promise.all(deletes);
+    await this.init();
     return this;
   }
 }
