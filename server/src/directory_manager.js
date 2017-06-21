@@ -44,7 +44,7 @@ const directoryManager = class DirectoryManager {
   async init() {
     const directory = this.workingDirectory;
     const fileStats = async (fileName) => {
-      const stat = await fs.statAsync(fileName)
+      const stat = await fs.statAsync(fileName);
       return {
         filename: fileName,
         size: stat.size,
@@ -76,9 +76,9 @@ const directoryManager = class DirectoryManager {
 
     const deleteFiles = [];
 
-    this.stats.some(fileStat => {
+    this.stats.some(() => {
       const deletedStat = this.stats.pop();
-      deleteFiles.push(fileStat.filename);
+      deleteFiles.push(deletedStat.filename);
       return desiredSize >= this.totalSize();
     });
 
@@ -87,6 +87,6 @@ const directoryManager = class DirectoryManager {
     await this.init();
     return this;
   }
-}
+};
 
 module.exports = directoryManager;
