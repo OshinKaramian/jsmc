@@ -8,6 +8,6 @@ module.exports = {
   apiKeys: apiKeys,
   serverOptions: {
     'TEMP_DIR': server.TEMP_DIR.replace('{base_dir}', __dirname),
-    'MAX_SIZE': server.MAX_SIZE
+    'MAX_SIZE': server.MAX_SIZE * 1000000000
   }
 };
