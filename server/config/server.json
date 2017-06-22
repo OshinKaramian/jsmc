@@ -1,4 +1,4 @@
 {
   "TEMP_DIR": "{base_dir}/../tmp/",
-  "MAX_SIZE": "25000"
+  "MAX_SIZE": "25"
 }

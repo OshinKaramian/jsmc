@@ -6,10 +6,12 @@ const controller = require('./src/controller.js');
 const polo = require('polo');
 const apps = polo();
 const schedule = require('node-schedule');
+const fileWatcher = require('./src/watchers/file_cleanup.js');
 
-//schedule.scheduleJob('10 * * * * *', () => {
-//  console.log('checking temp dir');
-//});
+schedule.scheduleJob('10 * * * * *', () => {
+  console.log('Running file cleanup');
+  fileWatcher();
+});
 
 const SSDP = require('node-ssdp').Server;
 const broadcast = new SSDP({
@@ -73,7 +75,7 @@ server.register(inert, function () {
   });
 
   server.start(function() { console.log('Visit: http://127.0.0.1:3000') });
-  
+
   // start server on all interfaces
   broadcast.start()
 });
