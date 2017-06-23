@@ -203,6 +203,15 @@ module.exports.movie = {
    * @return {object} common format media object
    */
   convertResponsesToMediaObject: function(info) {
+    const crew = info.moviedb.credits.crew;
+    const directors = crew.filter(crewInfo => crewInfo.job === 'Director');
+    const writers = crew.filter(crewInfo => crewInfo.job === 'Screenplay');
+    let actors = info.moviedb.credits.cast;
+
+    if (actors.length > 3) {
+      actors = actors.splice(0,3);
+    }
+
     let mediaObject = {
       title: info.moviedb.title,
       media_type: 'movie',
@@ -212,9 +221,9 @@ module.exports.movie = {
       poster_path: info.moviedb.poster_path,
       backdrop_path: info.moviedb.backdrop_path,
       rated: '',//omdbResponse.Rated,
-      director: '',//omdbResponse.Director,
-      writer: '',//omdbResponse.Writer,
-      actors: '',//omdbResponse.Actors,
+      director: directors.map(people => people.name).join(', '),//omdbResponse.Director,
+      writer: writers.map(people => people.name).join(', '),//omdbResponse.Writer,
+      actors: actors.map(people => people.name).join(', '),//omdbResponse.Actors,
       metacritic_rating: '',//omdbResponse.Metascore,
       awards: '',//omdbResponse.Awards,
       short_plot:'',// omdbResponse.Plot,

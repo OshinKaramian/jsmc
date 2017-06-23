@@ -46,7 +46,7 @@ module.exports.search = (filename, category, year) => {
 };
 
 module.exports.getMovieDetails = (id) => {
-  let queryUrl = apiBase + '/movie/'+ id +'?api_key=' + config.apiKey + '&append_to_response=external_ids';
+  let queryUrl = apiBase + '/movie/'+ id +'?api_key=' + config.apiKey + '&append_to_response=external_ids,credits';
   return request(queryUrl)
     .then(response => {
       if (response.statusCode === 429) {
@@ -59,7 +59,7 @@ module.exports.getMovieDetails = (id) => {
 };
 
 module.exports.getTVDetails = (id) => {
-  let queryUrl = apiBase + '/tv/'+ id + '?api_key=' + config.apiKey + '&append_to_response=external_ids';
+  let queryUrl = apiBase + '/tv/'+ id + '?api_key=' + config.apiKey + '&append_to_response=external_ids,credits';
   return request(queryUrl)
     .then(response => {
       if (response.statusCode === 429) {

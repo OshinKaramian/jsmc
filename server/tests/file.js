@@ -36,7 +36,32 @@ describe('file', function() {
       });
     });
 
-    it('can create a proper record', () => {
+    it('can create a proper record for a tv show', () => {
+      const fileName = path.join(baseDir, 'hannibal.213.hdtv-lol.mp4');
+      const category = 'tv';
+      const collectionName = 'Television';
+      return file.createRecord(fileName, baseDir, category, collectionName)
+        .then(queryOutput => {
+          return db.findMedia('Hannibal');
+        })
+        .then(queryOutput => {
+          const expectedOutput = {
+            name: 'Hannibal',
+            category: 'tv',
+            filename: 'hannibal.213.',
+            title: 'Hannibal',
+            media_type: 'tv',
+            id: 40008,
+            release_date: '2013-04-04',
+            director: 'Bryan Fuller',
+            writer: 'Bryan Fuller'
+          }
+
+          return expect(queryOutput[0]).to.include(expectedOutput);
+        })
+    });
+
+    it('can create a proper record for a movie', () => {
       const fileName = path.join(baseDir, 'Captain_America_The_Winter_Soldier.mpg');
       const category = 'movie';
       const collectionName = 'Movies';
@@ -51,6 +76,9 @@ describe('file', function() {
             filename: 'captain_america_the_winter_soldier.mpg',
             title: 'Captain America: The Winter Soldier',
             media_type: 'movie',
+            director: 'Joe Russo, Anthony Russo',
+            writer: 'Christopher Markus, Stephen McFeely',
+            actors: 'Chris Evans, Samuel L. Jackson, Scarlett Johansson',
             id: 100402
           }
 
