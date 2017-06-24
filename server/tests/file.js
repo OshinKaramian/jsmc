@@ -11,15 +11,13 @@ const expect = require('chai').expect;
 const testDbPath = path.join(__dirname, 'data', 'file_test.db');
 let db = rewire('../src/db.js')(testDbPath);
 
-
 describe('file', function() {
-
   before(() => {
     return file.__set__('db', db);
   });
 
   afterEach(() => {
-    return fs.unlinkAsync(testDbPath);
+    return fs.removeAsync(testDbPath);
   });
 
   describe('createRecord', () => {
@@ -40,50 +38,72 @@ describe('file', function() {
       const fileName = path.join(baseDir, 'hannibal.213.hdtv-lol.mp4');
       const category = 'tv';
       const collectionName = 'Television';
-      return file.createRecord(fileName, baseDir, category, collectionName)
-        .then(queryOutput => {
-          return db.findMedia('Hannibal');
-        })
-        .then(queryOutput => {
-          const expectedOutput = {
-            name: 'Hannibal',
-            category: 'tv',
-            filename: 'hannibal.213.',
-            title: 'Hannibal',
-            media_type: 'tv',
-            id: 40008,
-            release_date: '2013-04-04',
-            director: 'Bryan Fuller',
-            writer: 'Bryan Fuller'
-          }
+      const expectedOutput = {
+        name: 'Hannibal',
+        category: 'tv',
+        filename: 'hannibal.213.',
+        title: 'Hannibal',
+        media_type: 'tv',
+        id: 40008,
+        release_date: '2013-04-04',
+        director: 'Bryan Fuller',
+        writer: 'Bryan Fuller'
+      };
 
-          return expect(queryOutput[0]).to.include(expectedOutput);
-        })
+      return file.createRecord(fileName, baseDir, category, collectionName)
+        .then(() => db.findMedia('Hannibal'))
+        .then(queryOutput => expect(queryOutput[0]).to.include(expectedOutput));
     });
 
     it('can create a proper record for a movie', () => {
       const fileName = path.join(baseDir, 'Captain_America_The_Winter_Soldier.mpg');
       const category = 'movie';
       const collectionName = 'Movies';
-      return file.createRecord(fileName, baseDir, category, collectionName)
-        .then(queryOutput => {
-          return db.findMedia('Captain');
-        })
-        .then(queryOutput => {
-          const expectedOutput = {
-            name: 'Captain America: The Winter Soldier',
-            category: 'movie',
-            filename: 'captain_america_the_winter_soldier.mpg',
-            title: 'Captain America: The Winter Soldier',
-            media_type: 'movie',
-            director: 'Joe Russo, Anthony Russo',
-            writer: 'Christopher Markus, Stephen McFeely',
-            actors: 'Chris Evans, Samuel L. Jackson, Scarlett Johansson',
-            id: 100402
-          }
+      const expectedOutput = {
+        name: 'Captain America: The Winter Soldier',
+        category: 'movie',
+        filename: 'captain_america_the_winter_soldier.mpg',
+        title: 'Captain America: The Winter Soldier',
+        media_type: 'movie',
+        director: 'Joe Russo, Anthony Russo',
+        writer: 'Christopher Markus, Stephen McFeely',
+        actors: 'Chris Evans, Samuel L. Jackson, Scarlett Johansson',
+        id: 100402
+      };
 
-          return expect(queryOutput[0]).to.include(expectedOutput);
-        })
+      return file.createRecord(fileName, baseDir, category, collectionName)
+        .then(() => db.findMedia('Captain'))
+        .then(queryOutput => expect(queryOutput[0]).to.include(expectedOutput));
+    });
+
+
+  });
+
+  describe('transcode', function() {
+    this.timeout(60000);
+    const tempDir = path.join('tests', 'tmp');
+
+    beforeEach(() => {
+      return fs.mkdirs(tempDir);
+    });
+
+    afterEach(() => {
+      return fs.remove(tempDir);
+    });
+
+    it.only('can transcode a file to progressive mp4', (done) => {
+      const videoStream = fs.createWriteStream(path.join(tempDir,'gangs.mp4'));
+      const sampleFile = path.resolve(path.join('tests','files', 'Gangs.Of.New.York.mkv'));
+
+      file.transcodeFile(sampleFile, videoStream);
+
+      videoStream.on('close', () => {
+        return done();
+      });
+
+      videoStream.on('error', (err) => {
+        expect(err).to.be.null;
+      });
     });
   });
 });

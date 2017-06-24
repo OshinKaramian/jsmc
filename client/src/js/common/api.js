@@ -5,24 +5,24 @@ module.exports.BaseUrl = baseApiUrl;
 
 if (window && window.process && window.process.type) {
   let ipc = require('electron').ipcRenderer;
-  
+
   ipc.on('updateJsmcUrl', function(event, message) {
     baseApiUrl = message;
-    module.exports.BaseUrl = baseApiUrl;  
+    module.exports.BaseUrl = baseApiUrl;
   });
-  
+
   ipc.on('api-url', function(event, message) {
     baseApiUrl = message;
     module.exports.BaseUrl = baseApiUrl;
   });
-  
+
   ipc.send('request-api-url', '');
 }
 
 module.exports.media = {
   /**
    * Given a media ID gets the media object
-   * 
+   *
    * @param {number} mediaId
    * @returns media object
    */
@@ -31,10 +31,10 @@ module.exports.media = {
       return response.json();
     });
   },
-  
+
   /**
    * Starts transcoding given file if not yet transcoded
-   * 
+   *
    * @param {number} {mediaId: mediaId, fileIndex: fileIndex = 0} id of media object and optional index of file
    * @returns URL of transcoded media resource (as an HLS manifest)
    */
@@ -43,10 +43,14 @@ module.exports.media = {
       return response.text();
     });
   },
-  
+
+  mp4Url: function({mediaId: mediaId, fileIndex: fileIndex = 0}) {
+    return baseApiUrl + 'media/' + mediaId + '/file/' + fileIndex + '/file.mp4';
+  },
+
   /**
    * Queries media database for matching entries
-   * 
+   *
    * @param {string} query search term querying the database
    * @returns Array of matching media objects
    */
@@ -60,11 +64,11 @@ module.exports.media = {
 module.exports.collection = {
   /**
    * Gets all media for a given collection
-   * 
+   *
    * @param {string} collectionName Id of collection to get information of
    * @returns Array of values matching collectionName
    */
-  get: function(collectionName) {    
+  get: function(collectionName) {
     return fetch(baseApiUrl + 'collections/' + collectionName).then(function(response) {
       return response.json();
     });
@@ -73,8 +77,8 @@ module.exports.collection = {
 
 module.exports.config = {
   /**
-   * 
-   * 
+   *
+   *
    * @returns
    */
   get: function() {

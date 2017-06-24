@@ -1,11 +1,12 @@
 "use strict"
-const hapi = require('hapi');
+const express = require('express');
 const inert = require('inert');
 const schedule = require('node-schedule');
 const SSDP = require('node-ssdp').Server;
-const server = new hapi.Server();
 const fileWatcher = require('./src/watchers/file_cleanup.js');
 const controller = require('./src/controller.js');
+
+const server = express();
 
 schedule.scheduleJob('10 * * * * *', () => {
   console.log('Running file cleanup');
@@ -29,47 +30,24 @@ broadcast.on('advertise-bye', function (heads) {
 //  console.log('advertise-bye', heads)
 })
 
-server.register(inert, function () {
-
-  server.connection({ port: 3000, routes: { cors: true}});
-
-  server.route({
-    method: 'GET',
-    path: '/media',
-    handler: controller.media.search
-  });
-
-  server.route( {
-  method: 'POST',
-  path: '/media/{mediaId}/file/{fileIndex}/transcode',
-    handler: controller.media.transcode
-  });
-
-  server.route({
-    method: 'GET',
-    path: '/media/{mediaId*}',
-    handler: controller.media.get
-  });
-
-  server.route({
-    method: 'GET',
-    path: '/config/',
-    handler: controller.config.get
-  });
-
-  server.route({
-    method: 'GET',
-    path: '/collections/{collection*}',
-    handler: controller.collection.get
-   });
-
-  server.route({
-    method: 'GET',
-    path: '/{file*}',
-    handler: controller.static.get
-  });
-
-  server.start(function() { console.log('Visit: http://127.0.0.1:3000') });
-  // start server on all interfaces
-  broadcast.start();
+server.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
 });
+
+server.get('/media/:mediaId/file/:fileIndex/file.mp4', controller.static.getMp4);
+server.get('/media', controller.media.search);
+server.post('/media/:mediaId/file/:fileIndex/transcode', controller.media.transcode);
+server.get('/media/:mediaId', controller.media.get);
+server.get('/config/', controller.config.get);
+server.get('/collections/:collection', controller.collection.get);
+server.get('/:file', controller.static.get);
+
+server.listen(3000, function() { console.log('Visit: http://127.0.0.1:3000') });
+// start server on all interfaces
+server.use(function (err, req, res, next) {
+  console.error(err.stack)
+  res.status(500).send('Something broke!')
+})
+broadcast.start();

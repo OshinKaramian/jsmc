@@ -8,25 +8,21 @@ const backButton = $('.vjs-back-button');
 
 var transcodeAndRun = function() {
   var transcodeRequestObject = queryString.parse(location.search);
-  
+
   api.media.get(transcodeRequestObject.mediaId)
     .then(function(data) {
       console.log(data.backdrop_path);
-      try { 
+      try {
         myPlayer.poster(api.BaseUrl + data.backdrop_path);
       } catch (exception) {
         console.log(exception);
       }
-      return api.media.transcode(transcodeRequestObject);
-    })
-    .then(function(data) {
-      console.log(data);
-      setTimeout(function() {
-        console.log(data);
-        myPlayer.src({"src": data, "type":"application/x-mpegURL"});
-        myPlayer.play();
-        myPlayer.currentTime(1);    
-      }, 15000);
+
+      var sourceUrl = api.media.mp4Url(transcodeRequestObject);
+
+      myPlayer.src({"src": sourceUrl, "type":"video/mp4"});
+      myPlayer.play();
+      myPlayer.currentTime(1);
     });
 };
 
@@ -34,20 +30,20 @@ var transcodeAndRun = function() {
   backButton.click(function(event) {
     window.history.back();
   });
-  
+
   backButton.mouseover(function(event) {
     backButton.addClass('glow');
     backButton.show();
   });
-  
+
   backButton.mouseout(function(event) {
     backButton.removeClass('glow');
   });
-  
+
   myPlayer.on('mouseover', function() {
     backButton.show();
   });
-  
+
   myPlayer.on('mouseout', function() {
     backButton.hide()
   });
@@ -55,7 +51,7 @@ var transcodeAndRun = function() {
 
 if (window && window.process && window.process.type) {
   let ipc = require('electron').ipcRenderer;
-  
+
   ipc.on('data-loaded', function(event, message) {
     transcodeAndRun();
   });

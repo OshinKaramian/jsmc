@@ -4,6 +4,8 @@
 'use strict';
 const Promise = require('bluebird');
 const fs = Promise.promisifyAll(require('fs-extra'));
+const Writeable = require('stream').Writable;
+const Readable = require('stream').Readable;
 const path = require('path');
 const file = require('./file.js');
 let db = require('./db.js')();
@@ -106,5 +108,27 @@ module.exports.static = {
     } else {
       reply.file(request.params.file);
     }
+  },
+
+  getMp4: function(request, reply) {
+    const mediaId = request.params.mediaId;
+    const fileIndex = request.params.fileIndex || 0;
+
+    //db.getMedia(mediaId).then(doc => {
+      const videostream = new Writeable();
+      //const fileName = doc.filedata[fileIndex].filename;
+      const fileName = path.resolve(path.join('tests', 'files', 'Gangs.Of.New.York.mkv'));
+      file.transcodeFile(fileName, videostream);
+
+      videostream._write = function(chunk, enc, next) {
+        reply.write(chunk);
+        next();
+      };
+
+      videostream.on('finish', () => {
+        console.log('sad');
+        return reply.end();
+      })
+
   }
 };

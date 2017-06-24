@@ -46,8 +46,10 @@ const validExtensions = [
   '.mpg'
 ];
 
-ffmpeg.setFfmpegPath(path.join('ffmpeg', os.platform(), 'bin','ffmpeg.exe'));
-ffmpeg.setFfprobePath(path.join('ffmpeg', os.platform(), 'bin','ffprobe.exe'));
+const ffmpegExe = os.platform() === 'win32' ? 'ffmpeg.exe' : 'ffmpeg';
+
+ffmpeg.setFfmpegPath(path.join('ffmpeg', os.platform(), 'bin', ffmpegExe));
+ffmpeg.setFfprobePath(path.join('ffmpeg', os.platform(), 'bin', ffmpegExe));
 
 /**
  * Takes output from ffprobe and evaluates whether the file is valid
@@ -102,6 +104,41 @@ module.exports.createRecord = (filePath, baseDir, category, collectionName)  => 
       mediaObject.db = db;
       return mediaObject.save(collectionName);
     });
+};
+
+module.exports.transcodeFile = (file, stream) => {
+  console.log(file);
+  ffmpeg(file)
+    .videoCodec('copy')
+    .audioCodec('aac')
+    .format('mp4')
+    .addOption('-b:a', '200k')
+    //.addOption('-bsf:v', 'h264_mp4toannexb')
+    .addOption('-movflags', '+faststart+frag_keyframe+empty_moov')
+    .addOption('-strict', 'experimental')
+    //.addOption('-f', 'segment')
+    //.addOption('-segment_time', '4')
+    //.addOption('-segment_list', 'tmp/' + mediaId + '_' + fileIndex + '.m3u8')
+    //.addOption('-segment_format', 'mpegts')
+    .on('progress', function(progress) {
+      console.log('Processing: ' + progress.timemark);
+    })
+    .on('error', function(err, stdout, stderr) {
+      console.log('blong');
+      console.log(err);
+      console.log(stdout);
+      console.log(stderr);
+      stream.destroy(err);
+    })
+    .on('start', function() {
+      console.log('Transcoding: ' + file);
+    })
+    .on('end', function() {
+      stream.end();
+    })
+    .output(stream, { end: true})
+    .run();
+    //.save('tmp/testfile.mp4');
 };
 
 /**

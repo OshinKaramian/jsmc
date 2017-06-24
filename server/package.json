@@ -19,6 +19,7 @@
     "bootstrap": "^3.3.5",
     "cheerio": "^1.0.0-rc.1",
     "electron-prebuilt": "^0.36.7",
+    "express": "^4.15.3",
     "fluent-ffmpeg": "git://github.com/OshinKaramian/node-fluent-ffmpeg.git",
     "fs-extra": "^0.24.0",
     "gulp-util": "^3.0.7",
