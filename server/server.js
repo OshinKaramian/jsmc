@@ -42,7 +42,7 @@ server.post('/media/:mediaId/file/:fileIndex/transcode', controller.media.transc
 server.get('/media/:mediaId', controller.media.get);
 server.get('/config/', controller.config.get);
 server.get('/collections/:collection', controller.collection.get);
-server.get('/:file', controller.static.get);
+server.get('/*', controller.static.get);
 
 server.listen(3000, function() { console.log('Visit: http://127.0.0.1:3000') });
 // start server on all interfaces

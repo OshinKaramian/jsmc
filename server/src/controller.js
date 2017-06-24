@@ -48,9 +48,9 @@ module.exports.media = {
     return db.getMedia(request.params.mediaId)
       .then(function(media) {
         if (!media) {
-          return reply(`Media ID ${request.params.mediaId} does not exist.`).code(404);
+          return reply.send(`Media ID ${request.params.mediaId} does not exist.`).code(404);
         }
-        return reply(media).header('Content-Type', 'application/json');
+        return reply.json(media);
       })
       .catch(function(error) {
         throw error;
@@ -63,7 +63,7 @@ module.exports.media = {
   search: function(request, reply) {
     let query = request.query.query;
     return db.findMedia(query).then(function(mediaList) {
-      return reply(mediaList).header('Content-Type', 'application/json');
+      return reply.json(mediaList);
     });
   }
 };
@@ -74,7 +74,7 @@ module.exports.media = {
 module.exports.config = {
   get: function(request, reply) {
     return fs.readJsonAsync('config/files_config.json').then(function(json) {
-      return reply(json).header('Content-Type', 'application/json');
+      return reply.json(json);
     });
   }
 };
@@ -88,11 +88,11 @@ module.exports.collection = {
 
     if (name) {
       return db.getCollection(name).then(function(docs) {
-        return reply(docs).header('Content-Type', 'application/json');
+        return reply.json(docs);
       });
     } else {
       return fs.readJsonAsync('./config/files_config.json').then(function(filesConfig) {
-        return reply(filesConfig).header('Content-Type', 'application/json');
+        return reply.json(filesConfig);
       });
     }
   }
@@ -103,21 +103,18 @@ module.exports.collection = {
  */
 module.exports.static = {
   get: function(request, reply) {
-    if (path.extname(request.params.file) === '.ts') {
-      reply.file(request.params.file).header('Content-Type', 'application/vnd.apple.mpegurl');
-    } else {
-      reply.file(request.params.file);
-    }
+    console.log(request.url);
+    reply.sendFile(path.join(__dirname, '..', request.url));
   },
 
   getMp4: function(request, reply) {
     const mediaId = request.params.mediaId;
     const fileIndex = request.params.fileIndex || 0;
 
-    //db.getMedia(mediaId).then(doc => {
+    db.getMedia(mediaId).then(doc => {
       const videostream = new Writeable();
-      //const fileName = doc.filedata[fileIndex].filename;
-      const fileName = path.resolve(path.join('tests', 'files', 'Gangs.Of.New.York.mkv'));
+      const fileName = doc.filedata[fileIndex].filename;
+      //const fileName = path.resolve(path.join('tests', 'files', 'Gangs.Of.New.York.mkv'));
       file.transcodeFile(fileName, videostream);
 
       videostream._write = function(chunk, enc, next) {
@@ -129,6 +126,6 @@ module.exports.static = {
         console.log('sad');
         return reply.end();
       })
-
+    });
   }
 };
