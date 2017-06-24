@@ -48,7 +48,7 @@ module.exports.media = {
     return db.getMedia(request.params.mediaId)
       .then(function(media) {
         if (!media) {
-          return reply.send(`Media ID ${request.params.mediaId} does not exist.`).code(404);
+          return reply.status(404).send(`Media ID ${request.params.mediaId} does not exist.`);
         }
         return reply.json(media);
       })

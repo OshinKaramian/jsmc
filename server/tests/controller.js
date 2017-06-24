@@ -11,30 +11,35 @@ let db = rewire('../src/db.js')(testDbPath);
 const sinon = require('sinon');
 let request = {};
 
-let mockReply = function (body) {
-  return {
-    header: function(key, value) {
-      return { body: body, statusCode: 200};
-    },
-    code: function(statusCode) {
-      return { body: body, statusCode: statusCode};
-    }
-  }; 
+let mockReply = {
+  statusCode: 200,
+
+  status(code) {
+    this.statusCode = code;
+    return this;
+  },
+
+  send(body) {
+    return {body: body, statusCode: this.statusCode};
+  },
+  json(body) {
+    return {body: body, statusCode: 200};
+  }
 };
 
 describe('Controller', function() {
-  
+
   before(function(done) {
     controller.__set__('db', db);
     done();
   });
-  
+
   beforeEach(function(done) {
     request.params = {};
     request.query = {};
     done();
   });
-  
+
   describe('/media/{mediaId} GET', function () {
     it('should return a valid object for a valid media id', function (done) {
       request.params.mediaId = '10658';
@@ -50,7 +55,7 @@ describe('Controller', function() {
         done(error);
       });
     });
-    
+
     it('should return an error for an invalid media id', function (done) {
       request.params.mediaId = '1';
       controller.media.get(request, mockReply).then(function(response) {
@@ -60,28 +65,28 @@ describe('Controller', function() {
       }).catch(function(error) {
         done(error);
       });
-    });    
+    });
   });
-  
+
   describe('/media/{mediaId}/file/{fileIndex}/transcode POST', function () {
     it('should return a valid object url for a file while transcoding', function (done) {
       done();
     });
-    
+
     it('should return a valid object url for a file that has been transcoded', function (done) {
       done();
-    });  
-    
+    });
+
     it('should return an error for an id that doesn\'t exist', function (done) {
       done();
-    }); 
-    
-        
+    });
+
+
     it('should return an error for an file that has difficulty being transcoded', function (done) {
       done();
-    });   
-  }); 
-  
+    });
+  });
+
   describe('/config/ GET', function () {
     it('should return the correct config', function (done) {
       var expectedJson;
@@ -96,26 +101,26 @@ describe('Controller', function() {
         })
         .catch(function(error) {
           done(error);
-        });    
+        });
       });
-  }); 
-  
+  });
+
   describe('/collection?query GET', function () {
     it('should return a list for a valid query', function(done) {
       request.query.query = 'dark';
       controller.media.search(request, mockReply).then(function(response) {
         let mediaObjectList = response.body;
-        
+
         assert.equal(mediaObjectList.length, 6);
         mediaObjectList.forEach((media) => assert(media.title.indexOf('Dark') >= 0 || media.title.indexOf('dark') >= 0));
-        
+
         done();
       }).catch(function(error) {
         done(error);
       });
     });
   });
-  
+
   describe('/collection/{collectionName} GET', function () {
     it('should return the correct collection', function (done) {
       request.params.collection = 'Movies';
@@ -129,7 +134,7 @@ describe('Controller', function() {
         done(error);
       });
     });
-    
+
     it('should return no items if the collection doesn\'t exist', function (done) {
       request.params.collection = 'Fake';
       controller.collection.get(request, mockReply).then(function(collection) {
@@ -140,9 +145,9 @@ describe('Controller', function() {
         done(error);
       });
     });
-    
+
     it('should return the config if no collection name is given', function (done) {
       done();
     });
-  }); 
+  });
 });
