@@ -1,9 +1,7 @@
 var
   hapi = require('hapi'),
   inert = require('inert'),
-  server = new hapi.Server(),
-  polo = require('polo'),
-  apps = polo();
+  server = new hapi.Server();
 
 server.register(inert, function () {
 

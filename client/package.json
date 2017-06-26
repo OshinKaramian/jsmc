@@ -6,7 +6,7 @@
   "scripts": {
     "start": "gulp",
     "test": "mocha --compilers js:babel-core/register --require ./tests/utils/dom.js --reporter spec ./tests/",
-    "electron-package-win": "electron-packager.cmd . --platform=win32 --arch=x64 --version=0.36.7 --overwrite"
+    "electron-package-win": "electron-packager.cmd . --platform=win32 --arch=x64 --version=1.4.13 --overwrite"
   },
   "author": "",
   "license": "ISC",
@@ -16,7 +16,7 @@
     "babelify": "^7.2.0",
     "bluebird": "^3.0.5",
     "bootstrap": "^3.3.5",
-    "electron-prebuilt": "^0.36.7",
+    "electron-prebuilt": "^1.4.13",
     "gulp-util": "^3.0.7",
     "gutil": "^1.6.4",
     "hapi": "*",

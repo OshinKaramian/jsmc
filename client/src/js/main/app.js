@@ -115,6 +115,7 @@ if (window && window.process && window.process.type === "renderer") {
   var ipc = require('electron').ipcRenderer;
   
   ipc.on('data-loaded', function(event, message) {
+    console.log('data-loaded');
     ReactDOM.render(<App />, document.getElementById('content')); 
   });
 } else {

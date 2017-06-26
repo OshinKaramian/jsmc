@@ -3,7 +3,7 @@
 const electron = require('electron');
 const app = electron.app;  // Module to control application life.
 const BrowserWindow = electron.BrowserWindow;  // Module to create native browser window.
-var ipc = require('ipc');
+var ipc = require('electron').ipcMain;
 const remote = require('electron').remote;
 const ssdp = require('node-ssdp').Client;
 const client =  new ssdp({
@@ -77,7 +77,8 @@ app.on('ready', function() {
   mainWindow.loadURL('file://' + __dirname + '/index.html');
 
   // Open the DevTools.
-  //mainWindow.webContents.openDevTools();
+ // mainWindow.webContents.openDevTools();
+
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function() {
@@ -91,14 +92,16 @@ app.on('ready', function() {
     event.sender.send('api-url', baseApiUrl);
   });
   
-  mainWindow.webContents.on('did-finish-load', function() {     
-    client.on('notify', function () {})
+  mainWindow.webContents.on('did-finish-load', function() {
+    console.log('did finish load');     
+    client.on('notify', function () {});
     client.on('response', function inResponse(headers, code, rinfo) {
       //console.log('Got a response to an m-search:\n%d\n%s\n%s', code, JSON.stringify(headers, null, '  '), JSON.stringify(rinfo, null, '  '))
+      //console.log(rinfo);
       baseApiUrl = 'http://' + rinfo.address + ':3000' + '/';
       mainWindow.webContents.send('updateJsmcUrl', baseApiUrl);
       mainWindow.webContents.send('data-loaded');
-    })
+    });
 
     client.search('urn:schemas-upnp-org:device:MediaServer:1')
   });
