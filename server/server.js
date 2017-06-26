@@ -1,6 +1,5 @@
 "use strict"
 const express = require('express');
-const inert = require('inert');
 const schedule = require('node-schedule');
 const SSDP = require('node-ssdp').Server;
 const fileWatcher = require('./src/watchers/file_cleanup.js');
@@ -30,15 +29,16 @@ broadcast.on('advertise-bye', function (heads) {
 //  console.log('advertise-bye', heads)
 })
 
+broadcast.start();
+
 server.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
 
-server.get('/media/:mediaId/file/:fileIndex/file.mp4', controller.static.getMp4);
+server.get('/media/:mediaId/file/:fileIndex/file.mp4', controller.static.mp4);
 server.get('/media', controller.media.search);
-server.post('/media/:mediaId/file/:fileIndex/transcode', controller.media.transcode);
 server.get('/media/:mediaId', controller.media.get);
 server.get('/config/', controller.config.get);
 server.get('/collections/:collection', controller.collection.get);
@@ -49,5 +49,5 @@ server.listen(3000, function() { console.log('Visit: http://127.0.0.1:3000') });
 server.use(function (err, req, res, next) {
   console.error(err.stack)
   res.status(500).send('Something broke!')
-})
-broadcast.start();
+});
+
