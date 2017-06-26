@@ -10,37 +10,8 @@ const path = require('path');
 const file = require('./file.js');
 let db = require('./db.js')();
 let os = require('os');
-let ifaces = os.networkInterfaces();
 
 module.exports.media = {
-  /**
-   * Sends a request to transcode a file and returns a path to the manifest file
-   */
-  transcode: function(request, reply) {
-    let mediaId = request.params.mediaId;
-    let fileIndex = request.params.fileIndex || 0;
-    let address;
-
-    // Get current IP
-    for (let dev in ifaces) {
-      let iface = ifaces[dev].filter(function(details) {
-        return details.family === 'IPv4' && details.internal === false;
-      });
-
-      if (iface.length > 0) {
-        address = iface[0].address;
-      }
-    }
-
-    file.transcode('movies', mediaId, fileIndex)
-      .then(filePath => reply('http://' + address + ':3000/' + filePath))
-      .catch(function(error) {
-        /* eslint-disable no-console */
-        console.error(error);
-        /* eslint-disable no-console */
-      });
-  },
-
   /**
    * Gets a media object by ID
    */
@@ -48,7 +19,7 @@ module.exports.media = {
     return db.getMedia(request.params.mediaId)
       .then(function(media) {
         if (!media) {
-          return reply.send(`Media ID ${request.params.mediaId} does not exist.`).code(404);
+          return reply.status(404).send(`Media ID ${request.params.mediaId} does not exist.`);
         }
         return reply.json(media);
       })
@@ -102,30 +73,34 @@ module.exports.collection = {
  * Gets static files
  */
 module.exports.static = {
-  get: function(request, reply) {
-    console.log(request.url);
-    reply.sendFile(path.join(__dirname, '..', request.url));
+  get: function(req, res) {
+    console.log(req.url);
+    res.sendFile(path.join(__dirname, '..', req.url));
   },
 
-  getMp4: function(request, reply) {
-    const mediaId = request.params.mediaId;
-    const fileIndex = request.params.fileIndex || 0;
+  mp4: function(req, res) {
+    const mediaId = req.params.mediaId;
+    const fileIndex = req.params.fileIndex || 0;
 
     db.getMedia(mediaId).then(doc => {
       const videostream = new Writeable();
       const fileName = doc.filedata[fileIndex].filename;
-      //const fileName = path.resolve(path.join('tests', 'files', 'Gangs.Of.New.York.mkv'));
-      file.transcodeFile(fileName, videostream);
+      //const fileName = path.resolve(path.join('tests', 'files', 'testfile.mkv'));
+      file.transcode(fileName, videostream);
 
       videostream._write = function(chunk, enc, next) {
-        reply.write(chunk);
+        res.write(chunk);
         next();
       };
 
+      req.on('close', () => {
+        videostream.end();
+      });
+
       videostream.on('finish', () => {
-        console.log('sad');
-        return reply.end();
-      })
+        return res.end();
+      });
+
     });
   }
 };

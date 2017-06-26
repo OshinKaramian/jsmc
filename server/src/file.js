@@ -106,13 +106,12 @@ module.exports.createRecord = (filePath, baseDir, category, collectionName)  => 
     });
 };
 
-module.exports.transcodeFile = (file, stream) => {
-  console.log(file);
+module.exports.transcode = (file, stream) => {
   ffmpeg(file)
     .videoCodec('copy')
     .audioCodec('aac')
     .format('mp4')
-    .addOption('-b:a', '200k')
+    .addOption('-b:a', '128k')
     //.addOption('-bsf:v', 'h264_mp4toannexb')
     .addOption('-movflags', '+faststart+frag_keyframe+empty_moov')
     .addOption('-strict', 'experimental')
@@ -124,10 +123,9 @@ module.exports.transcodeFile = (file, stream) => {
       console.log('Processing: ' + progress.timemark);
     })
     .on('error', function(err, stdout, stderr) {
-      console.log('blong');
-      console.log(err);
-      console.log(stdout);
-      console.log(stderr);
+      console.error(err);
+      console.error(stdout);
+      console.error(stderr);
       stream.destroy(err);
     })
     .on('start', function() {
@@ -139,55 +137,6 @@ module.exports.transcodeFile = (file, stream) => {
     .output(stream, { end: true})
     .run();
     //.save('tmp/testfile.mp4');
-};
-
-/**
- * Kicks off process to transcode a file to HLS
- *
- * @param {string} collection - collection file is stored under
- * @param {string} mediaId - database id of a given file
- * @param {integer} fileIndex - file index as set in the database
- * @return {string} location of the transcoded asset
- */
-module.exports.transcode = (collection, mediaId, fileIndex) => {
-  return fs.existsAsync('tmp/' + mediaId + '_'+ fileIndex + '.m3u8')
-    .then(function(exists) {
-      if (!exists) {
-        db.getMedia(mediaId).then(function(doc) {
-          console.log('transcode');
-          console.log(doc);
-          ffmpeg(doc.filedata[fileIndex].filename)
-            .videoCodec('copy')
-            .audioCodec('aac')
-            .addOption('-b:a', '200k')
-            .addOption('-bsf:v', 'h264_mp4toannexb')
-            .addOption('-strict', 'experimental')
-            .addOption('-f', 'segment')
-            .addOption('-segment_time', '4')
-            .addOption('-segment_list', 'tmp/' + mediaId + '_' + fileIndex + '.m3u8')
-            .addOption('-segment_format', 'mpegts')
-            .on('progress', function(progress) {
-              console.log('Processing: ' + progress.percent + '% done');
-            })
-            .on('error', function(err) {
-              throw err;
-              //console.log('Cannot process video: ' + err.message);
-            })
-            .on('start', function() {
-              console.log('Transcoding: ' + doc.filedata[fileIndex].filename);
-            })
-            .save('tmp/' + mediaId + '_' + fileIndex +'_%05d.ts');
-        }).catch(function(error) {
-          console.log(error);
-        });
-      }
-
-      return 'tmp/'+ mediaId + '_' + fileIndex +'.m3u8';
-    })
-    .catch(function(error) {
-      console.log(error);
-      return 'tmp/'+ mediaId + '_' + fileIndex +'.m3u8';
-    });
 };
 
 module.exports.indexAllFiles = (collectionName, searchInfo) => {

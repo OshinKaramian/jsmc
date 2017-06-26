@@ -75,8 +75,6 @@ describe('file', function() {
         .then(() => db.findMedia('Captain'))
         .then(queryOutput => expect(queryOutput[0]).to.include(expectedOutput));
     });
-
-
   });
 
   describe('transcode', function() {
@@ -91,11 +89,11 @@ describe('file', function() {
       return fs.remove(tempDir);
     });
 
-    it.only('can transcode a file to progressive mp4', (done) => {
-      const videoStream = fs.createWriteStream(path.join(tempDir,'gangs.mp4'));
-      const sampleFile = path.resolve(path.join('tests','files', 'Gangs.Of.New.York.mkv'));
+    it('can transcode a file to progressive mp4', (done) => {
+      const videoStream = fs.createWriteStream(path.join(tempDir, 'test.mp4'));
+      const sampleFile = path.resolve(path.join('tests','files', 'testfile.mkv'));
 
-      file.transcodeFile(sampleFile, videoStream);
+      file.transcode(sampleFile, videoStream);
 
       videoStream.on('close', () => {
         return done();
