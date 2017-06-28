@@ -87,8 +87,9 @@ module.exports.static = {
     })
     .then(stat => {
       //const fileName = path.resolve(path.join('tests', 'files', 'testfile.mkv'));
-      videoStream = file.transcode(stat.path);
-      videoStream.on('finish', () => res.end());
+      const videoStream = file.transcode(stat.path);
+      //videoStream.on('finish', () => res.end());
+      videoStream.pipe(res);
       videoStream.transcode();
 
       res.header('Content-Type', 'video/mp4');
@@ -96,7 +97,6 @@ module.exports.static = {
 
       req.on('close', () => videoStream.end());
 
-      videoStream.pipe(res);
     });
   }
 };
