@@ -149,7 +149,7 @@ let VideoItem = React.createClass({
     }
     return (     
       <div onClick={this.handleClick} className="video-item">
-        <img height="100%" src={api.BaseUrl + posterImage} data-fileid={this.props.movie.id}/>
+        <img height="100%" data-lazy={api.BaseUrl + posterImage} data-fileid={this.props.movie.id}/>
       </div>
     )
   } 

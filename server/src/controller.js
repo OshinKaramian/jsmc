@@ -83,24 +83,37 @@ module.exports.static = {
     const fileIndex = req.params.fileIndex || 0;
 
     db.getMedia(mediaId).then(doc => {
-      const videostream = new Writeable();
-      const fileName = doc.filedata[fileIndex].filename;
-      //const fileName = path.resolve(path.join('tests', 'files', 'testfile.mkv'));
-      file.transcode(fileName, videostream);
+      console.log(doc.filedata[fileIndex]);
+    return file.stats(doc.filedata[fileIndex])
+    })
+      .then(stat => {
+        const videoWriteStream = new Writeable();
+        const videoReadStream = new Readable();
+        //const videoBuffer = new Buffer();
+        //const fileName = path.resolve(path.join('tests', 'files', 'testfile.mkv'));
+        file.transcode(stat.path, videoWriteStream, stat.duration);
+        
+        res.header('Content-Type', 'video/mp4');
+        res.header('Content-Length', stat.size);
 
-      videostream._write = function(chunk, enc, next) {
-        res.write(chunk);
-        next();
-      };
+        videoWriteStream._write = function(chunk, enc, next) {
+          videoReadStream.push(chunk);
+          next();
+        };
 
-      req.on('close', () => {
-        videostream.end();
+        req.on('close', () => {
+          videoWriteStream.end();
+          videoReadStream.destroy();
+        });
+
+        videoWriteStream.on('finish', () => {
+          return res.end();
+        });
+
+        videoReadStream._read = function() {};
+
+        videoReadStream.pipe(res);
+
       });
-
-      videostream.on('finish', () => {
-        return res.end();
-      });
-
-    });
   }
 };

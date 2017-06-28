@@ -19,12 +19,20 @@ var transcodeAndRun = function() {
       }
 
       var sourceUrl = api.media.mp4Url(transcodeRequestObject);
+myPlayer.on('loadedmetadata', function() {
+    console.log(myPlayer.duration());
+});
 
-      myPlayer.src({"src": sourceUrl, "type":"video/mp4"});
-      myPlayer.play();
+myPlayer.duration = function() {
+  return 10000;
+};
+
+      myPlayer.src({src: sourceUrl, type:"video/mp4"});
+      //myPlayer.play();
       myPlayer.currentTime(1);
     });
 };
+
 
 (function(window, videojs) {
   backButton.click(function(event) {

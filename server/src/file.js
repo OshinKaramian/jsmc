@@ -106,14 +106,16 @@ module.exports.createRecord = (filePath, baseDir, category, collectionName)  => 
     });
 };
 
-module.exports.transcode = (file, stream) => {
+module.exports.transcode = (file, stream, length) => {
   ffmpeg(file)
-    .videoCodec('copy')
+    .videoCodec('libx264')
     .audioCodec('aac')
     .format('mp4')
-    .addOption('-b:a', '128k')
+    .addOption('-b:a', '200k')
+    .addOption('-t', length)
     //.addOption('-bsf:v', 'h264_mp4toannexb')
-    .addOption('-movflags', '+faststart+frag_keyframe+empty_moov')
+    .addOption('-err_detect', 'ignore_err')
+    .addOption('-movflags', 'faststart+frag_keyframe+empty_moov')
     .addOption('-strict', 'experimental')
     //.addOption('-f', 'segment')
     //.addOption('-segment_time', '4')
@@ -137,6 +139,15 @@ module.exports.transcode = (file, stream) => {
     .output(stream, { end: true})
     .run();
     //.save('tmp/testfile.mp4');
+};
+
+module.exports.stats = file => {
+  return fs.statAsync(file.filename)
+    .then(stats => {
+      stats.path = file.filename;
+      stats.duration = file.duration;
+      return stats;
+    });
 };
 
 module.exports.indexAllFiles = (collectionName, searchInfo) => {
