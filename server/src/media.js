@@ -95,12 +95,24 @@ let Media = class Media {
     return this;
   }
 
-  save(collectionName) {
+  save (collectionName) {
     const databaseTranslated = Object.assign({}, this.details);
     databaseTranslated.filedata = this.filedata;
     return this.database.insertQuery(collectionName, databaseTranslated)
       .then(() => this);
   }
+
+  stat(index = 0) {
+    return fs.statAsync(this.filedata[index].filename)
+      .then(stats => {
+        stats.path = this.filedata[index].filename;
+        stats.duration = this.filedata[index].duration;
+        return stats;
+      });
+  }
+
+  transcode(index = 0) {
+  };
 
   set db(newDb) {
     this.database = newDb;

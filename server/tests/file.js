@@ -90,12 +90,11 @@ describe('file', function() {
     });
 
     it('can transcode a file to progressive mp4', (done) => {
-      const videoStream = fs.createWriteStream(path.join(tempDir, 'test.mp4'));
       const sampleFile = path.resolve(path.join('tests','files', 'testfile.mkv'));
+      const videoStream = file.transcode(sampleFile);
+      videoStream.transcode();
 
-      file.transcode(sampleFile, videoStream);
-
-      videoStream.on('close', () => {
+      videoStream.on('finish', () => {
         return done();
       });
 

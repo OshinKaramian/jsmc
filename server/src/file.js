@@ -137,7 +137,7 @@ module.exports.transcode = file => {
       console.log('Transcoding: ' + file);
     })
     .on('end', function() {
-      stream.end();
+      videoWriteStream.end();
     })
     .output(videoWriteStream, { end: true})
     //.run();
@@ -151,7 +151,7 @@ module.exports.transcode = file => {
     };
 
     return {
-      transcode: () => ffmpeg.run(),
+      transcode: () => ffmpegStream.run(),
 
       pipe: writeStream => videoReadStream.pipe(writeStream),
 
@@ -160,7 +160,22 @@ module.exports.transcode = file => {
         videoReadStream.destroy();
       },
 
-      onFinish: callback => videoWriteStream.on('finish', () => callback())
+      //onWrite: (event, callback) => videoWriteStream.on(event, () => callback()),
+
+      //onRead: (event, callback) => videoReadStream.on(event, () => callback()),
+      on: (event, callback) => {
+        const writeEvents = ['close', 'drain', 'error', 'finish', 'pipe', 'unpipe'];
+        const readEvents = ['close', 'data', 'end', 'error', 'readable'];
+
+        if (writeEvents.some(writeEvent => writeEvent === event)) {
+          videoWriteStream.on(event, callback);
+        }
+
+        if (readEvents.some(readEvent => readEvent === event)) {
+          videoReadStream.on(event, callback);
+        }
+      }
+
     };
 };
 

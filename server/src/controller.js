@@ -6,6 +6,7 @@ const Promise = require('bluebird');
 const fs = Promise.promisifyAll(require('fs-extra'));
 const path = require('path');
 const file = require('./file.js');
+const Media = require('./media.js');
 let db = require('./db.js')();
 let os = require('os');
 
@@ -87,7 +88,7 @@ module.exports.static = {
     .then(stat => {
       //const fileName = path.resolve(path.join('tests', 'files', 'testfile.mkv'));
       videoStream = file.transcode(stat.path);
-      videoStream.onFinish(res.end);
+      videoStream.on('finish', () => res.end());
       videoStream.transcode();
 
       res.header('Content-Type', 'video/mp4');
