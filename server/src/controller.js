@@ -4,8 +4,6 @@
 'use strict';
 const Promise = require('bluebird');
 const fs = Promise.promisifyAll(require('fs-extra'));
-const Writeable = require('stream').Writable;
-const Readable = require('stream').Readable;
 const path = require('path');
 const file = require('./file.js');
 let db = require('./db.js')();
@@ -84,36 +82,20 @@ module.exports.static = {
 
     db.getMedia(mediaId).then(doc => {
       console.log(doc.filedata[fileIndex]);
-    return file.stats(doc.filedata[fileIndex])
+      return file.stats(doc.filedata[fileIndex])
     })
-      .then(stat => {
-        const videoWriteStream = new Writeable();
-        const videoReadStream = new Readable();
-        //const videoBuffer = new Buffer();
-        //const fileName = path.resolve(path.join('tests', 'files', 'testfile.mkv'));
-        file.transcode(stat.path, videoWriteStream, stat.duration);
-        
-        res.header('Content-Type', 'video/mp4');
-        res.header('Content-Length', stat.size);
+    .then(stat => {
+      //const fileName = path.resolve(path.join('tests', 'files', 'testfile.mkv'));
+      videoStream = file.transcode(stat.path);
+      videoStream.onFinish(res.end);
+      videoStream.transcode();
 
-        videoWriteStream._write = function(chunk, enc, next) {
-          videoReadStream.push(chunk);
-          next();
-        };
+      res.header('Content-Type', 'video/mp4');
+      res.header('Content-Length', stat.size);
 
-        req.on('close', () => {
-          videoWriteStream.end();
-          videoReadStream.destroy();
-        });
+      req.on('close', () => videoStream.end());
 
-        videoWriteStream.on('finish', () => {
-          return res.end();
-        });
-
-        videoReadStream._read = function() {};
-
-        videoReadStream.pipe(res);
-
-      });
+      videoStream.pipe(res);
+    });
   }
 };

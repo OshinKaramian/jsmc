@@ -20,6 +20,21 @@ let Media = class Media {
     this.database = db;
   }
 
+  static getByMediaId(id) {
+    return db.getMedia(id)
+      .then(item => {
+        const mediaObj = new Media(item);
+        const { filedata } = item;
+        delete item.filedata;
+        const details = item;
+
+        mediaObj.details = details;
+        mediaObj.filedata = filedata;
+
+        return mediaObj;
+      });
+  }
+
   getDetails() {
     const detailsOutput = {};
 

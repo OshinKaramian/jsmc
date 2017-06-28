@@ -2,6 +2,8 @@
  * @file Handles all filesystem level operations on media files
  */
 'use strict';
+const Writeable = require('stream').Writable;
+const Readable = require('stream').Readable;
 const Promise = require('bluebird');
 const path = require('path');
 const os = require('os');
@@ -106,13 +108,14 @@ module.exports.createRecord = (filePath, baseDir, category, collectionName)  => 
     });
 };
 
-module.exports.transcode = (file, stream, length) => {
-  ffmpeg(file)
+module.exports.transcode = file => {
+  const videoWriteStream = new Writeable();
+  const videoReadStream = new Readable();
+  const ffmpegStream  = ffmpeg(file)
     .videoCodec('libx264')
     .audioCodec('aac')
     .format('mp4')
     .addOption('-b:a', '200k')
-    .addOption('-t', length)
     //.addOption('-bsf:v', 'h264_mp4toannexb')
     .addOption('-err_detect', 'ignore_err')
     .addOption('-movflags', 'faststart+frag_keyframe+empty_moov')
@@ -136,9 +139,29 @@ module.exports.transcode = (file, stream, length) => {
     .on('end', function() {
       stream.end();
     })
-    .output(stream, { end: true})
-    .run();
+    .output(videoWriteStream, { end: true})
+    //.run();
     //.save('tmp/testfile.mp4');
+
+    videoReadStream._read = function() {};
+
+    videoWriteStream._write = function(chunk, enc, next) {
+      videoReadStream.push(chunk);
+      next();
+    };
+
+    return {
+      transcode: () => ffmpeg.run(),
+
+      pipe: writeStream => videoReadStream.pipe(writeStream),
+
+      end: () => {
+        videoWriteStream.end();
+        videoReadStream.destroy();
+      },
+
+      onFinish: callback => videoWriteStream.on('finish', () => callback())
+    };
 };
 
 module.exports.stats = file => {
