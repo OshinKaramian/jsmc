@@ -53,6 +53,10 @@ let App = React.createClass({
   },
   
   componentDidMount: function() { 
+    $('.fa-window-close-o').on('click', event => {
+      window.close();
+    });
+    
     api.config.get().then((config) => {
       let firstKey = Object.keys(config)[0];
       console.log(firstKey);
@@ -91,6 +95,14 @@ let App = React.createClass({
       float: 'left'
     };
 
+    let closeStyle = {
+      background: 'black',
+      color: 'white',
+      marginLeft: '10px',
+      marginRight: '10px',
+      float: 'left',
+    };
+
     return (
       <div>       
         <div className="container-full">
@@ -105,6 +117,10 @@ let App = React.createClass({
             <i className="fa fa-search fa-2x"></i> &nbsp;&nbsp;
             <VideoSearchBox onSearchBoxChange={this.searchBoxChange} />          
           </div>
+
+          <div style={closeStyle}>
+            &nbsp;&nbsp;<i className="fa fa-window-close-o fa-2x"></i>&nbsp;&nbsp;
+          </div>
         </div>
       </div>
     );
@@ -118,6 +134,7 @@ if (window && window.process && window.process.type === "renderer") {
     console.log('data-loaded');
     ReactDOM.render(<App />, document.getElementById('content')); 
   });
+
 } else {
   ReactDOM.render(<App />, document.getElementById('content'));
 }

@@ -71,13 +71,22 @@ if (handleStartupEvent()) {
 app.on('ready', function() {
   
   // Create the browser window.
-  mainWindow = new BrowserWindow({height: 1200, width: 1200, minHeight: 800, minWidth: 1200, autoHideMenuBar: false });
+  mainWindow = new BrowserWindow({
+    height: 400, 
+    width: 400, 
+    minHeight: 400, 
+    minWidth: 400, 
+    autoHideMenuBar: false,
+    fullscreen: true,
+    frame: false 
+  });
 
   // and load the index.html of the app.
   mainWindow.loadURL('file://' + __dirname + '/index.html');
 
   // Open the DevTools.
- // mainWindow.webContents.openDevTools();
+//  mainWindow.webContents.openDevTools();
+
 
 
   // Emitted when the window is closed.
@@ -90,6 +99,10 @@ app.on('ready', function() {
   
   ipc.on('request-api-url', function(event, arg) {
     event.sender.send('api-url', baseApiUrl);
+  });
+
+  ipc.on('close-app', function(event, arg) {
+    app.quit();
   });
   
   mainWindow.webContents.on('did-finish-load', function() {

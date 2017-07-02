@@ -16,6 +16,7 @@ if (window && window.process && window.process.type) {
     module.exports.BaseUrl = baseApiUrl;
   });
 
+  console.log('wut');
   ipc.send('request-api-url', '');
 }
 
@@ -45,7 +46,7 @@ module.exports.media = {
   },
 
   mp4Url: function({mediaId: mediaId, fileIndex: fileIndex = 0}) {
-    return baseApiUrl + 'media/' + mediaId + '/file/' + fileIndex + '/file.mp4';
+    return baseApiUrl + 'tmp/' + mediaId + '_' + fileIndex + '.m3u8';
   },
 
   /**

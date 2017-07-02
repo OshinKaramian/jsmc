@@ -4,6 +4,7 @@
 'use strict';
 const Writeable = require('stream').Writable;
 const Readable = require('stream').Readable;
+const Stream = require('stream');
 const Promise = require('bluebird');
 const path = require('path');
 const os = require('os');
@@ -49,9 +50,10 @@ const validExtensions = [
 ];
 
 const ffmpegExe = os.platform() === 'win32' ? 'ffmpeg.exe' : 'ffmpeg';
+const ffprobeExe = os.platform() === 'win32' ? 'ffprobe.exe' : 'ffprobe';
 
 ffmpeg.setFfmpegPath(path.join('ffmpeg', os.platform(), 'bin', ffmpegExe));
-ffmpeg.setFfprobePath(path.join('ffmpeg', os.platform(), 'bin', ffmpegExe));
+ffmpeg.setFfprobePath(path.join('ffmpeg', os.platform(), 'bin', ffprobeExe));
 
 /**
  * Takes output from ffprobe and evaluates whether the file is valid
@@ -108,22 +110,19 @@ module.exports.createRecord = (filePath, baseDir, category, collectionName)  => 
     });
 };
 
-module.exports.transcode = file => {
-  const videoWriteStream = new Writeable();
-  const videoReadStream = new Readable();
+module.exports.transcode = (file, mediaId, index) => {
   const ffmpegStream  = ffmpeg(file)
-    .videoCodec('libx264')
+    .videoCodec('copy')
     .audioCodec('aac')
-    .format('mp4')
     .addOption('-b:a', '200k')
-    //.addOption('-bsf:v', 'h264_mp4toannexb')
+    .addOption('-bsf:v', 'h264_mp4toannexb')
     .addOption('-err_detect', 'ignore_err')
     .addOption('-movflags', 'faststart+frag_keyframe+empty_moov')
     .addOption('-strict', 'experimental')
-    //.addOption('-f', 'segment')
-    //.addOption('-segment_time', '4')
-    //.addOption('-segment_list', 'tmp/' + mediaId + '_' + fileIndex + '.m3u8')
-    //.addOption('-segment_format', 'mpegts')
+    .addOption('-f', 'segment')
+    .addOption('-segment_time', '4')
+    .addOption('-segment_list', 'tmp/' + mediaId + '_' + index + '.m3u8')
+    .addOption('-segment_format', 'mpegts')
     .on('progress', function(progress) {
       console.log('Processing: ' + progress.timemark);
     })
@@ -131,52 +130,15 @@ module.exports.transcode = file => {
       console.error(err);
       console.error(stdout);
       console.error(stderr);
-      stream.destroy(err);
+      //stream.destroy(err);
     })
     .on('start', function() {
       console.log('Transcoding: ' + file);
     })
     .on('end', function() {
-      videoWriteStream.end();
+      console.log('im finished!');
     })
-    .output(videoWriteStream, { end: true})
-    //.run();
-    //.save('tmp/testfile.mp4');
-
-    videoReadStream._read = function() {};
-
-    videoWriteStream._write = function(chunk, enc, next) {
-      videoReadStream.push(chunk);
-      next();
-    };
-
-    return {
-      transcode: () => ffmpegStream.run(),
-
-      pipe: writeStream => videoReadStream.pipe(writeStream),
-
-      end: () => {
-        videoWriteStream.end();
-        videoReadStream.destroy();
-      },
-
-      //onWrite: (event, callback) => videoWriteStream.on(event, () => callback()),
-
-      //onRead: (event, callback) => videoReadStream.on(event, () => callback()),
-      on: (event, callback) => {
-        const writeEvents = ['close', 'drain', 'error', 'finish', 'pipe', 'unpipe'];
-        const readEvents = ['close', 'data', 'end', 'error', 'readable'];
-
-        if (writeEvents.some(writeEvent => writeEvent === event)) {
-          videoWriteStream.on(event, callback);
-        }
-
-        if (readEvents.some(readEvent => readEvent === event)) {
-          videoReadStream.on(event, callback);
-        }
-      }
-
-    };
+    .save('tmp/' + mediaId + '_' + index +'_%05d.ts');
 };
 
 module.exports.stats = file => {

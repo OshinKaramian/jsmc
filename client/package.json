@@ -6,7 +6,8 @@
   "scripts": {
     "start": "gulp",
     "test": "mocha --compilers js:babel-core/register --require ./tests/utils/dom.js --reporter spec ./tests/",
-    "electron-package-win": "electron-packager.cmd . --platform=win32 --arch=x64 --version=1.4.13 --overwrite"
+    "electron-package-win": "electron-packager.cmd . --platform=win32 --arch=x64 --version=1.4.13 --overwrite",
+    "electron-dev": "./node_modules/electron-prebuilt/dist/electron.exe ."
   },
   "author": "",
   "license": "ISC",
