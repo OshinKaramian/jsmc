@@ -16,7 +16,6 @@ if (window && window.process && window.process.type) {
     module.exports.BaseUrl = baseApiUrl;
   });
 
-  console.log('wut');
   ipc.send('request-api-url', '');
 }
 

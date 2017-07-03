@@ -7,7 +7,7 @@ const Row = require('react-bootstrap').Row;
 const Col = require('react-bootstrap').Col;
 const Modal = require('react-modal');
 let ModalItemInfo = require('./modal_item_info.js');
-let VideoOptionBar = require('./video_option_bar.js'); 
+let VideoOptionBar = require('./video_option_bar.js');
 let VideoInfoModal = require('./video_info_modal.js');
 
 // This is huge, chop it down
@@ -47,7 +47,7 @@ let VideoItemModal = React.createClass({
         bottom                     : '40px',
         border                     : '1px solid #ccc',
         background                 : '#fff',
-        overflow                   : 'none',
+        overflow                   : 'hidden',
         WebkitOverflowScrolling    : 'touch',
         borderRadius               : '4px',
         outline                    : 'none',
@@ -57,26 +57,26 @@ let VideoItemModal = React.createClass({
 
       }
     };
-    
+
     let modalTitleStyle = {
       margin: '5px'
     }
-    
+
     return (
-      <Row >      
+      <Row >
         <Col className="modal-video-info" lg={4} md={6} sm={12} xs={12}>
           <Row className="modal-movie-title"><h1>{this.props.title}</h1></Row>
-          <Col md={12}>        
-          <VideoOptionBar openInfo={this.openInfoPanel} videoId={this.props.id} />   
+          <Col md={12}>
+          <VideoOptionBar openInfo={this.openInfoPanel} videoId={this.props.id} />
             <ModalItemInfo className="modal-grid-row-right" title="Plot:" content={this.props.short_plot || this.props.long_plot} />
             <ModalItemInfo className="modal-grid-row-right" title="Director:" content={this.props.director} />
             <ModalItemInfo className="modal-grid-row-right" title="Writer:" content={this.props.writer} />
-            <ModalItemInfo className="modal-grid-row-right" title="Actors:" content={this.props.actors} />            
+            <ModalItemInfo className="modal-grid-row-right" title="Actors:" content={this.props.actors} />
           </Col>
         </Col>
         <Modal isOpen={this.state.isModalOpen} onRequestClose={this.closeModal} style={modalStyle}>
-          <Row className="modal-movie-title" style={modalTitleStyle}><h1>File Details</h1></Row>    
-          <VideoInfoModal { ...this.props}/>                          
+          <Row className="modal-movie-title" style={modalTitleStyle}><h1>File Details</h1></Row>
+          <VideoInfoModal { ...this.props}/>
         </Modal>
       </Row>
     );
