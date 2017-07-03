@@ -17,10 +17,10 @@ let App = React.createClass({
       currentCollection: null,
     };
   },
-  
+
   searchBoxChange: function(searchInfo) {
     slider.deconstruct();
-    
+
     if (searchInfo.searchContents || searchInfo.data) {
       this.setState({ data: searchInfo.data});
       let item = slider.findByIndex('0');
@@ -33,61 +33,63 @@ let App = React.createClass({
       });
     }
   },
-  
+
   selectChange: function(value) {
     slider.deconstruct();
-    
-    this.setState({ 
+
+    this.setState({
       data: null
     });
-    
+
     api.collection.get(value).then((data) => {
-      this.setState({ 
+      this.setState({
         data: data,
-        currentCollection: value 
+        currentCollection: value
       });
-      
+
       let item = slider.findByIndex('0');
       item.click();
     });
   },
-  
-  componentDidMount: function() { 
+
+  componentDidMount: function() {
     $('.fa-window-close-o').on('click', event => {
       window.close();
     });
-    
+
     api.config.get().then((config) => {
       let firstKey = Object.keys(config)[0];
       console.log(firstKey);
-  
+
       this.setState({
         currentCollection: 'Movies'
-      }); 
+      });
       return 'Movies';
     }).then((firstKey) => {
       return api.collection.get(firstKey);
     }).then((data) => {
-      this.setState({ data: data});    
+      this.setState({ data: data});
       var item = slider.findByIndex('0');
       item.click();
-    });    
+      // Hide loading screen
+      $('#loading').hide();
+    });
   },
-  
+
   render: function() {
-    let controlStyle = { 
+    let controlStyle = {
       position: 'fixed',
       top: '0',
       right: '20px'
     };
-    
+
     let selectStyle = {
       background: 'black',
       color: 'white',
       float: 'left',
       marginRight: '20px'
     };
-    
+
     let buttonStyle = {
       background: 'black',
       color: 'white',
@@ -104,7 +106,7 @@ let App = React.createClass({
     };
 
     return (
-      <div>       
+      <div>
         <div className="container-full">
           <VideoDisplay movies={this.state.data}/>
         </div>
@@ -115,7 +117,7 @@ let App = React.createClass({
           </div>
           <div style={buttonStyle}>
             <i className="fa fa-search fa-2x"></i> &nbsp;&nbsp;
-            <VideoSearchBox onSearchBoxChange={this.searchBoxChange} />          
+            <VideoSearchBox onSearchBoxChange={this.searchBoxChange} />
           </div>
 
           <div style={closeStyle}>
@@ -129,10 +131,10 @@ let App = React.createClass({
 
 if (window && window.process && window.process.type === "renderer") {
   var ipc = require('electron').ipcRenderer;
-  
+
   ipc.on('data-loaded', function(event, message) {
     console.log('data-loaded');
-    ReactDOM.render(<App />, document.getElementById('content')); 
+    ReactDOM.render(<App />, document.getElementById('content'));
   });
 
 } else {
