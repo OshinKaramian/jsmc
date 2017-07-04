@@ -36,6 +36,8 @@ console.log(data);
 */
 var transcodeAndRun = function() {
   var transcodeRequestObject = queryString.parse(location.search);
+  var mediaInfo = {};
+  var durationSet = false;
   
   api.media.get(transcodeRequestObject.mediaId)
     .then(function(data) {
@@ -46,15 +48,23 @@ var transcodeAndRun = function() {
       } catch (exception) {
         console.log(exception);
       }
+      mediaInfo = data;
       return api.media.transcode(transcodeRequestObject);
     })
     .then(function(data) {
       console.log(data);
+      myPlayer.duration =  () =>{
+        var fileIndex = transcodeRequestObject.fileIndex || 0;
+        return mediaInfo.filedata[fileIndex].duration;
+      };
       setTimeout(function() {
-        console.log(data);
         myPlayer.src({"src": api.media.mp4Url(transcodeRequestObject), "type":"application/x-mpegURL"});
         myPlayer.play();
-        myPlayer.currentTime(1);    
+        myPlayer.one('canplay', () => {
+          myPlayer.pause();
+          myPlayer.currentTime(1);    
+          myPlayer.play();
+        });
       }, 15000);
     });
 };
