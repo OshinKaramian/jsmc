@@ -3,8 +3,40 @@
    <!-- <link href="style/videojs/video-js.flat.custom.css" rel="stylesheet"> -->
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <script src="src/video.min.js"></script>
-    <script src="src/vjs-hls.min.js"></script>
+    <script src="src/videojs-contrib-hls.js"></script>
     <style>
+
+        .video-js .vjs-time-tooltip {
+  background-color: rgba(252,252,252,0.19);
+  -webkit-border-radius: 0.3em;
+  -moz-border-radius: 0.3em;
+  border-radius: 0.3em;
+  color: white;
+  float: right;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1em;
+  padding: 6px 8px 8px 8px;
+  pointer-events: none;
+  position: relative;
+  top: -3.4em;
+  visibility: hidden;
+  z-index: 1; }
+
+.video-js .vjs-progress-holder:focus .vjs-time-tooltip {
+  display: none; 
+  }
+.video-js .vjs-progress-control:hover .vjs-play-progress:after {
+    display:none;
+}
+.video-js .vjs-progress-holder .vjs-play-progress {
+   display: none; 
+}
+.video-js .vjs-progress-control:hover .vjs-time-tooltip,
+.video-js .vjs-progress-control:hover .vjs-progress-holder:focus .vjs-time-tooltip {
+  display: block;
+  font-size: 0.6em;
+  visibility: visible; 
+}
       .video-js {
         width: 100% !important;
         height: 100% !important;

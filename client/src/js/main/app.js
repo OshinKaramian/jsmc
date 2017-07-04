@@ -72,7 +72,7 @@ let App = React.createClass({
       var item = slider.findByIndex('0');
       item.click();
       // Hide loading screen
-      $('#loading').hide();
+      setTimeout(() => $('#loading').fadeOut(1000), 1000);
     });
   },
 
