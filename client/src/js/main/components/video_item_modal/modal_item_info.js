@@ -13,14 +13,14 @@ let ModalItemInfo = React.createClass({
       fontSize: '20px'
     }
     let inlineContent = {
-      WebkitLineClamp: '5',
+      WebkitLineClamp: '3',
       WebkitBoxOrient: 'vertical',
       display: '-webkit-box',
       overflow:'hidden',
       bottom: '0',
       paddingTop:'3px',
       fontFamily: 'coolveticaregular',
-      fontSize: '20px'
+      fontSize: '15px'
     }
     return (
       <Row className={this.props.className}>

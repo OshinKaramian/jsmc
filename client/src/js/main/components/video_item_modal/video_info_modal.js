@@ -1,6 +1,6 @@
 "use strict";
 const React = require('react');
-const VideoFileDetail = require('./video_file_detail.js'); 
+const VideoFileDetail = require('./video_file_detail.js');
 const Row = require('react-bootstrap').Row;
 const Col = require('react-bootstrap').Col;
 
@@ -8,19 +8,19 @@ let episodeSort = function(a, b) {
         if (!a.episode || !b.episode) {
           return -1
         }
-        
+
          if (a.episode.season_number > b.episode.season_number) {
           return 1;
         }
-        
+
         if (a.episode.season_number < b.episode.season_number) {
           return -1;
         }
-        
+
         if (a.episode.episode_number > b.episode.episode_number) {
           return 1;
         }
-        
+
         if (a.episode.episode_number < b.episode.episode_number) {
           return -1;
         }
@@ -36,29 +36,29 @@ let VideoInfoModal = React.createClass({
       currentFile: null
     };
   },
-  
+
   playFile: function(index) {
     window.location = 'video.html?mediaId=' + this.props.id + '&fileIndex=' + index;
   },
-  
+
   setFileInfo: function(index, fileinfo) {
     fileinfo.id = this.props.id;
     fileinfo.index = index;
     this.setState({currentFile: fileinfo});
-  }, 
-  
+  },
+
   componentDidMount: function() {
     let fileinfo = this.props.filedata[0];
     fileinfo.id = this.props.id;
     fileinfo.index = 0;
     this.setState({currentFile: fileinfo});
   },
-  
+
   // TODO: Clean this render function up
   render: function() {
     let contentStyle = {
       padding:'15px'
-     
+
     };
     let rowStyle = {
       padding: '0px 0px 20px 0px',
@@ -71,18 +71,19 @@ let VideoInfoModal = React.createClass({
       position: 'absolute',
       bottom: '0'
     }
-    
+
     let filesArray = this.props.filedata;
     console.log(this.props);
     if (filesArray[0].episode) {
       filesArray.sort(episodeSort);
     }
+    console.log(this.props);
 
     let nodes = filesArray.map(function(filedata, index) {
-      
+
       let title = filedata.episode && filedata.episode.name ? filedata.episode.name : filedata.filename;
       let playbutton;
-      
+
       if (!filedata.episode) {
         playbutton = (
           <Col md={1} style={columnStyle}>

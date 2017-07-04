@@ -49,6 +49,19 @@ const validExtensions = [
   '.mpg'
 ];
 
+if (process.env.JSMC_DEV) {
+  ffprobe = (filename) => {
+    return {
+      format:{
+        filename: filename
+      },
+      duration: 10000,
+      codecLong: 'AVI',
+      codecShort: 'AVI'
+    }
+  }
+}
+
 const ffmpegExe = os.platform() === 'win32' ? 'ffmpeg.exe' : 'ffmpeg';
 const ffprobeExe = os.platform() === 'win32' ? 'ffprobe.exe' : 'ffprobe';
 
