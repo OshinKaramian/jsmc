@@ -59,7 +59,7 @@ let VideoInfoModal = React.createClass({
   // TODO: Clean this render function up
   render: function() {
     let contentStyle = {
-      padding:'15px'
+      padding:'25px'
 
     };
     let rowStyle = {

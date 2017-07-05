@@ -67,11 +67,8 @@ let VideoItemModal = React.createClass({
         <Col className="modal-video-info" lg={4} md={6} sm={12} xs={12}>
           <Row className="modal-movie-title"><h1>{this.props.title}</h1></Row>
           <Col md={12}>
-          <VideoOptionBar openInfo={this.openInfoPanel} videoId={this.props.id} />
+            <VideoOptionBar openInfo={this.openInfoPanel} videoId={this.props.id} />
             <ModalItemInfo className="modal-grid-row-right" title="Plot:" content={this.props.short_plot || this.props.long_plot} />
-            <ModalItemInfo className="modal-grid-row-right" title="Director:" content={this.props.director} />
-            <ModalItemInfo className="modal-grid-row-right" title="Writer:" content={this.props.writer} />
-            <ModalItemInfo className="modal-grid-row-right" title="Actors:" content={this.props.actors} />
           </Col>
         </Col>
         <Modal isOpen={this.state.isModalOpen} onRequestClose={this.closeModal} style={modalStyle}>
