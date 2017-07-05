@@ -31,6 +31,7 @@
     "react-bootstrap": "^0.27.3",
     "react-dom": "^0.14.0",
     "react-modal": "^0.6.1",
+    "react-simpletabs": "^0.7.0",
     "slick-carousel": "^1.5.9",
     "vinyl-buffer": "^1.0.0",
     "walk": "^2.3.9"

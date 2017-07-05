@@ -3,6 +3,8 @@ const React = require('react');
 const VideoFileDetail = require('./video_file_detail.js');
 const Row = require('react-bootstrap').Row;
 const Col = require('react-bootstrap').Col;
+const Tabs = require('react-simpletabs');
+var api = require('../../../common/api.js');
 
 let episodeSort = function(a, b) {
         if (!a.episode || !b.episode) {
@@ -71,6 +73,11 @@ let VideoInfoModal = React.createClass({
       position: 'absolute',
       bottom: '0'
     }
+    const formatter = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+    });
 
     let filesArray = this.props.filedata;
     console.log(this.props);
@@ -102,16 +109,58 @@ let VideoInfoModal = React.createClass({
       );
     }.bind(this));
 
-    let leftStyle = { overflowY: 'auto'};
-    let rightStyle = { overflowY: 'none'};
+    const leftStyle = { overflowY: 'auto'};
+    const rightStyle = { overflowY: 'none'};
+    const posterStyle = {
+      borderStyle: 'solid',
+      borderWidth: '5px'
+    };
     if (this.props.media_type === 'movie') {
-      return( <div>
-        <Col md={9}>
-          <div style={contentStyle}>{nodes}</div>
-        </Col>
-      </div>)
+      return(
+        <Tabs>
+          <Tabs.Panel title='Details'>
+            <div id="movie-details-panel" style={contentStyle}>
+              <Row>
+                <Col md={4}>
+                  <img src={api.BaseUrl + this.props.poster_path} width="100%" style={posterStyle}/>
+                </ Col>
+                <Col md={8}>
+                  <Row>
+                    <p>{this.props.long_plot}</p>
+                  </Row>
+                  <Row>
+                    <b><h6>Starring:</h6></b> <h5>{this.props.actors}</h5>
+                  </Row>
+                  <Row>
+                    <b><h6>Directed by:</h6></b> <h5>{this.props.director}</h5>
+                  </Row>
+                  <Row>
+                    <b><h6>Written by:</h6></b> <h5>{this.props.writer}</h5>
+                  </Row>
+                  <Row>
+                    <b><h6>Budget:</h6></b> <h5>{formatter.format(this.props.budget)}</h5>
+                  </Row>
+                  <Row>
+                    <b><h6>Genres:</h6></b> <h5>{this.props.genres.map(genre => genre.name).join(', ')}</h5>
+                  </Row>
+                </Col>
+              </Row>
+            </div>
+          </Tabs.Panel>
+          <Tabs.Panel title='Files'>
+            <div>
+              <Col md={9}>
+                <div style={contentStyle}>{nodes}</div>
+              </Col>
+            </div>
+          </Tabs.Panel>
+          <Tabs.Panel title='Editor'>
+          </Tabs.Panel>
+      </Tabs>
+      )
     } else {
-     return( <div>
+     return(
+      <div>
         <Col md={4} style={leftStyle}>
           <div style={contentStyle}>{nodes}</div>
         </Col>
