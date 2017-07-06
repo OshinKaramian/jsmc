@@ -75,7 +75,23 @@ describe('file', function() {
         .then(() => db.findMedia('Captain'))
         .then(queryOutput => expect(queryOutput[0]).to.include(expectedOutput));
     });
+
+     it.only('can create a proper record for a movie', () => {
+      const fileName = path.join(baseDir, 'Schindlers_list.mpg');
+      const category = 'movie';
+      const collectionName = 'Movies';
+      const expectedOutput = {
+        name: 'Schindler\'s List',
+        category: 'movie'
+      };
+
+      return file.createRecord(fileName, baseDir, category, collectionName)
+        .then(() => db.findMedia('Schindler'))
+        .then(queryOutput => expect(queryOutput[0]).to.include(expectedOutput));
+    });
   });
+
+
 
   describe('transcode', function() {
     this.timeout(60000);
@@ -92,9 +108,8 @@ describe('file', function() {
     it('can transcode a file to progressive mp4', (done) => {
       const sampleFile = path.resolve(path.join('tests','files', 'testfile.mkv'));
       const videoStream = file.transcode(sampleFile);
-      videoStream.transcode();
 
-      videoStream.on('finish', () => {
+      videoStream.on('end', () => {
         return done();
       });
 

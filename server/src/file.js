@@ -137,7 +137,7 @@ module.exports.transcode = (file, mediaId, index) => {
     .addOption('-segment_list', 'tmp/' + mediaId + '_' + index + '.m3u8')
     .addOption('-segment_format', 'mpegts')
     .on('progress', function(progress) {
-      console.log('Processing: ' + progress.timemark);
+      console.log('Processing: ' + progress.timemark + ' for ' + file);
     })
     .on('error', function(err, stdout, stderr) {
       console.error(err);
@@ -149,9 +149,11 @@ module.exports.transcode = (file, mediaId, index) => {
       console.log('Transcoding: ' + file);
     })
     .on('end', function() {
-      console.log('im finished!');
+      console.log('Finished transcoding ' + file);
     })
     .save('tmp/' + mediaId + '_' + index +'_%05d.ts');
+
+    return ffmpegStream;
 };
 
 module.exports.stats = file => {

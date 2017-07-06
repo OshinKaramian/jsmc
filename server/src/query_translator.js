@@ -3,6 +3,7 @@
  */
 'use strict';
 const moviedbApi = require('./moviedb_api.js');
+const imdbApi = require('./imdb_api.js');
 
 /**
  * Determines whether a given response is a valid object
@@ -239,6 +240,17 @@ module.exports.movie = {
   },
 
   getDetails: (tmdbid) => {
-    return moviedbApi.getMovieDetails(tmdbid);
+    let movieDbInfo = {};
+    let imdbInfo = {};
+
+    return moviedbApi.getMovieDetails(tmdbid)
+      .then(movideDbOutput => {
+        movieDbInfo = movideDbOutput;
+        return imdbApi.getById(movideDbOutput.imdb_id);
+      })
+      .then(imdbOutput => {
+        console.log(imdbOutput);
+        return movieDbInfo;
+      })
   }
 };
