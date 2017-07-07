@@ -62,7 +62,14 @@ const awards = (imdbId) => {
 module.exports.getById = (imdbId) => {
   return Promise.all([basic(imdbId), awards(imdbId)])
     .then(info => {
-      console.log(info[1]);
-      return info[0];
+      const { rating = '', imdbScore = '' } = info[0];
+      const awards = info[1] || [];
+      const imdbInfo = {
+        awards,
+        rating, 
+        imdbScore
+      };
+
+      return imdbInfo;
     })
 };

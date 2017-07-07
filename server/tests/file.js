@@ -73,7 +73,10 @@ describe('file', function() {
 
       return file.createRecord(fileName, baseDir, category, collectionName)
         .then(() => db.findMedia('Captain'))
-        .then(queryOutput => expect(queryOutput[0]).to.include(expectedOutput));
+        .then(queryOutput => {
+          console.log(queryOutput);
+           return expect(queryOutput[0]).to.include(expectedOutput)
+        });
     });
 
      it.only('can create a proper record for a movie', () => {

@@ -223,14 +223,14 @@ module.exports.movie = {
       budget: info.moviedb.budget,
       backdrop_path: info.moviedb.backdrop_path,
       genres: info.moviedb.genres,
-      rated: '',//omdbResponse.Rated,
+      rated: info.moviedb.rating,//omdbResponse.Rated,
       director: directors.map(people => people.name).join(', '),//omdbResponse.Director,
       writer: writers.map(people => people.name).join(', '),//omdbResponse.Writer,
       actors: actors.map(people => people.name).join(', '),//omdbResponse.Actors,
       metacritic_rating: '',//omdbResponse.Metascore,
-      awards: '',//omdbResponse.Awards,
+      awards: info.moviedb.awards,//omdbResponse.Awards,
       short_plot:'',// omdbResponse.Plot,
-      imdb_rating: '',//omdbResponse.imdbRating,
+      imdb_rating: info.moviedb.imdbScore,//omdbResponse.imdbRating,
       imdb_id: '',//omdbResponse.imdbID,
       tomato_meter: '',//omdbResponse.tomatoMeter,
       tomato_user_rating: '',//omdbResponse.tomatoUserMeter,
@@ -249,8 +249,8 @@ module.exports.movie = {
         return imdbApi.getById(movideDbOutput.imdb_id);
       })
       .then(imdbOutput => {
-        console.log(imdbOutput);
-        return movieDbInfo;
+        Object.assign(imdbOutput, movieDbInfo);
+        return imdbOutput;
       })
   }
 };
