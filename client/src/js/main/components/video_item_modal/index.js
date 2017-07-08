@@ -60,6 +60,7 @@ module.exports = React.createClass({
     let modalTitleStyle = {
       margin: '5px'
     }
+    console.log(this.props);
 
     return (
       <Row >
@@ -70,7 +71,7 @@ module.exports = React.createClass({
             <ModalItemInfo className="modal-grid-row-right" title="Plot:" content={this.props.short_plot || this.props.long_plot} />
           </Col>
         </Col>
-        <Modal isOpen={this.state.isModalOpen} onRequestClose={this.closeModal} style={modalStyle}>
+        <Modal isOpen={this.state.isModalOpen} onRequestClose={this.closeModal} style={modalStyle} contentLabel={"Modal"}>
           <Row className="modal-movie-title" style={modalTitleStyle}><h1>File Details</h1></Row>
           <VideoInfoModal { ...this.props}/>
         </Modal>

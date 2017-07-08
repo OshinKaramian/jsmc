@@ -17,7 +17,7 @@ let ModalItemInfo = React.createClass({
       WebkitBoxOrient: 'vertical',
       display: '-webkit-box',
       overflow:'hidden',
-      bottom: '0',
+      bottom: '0px',
       paddingTop:'3px',
       fontFamily: 'coolveticaregular',
       fontSize: '15px'

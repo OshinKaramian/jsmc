@@ -79,7 +79,7 @@ let App = React.createClass({
   render: function() {
     let controlStyle = {
       position: 'fixed',
-      top: '0',
+      top: '0px',
       right: '20px'
     };
 

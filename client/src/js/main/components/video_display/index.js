@@ -26,7 +26,7 @@ module.exports = React.createClass({
   },
 
   onRequestClose: function(event) {
-    this.setState({ isModalOpen: false });
+    this.setState({ isModalOpen: "false" });
   },
 
   setControlEventListeners: function() {
