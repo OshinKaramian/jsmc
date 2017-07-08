@@ -45,8 +45,7 @@ VideoBasicDetailsRow = React.createClass({
   }
 }),
 
-VideoBasicDetails = React.createClass({
-  render: function() {
+VideoBasicDetails = (props) => {
     const formatter = new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
@@ -61,26 +60,25 @@ VideoBasicDetails = React.createClass({
     return (
       <Row>
         <Col md={4}>
-          <img src={api.BaseUrl + this.props.poster_path} width="100%" style={posterStyle}/>
+          <img src={api.BaseUrl + props.poster_path} width="100%" style={posterStyle}/>
         </ Col>
         <Col md={8}>
           <Row>
-            <p>{this.props.long_plot}</p>
+            <p>{props.long_plot}</p>
           </Row>
-          <VideoBasicDetailsRow label="Rating" value={this.props.rated} />
-          <VideoBasicDetailsRow label="Starring" value = {this.props.actors} />
-          <VideoBasicDetailsRow label="Directed by" value={this.props.director} />
-          <VideoBasicDetailsRow label="Written by" value={this.props.writer} />
-          <VideoBasicDetailsRow label="Budget" value={formatter.format(this.props.budget)} />
-          <VideoBasicDetailsRow label="Genres" value={this.props.genres.map(genre => genre.name).join(', ')} />
-          <VideoBasicDetailsRow label="Awards" value={this.props.awards.map(award => award.category).join(', ')} />
-          <VideoBasicDetailsRow label="IMDB Rating" value={this.props.imdb_rating} />
+          <VideoBasicDetailsRow label="Rating" value={props.rated} />
+          <VideoBasicDetailsRow label="Starring" value = {props.actors} />
+          <VideoBasicDetailsRow label="Directed by" value={props.director} />
+          <VideoBasicDetailsRow label="Written by" value={props.writer} />
+          <VideoBasicDetailsRow label="Budget" value={formatter.format(props.budget)} />
+          <VideoBasicDetailsRow label="Genres" value={props.genres.map(genre => genre.name).join(', ')} />
+          <VideoBasicDetailsRow label="Awards" value={props.awards.map(award => award.category).join(', ')} />
+          <VideoBasicDetailsRow label="IMDB Rating" value={props.imdb_rating} />
         </Col>
       </Row>
     );
 
-  }
-}),
+  },
 
 VideoFileDetailsRow = React.createClass({
   playFile: function() {
@@ -112,18 +110,12 @@ VideoFileDetailsRow = React.createClass({
   }
 }),
 
-VideoFileDetails = React.createClass({
-  render: function() {
-    const nodes = this.props.files.map((filedata, index) =>
-          <VideoFileDetailsRow key={index} {... this.props} index={index} filename={filedata.filename}/>);
+VideoFileDetails = (props) => {
+  const nodes = props.files.map((filedata, index) =>
+        <VideoFileDetailsRow key={index} {... props} index={index} filename={filedata.filename}/>);
 
-    return (
-      <div>
-        <Col md={9}>{nodes}</Col>
-      </div>
-    );
-  }
-}),
+  return (<div><Col md={9}>{nodes}</Col></div>);
+},
 
 VideoInfoModal = React.createClass({
   getInitialState: function() {

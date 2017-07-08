@@ -79,10 +79,9 @@ module.exports = React.createClass({
   }
 });
 
-let VideoItemSlider = React.createClass({
-  render: function() {
-    let nodes = this.props.movies.map((movie, index) => {
-      return <VideoItem onItemClick={this.props.onItemClick} key={index} movie={movie} poster={movie.poster_path} title={movie.title} videoid={movie.id}></VideoItem>
+let VideoItemSlider = (props) => {
+    let nodes = props.movies.map((movie, index) => {
+      return <VideoItem onItemClick={props.onItemClick} key={index} movie={movie} poster={movie.poster_path} title={movie.title} videoid={movie.id}></VideoItem>
     });
 
     return (
@@ -106,10 +105,7 @@ let VideoItemSlider = React.createClass({
         </Row>
       </center>
     );
-  }
-});
-
-
+  };
 
 let VideoItem = React.createClass({
   handleClick: function(event) {

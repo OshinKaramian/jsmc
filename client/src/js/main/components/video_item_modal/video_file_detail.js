@@ -7,15 +7,15 @@ let VideoFileDetail = React.createClass({
   playFile: function() {
     window.location = 'video.html?mediaId=' + this.props.file.id + '&fileIndex=' + this.props.file.index;
   },
-  
+
   render: function() {
     if (!this.props.file || !this.props.file.episode) {
       return <div></div>;
     }
-    
+
     let rowStyle = { paddingBottom: '10px' };
-    
-    let backgroundImage = { 
+
+    let backgroundImage = {
       backgroundImage: 'url(' + this.props.file.episode.still_path + ')',
       minHeight : '55%',
       backgroundSize: 'cover',
@@ -24,8 +24,7 @@ let VideoFileDetail = React.createClass({
     let playButton = {
       'color':'white'
     }
-    console.log(this.props);
-    
+
     return (
       <div>
         <Row style={rowStyle}>
