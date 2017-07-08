@@ -165,6 +165,9 @@ VideoInfoModal = React.createClass({
           </div>
         </Tabs.Panel>
         <Tabs.Panel title='Editor'>
+          <div>
+            Placeholder
+          </div>
         </Tabs.Panel>
       </Tabs>
     )
