@@ -80,13 +80,18 @@ module.exports = React.createClass({
 });
 
 let VideoItemSlider = (props) => {
+
+    let removeMargins = {
+      marginLeft: 'auto',
+      marginRight: 'auto'
+    }
     let nodes = props.movies.map((movie, index) => {
       return <VideoItem onItemClick={props.onItemClick} key={index} movie={movie} poster={movie.poster_path} title={movie.title} videoid={movie.id}></VideoItem>
     });
 
     return (
       <center>
-        <Row className="footer">
+        <Row className="footer" style={removeMargins}>
           <Col md={1}>
           <div>
               <h1><i className="slider-button slider-button-left fa fa-chevron-circle-left fa-8x"></i></h1>
