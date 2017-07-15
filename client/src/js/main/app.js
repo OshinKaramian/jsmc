@@ -117,6 +117,16 @@ let App = React.createClass({
       display: 'inline'
     };
 
+    let menuStyle = {
+      background: 'maroon',
+      color: 'white',
+      marginTop: '10px',
+      marginLeft: '10px',
+      marginRight: '10px',
+      float:'left',
+      display: 'inline'
+    };
+
     return (
       <div>
         <div className="container-full">
@@ -124,6 +134,9 @@ let App = React.createClass({
         </div>
         <div style={topBarStyle}>
           <div style={controlStyle}>
+            <div style={menuStyle}>
+              &nbsp;&nbsp;<i className="fa fa-film fa-2x"></i>
+            </div>
             <div style={closeStyle}>
               &nbsp;&nbsp;<i className="fa fa-minus-square fa-2x"></i>
               &nbsp;&nbsp;<i className="fa fa-window-close-o fa-2x"></i>&nbsp;&nbsp;

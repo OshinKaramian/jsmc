@@ -4,7 +4,7 @@ const React = require('react');
 const ReactDOM = require('react-dom');
 const api = require('../../../common/api.js');
 
-let SearchBox = React.createClass({
+module.exports = React.createClass({
   getInitialState: function() {
     return {
        searchResults: null
@@ -59,5 +59,3 @@ let SearchBox = React.createClass({
     );
   }
 });
-
-module.exports = SearchBox;

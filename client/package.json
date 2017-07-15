@@ -6,7 +6,7 @@
   "scripts": {
     "start": "gulp",
     "test": "mocha --compilers js:babel-core/register --require ./tests/utils/dom.js --reporter spec ./tests/",
-    "electron-package-win": "electron-packager.cmd . --platform=win32 --arch=x64 --version=1.4.13 --overwrite",
+    "electron-package-win": "electron-packager.cmd . --no-prune --platform=win32 --arch=x64 --electron-version=1.6.11 --overwrite",
     "electron-dev": "./node_modules/electron-prebuilt/dist/electron.exe ."
   },
   "author": "",
@@ -17,7 +17,7 @@
     "babelify": "^7.2.0",
     "bluebird": "^3.0.5",
     "bootstrap": "^3.3.5",
-    "electron-prebuilt": "^1.4.13",
+    "electron-prebuilt-compile": "^1.6.11",
     "gutil": "^1.6.4",
     "hapi": "*",
     "inert": "^3.1.0",
@@ -54,5 +54,6 @@
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.6.0"
-  }
+  },
+  "false": {}
 }

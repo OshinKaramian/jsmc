@@ -1,12 +1,13 @@
 "use strict";
-var $ = require('jquery');
-var React = require('react');
-var Slick = require('slick-carousel');
-var Row = require('react-bootstrap').Row;
-var Col = require('react-bootstrap').Col;
-var VideoItemModal = require('../video_item_modal');
+const $ = require('jquery');
+const React = require('react');
+const Slick = require('slick-carousel');
+const Row = require('react-bootstrap').Row;
+const Col = require('react-bootstrap').Col;
+const VideoItemModal = require('../video_item_modal');
+const VideoItemSlider = require('./video_item_slider.js');
 const slider = require('../slider');
-var api = require('../../../common/api.js');
+const api = require('../../../common/api.js');
 
 module.exports = React.createClass({
   slickSet: false,
@@ -59,10 +60,9 @@ module.exports = React.createClass({
   },
 
   render: function() {
-    console.log('render')
-    let movies = this.props.movies || [];
-    let currentMovie = this.state.currentMovie || {};
-    let rowStyle = { height: "500px", top:"0px"};
+    const { movies = [] } = this.props;
+    const { currentMovie = {} } = this.state;
+    const rowStyle = { height: "500px", top:"0px"};
 
     return (
         <div>
@@ -79,89 +79,5 @@ module.exports = React.createClass({
   }
 });
 
-let VideoItemSlider = (props) => {
-    const videoItemMenuStyle = {
-      marginLeft: '0px',
-      marginRight: '0px'
-    };
-    let nodes = props.movies.map((movie, index) => {
-      return <VideoItem onItemClick={props.onItemClick} key={index} movie={movie} poster={movie.poster_path} title={movie.title} videoid={movie.id}></VideoItem>
-    });
 
-    return (
-      <center>
-        <Row className="footer" style={videoItemMenuStyle}>
-          <Col md={1}>
-          <div>
-              <h1><i className="slider-button slider-button-left fa fa-chevron-circle-left fa-8x"></i></h1>
-          </div>
-          </Col>
-          <Col md={10}>
-          <div className="carousel">
-              {nodes}
-          </div>
-          </Col>
-          <Col md={1}>
-              <div>
-                  <h1><i className="slider-button slider-button-right fa fa-chevron-circle-right fa-8x"></i></h1>
-              </div>
-          </Col>
-        </Row>
-      </center>
-    );
-  },
 
-VideoItem = React.createClass({
-  handleClick: function(event) {
-    let newBackground = new Image();
-    let backdropImage;
-
-    if (this.props.movie.backdrop_path) {
-      backdropImage = this.props.movie.backdrop_path;
-    } else {
-      backdropImage = 'staticassets/blank.jpg';
-    }
-
-    newBackground.onload = () => {
-      let movie = this.props.movie;
-      let itemStyle = {
-        'background-image': "url(" + api.BaseUrl + backdropImage + ")",
-        '-webkit-backface-visibility': 'hidden',
-        '-webkit-transition': 'background 2s ease-in-out',
-        '-moz-transition': 'background 2s ease-in-out',
-        '-o-transition': 'background 2s ease-in-out',
-        'transition': 'background 2s ease-in-out',
-        '-webkit-transform-style': 'preserve-3d',
-        '-webkit-transform': 'translate3d(0,0,0)',
-        '-webkit-background-size': 'cover',
-        '-moz-background-size': 'cover',
-        '-o-background-size': 'cover',
-        'background-size': 'cover'
-      };
-
-      $(".container-background-front").css(itemStyle);
-      $(".slick-current-selection").removeClass("slick-current-selection");
-      $('[data-fileid="' + this.props.movie.id +'"]').addClass('slick-current-selection');
-      console.log(this.props.movie);
-      this.props.onItemClick(movie);
-   };
-
-   newBackground.src = api.BaseUrl + backdropImage;
-  },
-  render: function() {
-    let divStyle = { 'display': 'inline-block' };
-    let divHidden = { 'display': 'none' };
-    let posterImage;
-
-    if (this.props.movie.poster_path) {
-      posterImage = this.props.movie.poster_path;
-    } else {
-      posterImage = 'staticassets/blank.jpg';
-    }
-    return (
-      <div onClick={this.handleClick} className="video-item">
-        <img height="100%" data-lazy={api.BaseUrl + posterImage} data-fileid={this.props.movie.id}/>
-      </div>
-    )
-  }
-});
