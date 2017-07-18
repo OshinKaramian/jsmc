@@ -78,6 +78,3 @@ module.exports = React.createClass({
       );
   }
 });
-
-
-

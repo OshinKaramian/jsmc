@@ -13,7 +13,7 @@ let api = require('../common/api.js');
 let App = React.createClass({
   getInitialState: function() {
     return {
-      data: null,
+      data: undefined,
       currentCollection: null,
     };
   },

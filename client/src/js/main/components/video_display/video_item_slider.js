@@ -9,8 +9,12 @@ module.exports = (props) => {
       marginLeft: '0px',
       marginRight: '0px'
     };
-    let nodes = props.movies.map((movie, index) => {
-      return <VideoItem onItemClick={props.onItemClick} key={index} movie={movie} poster={movie.poster_path} title={movie.title} videoid={movie.id}></VideoItem>
+
+    let { movies = [], onItemClick } = props;
+    //movies = movies || [];
+
+    let nodes = movies.map((movie, index) => {
+      return <VideoItem onItemClick={onItemClick} key={index} movie={movie} poster={movie.poster_path} title={movie.title} videoid={movie.id}></VideoItem>
     });
 
     return (
