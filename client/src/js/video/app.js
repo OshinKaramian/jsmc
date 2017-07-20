@@ -1,10 +1,12 @@
 "use strict";
 const $ = require('jquery');
+window.videojs = require('video.js');
 window.$ = window.jQuery = require('jquery');
 const api = require('../common/api.js');
 const myPlayer =  videojs('my-video');
 const queryString = require('query-string');
 const backButton = $('.vjs-back-button');
+require('videojs-contrib-hls');
 /*
 var transcodeAndRun = function() {
   var transcodeRequestObject = queryString.parse(location.search);

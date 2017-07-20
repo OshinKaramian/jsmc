@@ -79,7 +79,7 @@ describe('file', function() {
         });
     });
 
-     it.only('can create a proper record for a movie', () => {
+     it('can create a proper record for a movie', () => {
       const fileName = path.join(baseDir, 'Schindlers_list.mpg');
       const category = 'movie';
       const collectionName = 'Movies';

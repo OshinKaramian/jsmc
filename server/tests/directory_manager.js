@@ -23,7 +23,7 @@ describe('DirectoryManager', () => {
     beforeEach(() => {
       const numArray = Array.from(Array(200).keys());
       const createFiles = numArray.map(number => makeFile(`${number}.txt`));
-      fileNameArray = numArray.map(number => `${testDataDir}/${number}.txt`);
+      fileNameArray = numArray.map(number => path.join(testDataDir, `${number}.txt`));
       return Promise.all(createFiles);
     });
 

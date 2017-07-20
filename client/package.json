@@ -30,6 +30,8 @@
     "react-modal": "^1.*.*",
     "react-simpletabs-alt": "^0.7.1",
     "slick-carousel": "^1.5.9",
+    "video.js": "^6.2.0",
+    "videojs-contrib-hls": "^5.8.2",
     "walk": "^2.3.9"
   },
   "devDependencies": {

@@ -6,6 +6,7 @@ const ReactDOM = require('react-dom');
 const VideoDisplay = require('./components/video_display');
 const VideoSearchBox = require('./components/video_search_box');
 const CollectionSelector = require('./components/collection_selector');
+const OverlayMenu = require('./components/overlay_menu');
 const Bootstrap = require('bootstrap');
 const slider = require('./components/slider');
 let api = require('../common/api.js');
@@ -15,7 +16,12 @@ let App = React.createClass({
     return {
       data: undefined,
       currentCollection: null,
+      showOverlay: false
     };
+  },
+
+  toggleOverlay: function() {
+    this.setState({ showOverlay: !this.state.showOverlay });
   },
 
   searchBoxChange: function(searchInfo) {
@@ -132,10 +138,11 @@ let App = React.createClass({
         <div className="container-full">
           <VideoDisplay movies={this.state.data}/>
         </div>
+        
         <div style={topBarStyle}>
           <div style={controlStyle}>
-            <div style={menuStyle}>
-              &nbsp;&nbsp;<i className="fa fa-film fa-2x"></i>
+            <div style={menuStyle} onClick={this.toggleOverlay}>
+              &nbsp;&nbsp;<i className="fa fa-dot-circle-o fa-2x"></i>
             </div>
             <div style={closeStyle}>
               &nbsp;&nbsp;<i className="fa fa-minus-square fa-2x"></i>
@@ -149,8 +156,10 @@ let App = React.createClass({
               &nbsp;&nbsp;<i className="fa fa-film fa-2x"></i>
               <CollectionSelector collections={this.state.collectionInfo} onSelectChange={this.selectChange} />
             </div>
-
           </div>
+        </div>
+        <div className="container-full">
+          { this.state.showOverlay ? <OverlayMenu /> : null }
         </div>
       </div>
     );
