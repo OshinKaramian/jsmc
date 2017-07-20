@@ -1,6 +1,6 @@
 {
   "Movies": {
-    "directory": "Y:\\Movies",
+    "directory": "fake_files",
     "type": "movie"
   }
 }

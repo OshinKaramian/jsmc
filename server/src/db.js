@@ -110,6 +110,22 @@ module.exports = function(dbPath) {
         });
     },
 
+    getAllGenres(collectionName) {
+      return this.getCollection(collectionName)
+        .then((items) => {
+          const genres = items.reduce((distinctGenres, item) => {
+            item.genres.forEach(genre => {
+              if (distinctGenres.indexOf(genre.name) === -1) {
+                distinctGenres.push(genre.name);
+              }
+            });
+            return distinctGenres;
+          }, []);
+          genres.sort();
+          return genres;
+        });
+    },
+
     /**
      * Gets all media objects from a given collection
      *

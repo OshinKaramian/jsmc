@@ -6,7 +6,8 @@
   "scripts": {
     "test": "mocha --reporter spec ./tests/",
     "start": "node server.js",
-    "lint": "./node_modules/.bin/eslint src/ && ./node_modules/.bin/eslint test/"
+    "lint": "./node_modules/.bin/eslint src/ && ./node_modules/.bin/eslint test/",
+    "dev": "JSMC_DEV=true NO_BROADCAST=true npm start"
   },
   "author": "",
   "license": "ISC",

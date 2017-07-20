@@ -58,6 +58,17 @@ module.exports.collection = {
 
     if (name) {
       return db.getCollection(name).then(function(docs) {
+        docs.sort((a, b) => { 
+          if (a.title < b.title) {
+            return -1;
+          }
+
+          if (a.title > b.title) {
+            return 1;
+          }
+
+          return 0;
+        });
         return reply.json(docs);
       });
     } else {
@@ -65,6 +76,13 @@ module.exports.collection = {
         return reply.json(filesConfig);
       });
     }
+  },
+
+  genres: function(req, res) {
+    let { collection = '' } = req.params;
+
+    return db.getAllGenres(collection)
+      .then(genres => res.json({ items: genres }));
   }
 };
 

@@ -28,7 +28,7 @@ let VideoOptionBar = React.createClass({
 
   render: function() {
     const buttonCss = {
-      'WebkitBorderRadius': '0',
+      'WebkitBorderRadius': '0px',
       color: '#ffffff',
       background: '#000000',
       textDecoration: 'none',

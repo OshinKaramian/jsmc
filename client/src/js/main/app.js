@@ -6,6 +6,7 @@ const ReactDOM = require('react-dom');
 const VideoDisplay = require('./components/video_display');
 const VideoSearchBox = require('./components/video_search_box');
 const CollectionSelector = require('./components/collection_selector');
+const OverlayMenu = require('./components/overlay_menu');
 const Bootstrap = require('bootstrap');
 const slider = require('./components/slider');
 let api = require('../common/api.js');
@@ -13,9 +14,14 @@ let api = require('../common/api.js');
 let App = React.createClass({
   getInitialState: function() {
     return {
-      data: null,
+      data: undefined,
       currentCollection: null,
+      showOverlay: false
     };
+  },
+
+  toggleOverlay: function() {
+    this.setState({ showOverlay: !this.state.showOverlay });
   },
 
   searchBoxChange: function(searchInfo) {
@@ -77,32 +83,54 @@ let App = React.createClass({
   },
 
   render: function() {
-    let controlStyle = {
+    let topBarStyle = {
       position: 'fixed',
-      top: '0',
-      right: '20px'
+      top: '0px',
+      right: '0px',
+      height: '50px',
+      width: '100%',
+      background: 'maroon'
     };
 
+    let controlStyle = {
+      right: '0px',
+      position: 'relative'
+    }
+
     let selectStyle = {
-      background: 'black',
+      background: 'maroon',
       color: 'white',
-      float: 'left',
-      marginRight: '20px'
+      display: 'inline',
+      float:'right',
+      marginRight: '20px',
+      marginTop: '5px'
     };
 
     let buttonStyle = {
-      background: 'black',
+      background: 'maroon',
       color: 'white',
       padding: '5px',
-      float: 'left'
+      float:'right',
+      display: 'inline'
     };
 
     let closeStyle = {
-      background: 'black',
+      background: 'maroon',
       color: 'white',
       marginLeft: '10px',
       marginRight: '10px',
-      float: 'left',
+      float:'right',
+      display: 'inline'
+    };
+
+    let menuStyle = {
+      background: 'maroon',
+      color: 'white',
+      marginTop: '10px',
+      marginLeft: '10px',
+      marginRight: '10px',
+      float:'left',
+      display: 'inline'
     };
 
     return (
@@ -110,19 +138,28 @@ let App = React.createClass({
         <div className="container-full">
           <VideoDisplay movies={this.state.data}/>
         </div>
-        <div style={controlStyle}>
-          <div style={selectStyle}>
-             &nbsp;&nbsp;<i className="fa fa-film fa-2x"></i>
-            <CollectionSelector collections={this.state.collectionInfo} onSelectChange={this.selectChange} />
+        
+        <div style={topBarStyle}>
+          <div style={controlStyle}>
+            <div style={menuStyle} onClick={this.toggleOverlay}>
+              &nbsp;&nbsp;<i className="fa fa-dot-circle-o fa-2x"></i>
+            </div>
+            <div style={closeStyle}>
+              &nbsp;&nbsp;<i className="fa fa-minus-square fa-2x"></i>
+              &nbsp;&nbsp;<i className="fa fa-window-close-o fa-2x"></i>&nbsp;&nbsp;
+            </div>
+            <div style={buttonStyle}>
+              <i className="fa fa-search fa-2x"></i> &nbsp;&nbsp;
+              <VideoSearchBox onSearchBoxChange={this.searchBoxChange} />
+            </div>
+            <div style={selectStyle}>
+              &nbsp;&nbsp;<i className="fa fa-film fa-2x"></i>
+              <CollectionSelector collections={this.state.collectionInfo} onSelectChange={this.selectChange} />
+            </div>
           </div>
-          <div style={buttonStyle}>
-            <i className="fa fa-search fa-2x"></i> &nbsp;&nbsp;
-            <VideoSearchBox onSearchBoxChange={this.searchBoxChange} />
-          </div>
-
-          <div style={closeStyle}>
-            &nbsp;&nbsp;<i className="fa fa-window-close-o fa-2x"></i>&nbsp;&nbsp;
-          </div>
+        </div>
+        <div className="container-full">
+          { this.state.showOverlay ? <OverlayMenu /> : null }
         </div>
       </div>
     );

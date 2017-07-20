@@ -43,9 +43,11 @@ server.get('/config/', controller.config.get);
 server.get('/collections/:collection', controller.collection.get);
 server.get('/*', controller.static.get);
 
-server.listen(3000, function() { 
-  console.log('Visit: http://127.0.0.1:3000') 
-  broadcast.start();
+server.listen(3000, function() {
+  console.log('Visit: http://127.0.0.1:3000')
+  if (!process.env.NO_BROADCAST) {
+    broadcast.start();
+  }
 });
 // start server on all interfaces
 server.use(function (err, req, res, next) {

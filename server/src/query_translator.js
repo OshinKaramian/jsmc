@@ -3,6 +3,7 @@
  */
 'use strict';
 const moviedbApi = require('./moviedb_api.js');
+const imdbApi = require('./imdb_api.js');
 
 /**
  * Determines whether a given response is a valid object
@@ -219,15 +220,17 @@ module.exports.movie = {
       long_plot: info.moviedb.overview,
       release_date: info.moviedb.release_date,
       poster_path: info.moviedb.poster_path,
+      budget: info.moviedb.budget,
       backdrop_path: info.moviedb.backdrop_path,
-      rated: '',//omdbResponse.Rated,
+      genres: info.moviedb.genres,
+      rated: info.moviedb.rating,//omdbResponse.Rated,
       director: directors.map(people => people.name).join(', '),//omdbResponse.Director,
       writer: writers.map(people => people.name).join(', '),//omdbResponse.Writer,
       actors: actors.map(people => people.name).join(', '),//omdbResponse.Actors,
       metacritic_rating: '',//omdbResponse.Metascore,
-      awards: '',//omdbResponse.Awards,
+      awards: info.moviedb.awards,//omdbResponse.Awards,
       short_plot:'',// omdbResponse.Plot,
-      imdb_rating: '',//omdbResponse.imdbRating,
+      imdb_rating: info.moviedb.imdbScore,//omdbResponse.imdbRating,
       imdb_id: '',//omdbResponse.imdbID,
       tomato_meter: '',//omdbResponse.tomatoMeter,
       tomato_user_rating: '',//omdbResponse.tomatoUserMeter,
@@ -237,6 +240,17 @@ module.exports.movie = {
   },
 
   getDetails: (tmdbid) => {
-    return moviedbApi.getMovieDetails(tmdbid);
+    let movieDbInfo = {};
+    let imdbInfo = {};
+
+    return moviedbApi.getMovieDetails(tmdbid)
+      .then(movideDbOutput => {
+        movieDbInfo = movideDbOutput;
+        return imdbApi.getById(movideDbOutput.imdb_id);
+      })
+      .then(imdbOutput => {
+        Object.assign(imdbOutput, movieDbInfo);
+        return imdbOutput;
+      })
   }
 };

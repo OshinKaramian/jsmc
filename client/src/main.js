@@ -85,7 +85,7 @@ app.on('ready', function() {
   mainWindow.loadURL('file://' + __dirname + '/index.html');
 
   // Open the DevTools.
-//  mainWindow.webContents.openDevTools();
+  //mainWindow.webContents.openDevTools();
 
 
 
@@ -107,15 +107,19 @@ app.on('ready', function() {
   
   mainWindow.webContents.on('did-finish-load', function() {
     console.log('did finish load');     
-    client.on('notify', function () {});
+    client.on('notify', function () {
+      console.log('notify');
+    });
     client.on('response', function inResponse(headers, code, rinfo) {
-      //console.log('Got a response to an m-search:\n%d\n%s\n%s', code, JSON.stringify(headers, null, '  '), JSON.stringify(rinfo, null, '  '))
-      //console.log(rinfo);
+      const oldUrl = baseApiUrl;
+     // console.log('Got a response to an m-search:\n%d\n%s\n%s', code, JSON.stringify(headers, null, '  '), JSON.stringify(rinfo, null, '  '))
+      console.log(rinfo);
       baseApiUrl = 'http://' + rinfo.address + ':3000' + '/';
       mainWindow.webContents.send('updateJsmcUrl', baseApiUrl);
-      mainWindow.webContents.send('data-loaded');
+      if (oldUrl != baseApiUrl) {
+        mainWindow.webContents.send('data-loaded');
+      }
     });
-
-    client.search('urn:schemas-upnp-org:device:MediaServer:1')
+    client.search('urn:schemas-upnp-org:device:MediaServer:232')
   });
 });

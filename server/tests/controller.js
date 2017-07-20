@@ -3,6 +3,7 @@ const assert = require('assert');
 const rewire = require('rewire');
 const Promise = require('bluebird');
 const path = require('path');
+const expect = require('chai').expect;
 const fs = Promise.promisifyAll(require('fs-extra'));
 let controller = rewire('../src/controller.js');
 const Database = require('nedb');
@@ -48,8 +49,8 @@ describe('Controller', function() {
         assert.equal('200', response.statusCode);
         assert.equal('10658', mediaObject.id);
         assert.equal('Howard the Duck', mediaObject.title);
-        assert.equal('http://image.tmdb.org/t/p/original/f2pj3SSj1GdFSrS5bUojT56umL6.jpg', mediaObject.poster_path);
-        assert.equal('http://image.tmdb.org/t/p/original/rOzFJMPj1h5AFO1SzQtGWmyaNjV.jpg', mediaObject.backdrop_path);
+        assert.equal('assets/f2pj3SSj1GdFSrS5bUojT56umL6.jpg', mediaObject.poster_path);
+        assert.equal('assets/rOzFJMPj1h5AFO1SzQtGWmyaNjV.jpg', mediaObject.backdrop_path);
         done();
       }).catch(function(error) {
         done(error);
@@ -121,14 +122,47 @@ describe('Controller', function() {
     });
   });
 
+  describe('/collection/{collectionName}/genres GET', function () {
+    it('should get a distinct list of genres for a collection that exists', () => {
+
+      request.params.collection = 'Movies';
+      const expectedGenres = [ 
+        'Action',
+        'Adventure',
+        'Animation',
+        'Comedy',
+        'Crime',
+        'Documentary',
+        'Drama',
+        'Family',
+        'Fantasy',
+        'Foreign',
+        'History',
+        'Horror',
+        'Music',
+        'Mystery',
+        'Romance',
+        'Science Fiction',
+        'TV Movie',
+        'Thriller',
+        'War',
+        'Western'
+      ];
+      return controller.collection.genres(request, mockReply)
+        .then((response) => {
+          return expect(expectedGenres).to.deep.equal(response.body.items);
+        });
+    });
+  });
+
   describe('/collection/{collectionName} GET', function () {
     it('should return the correct collection', function (done) {
       request.params.collection = 'Movies';
       controller.collection.get(request, mockReply).then(function(collection) {
-        assert(collection.body.length, 514);
+        assert.equal(collection.body.length, 619);
         assert.equal(collection.body[0].title, '(500) Days of Summer');
-        assert.equal(collection.body[513].title, 'Zodiac')
-        done();
+        assert.equal(collection.body[618].title, 'Zone of the Dead')
+        return done();
       })
       .catch(function(error) {
         done(error);
