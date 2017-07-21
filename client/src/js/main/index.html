@@ -1,0 +1,306 @@
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<head>
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/jquery.slick/1.5.9/slick.css"/>
+  <link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/jquery.slick/1.5.9/slick-theme.css"/>
+  <style>
+ html, body {overflow:hidden;}
+/* =============================================================================
+  An example of how stylize the tabs
+============================================================================= */
+
+.tabs {
+  font-family: 'coolveticaregular'
+}
+.tabs-navigation {
+  padding: 0 50px;
+}
+
+.tabs-navigation {
+  padding: 0 20px;
+  max-height: 50px;
+  border-bottom: 1px solid #DDD;
+}
+
+.tabs-menu {
+  display: table;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tabs-menu-item {
+  float: left;
+}
+
+.tabs-menu-item a {
+  display: block;
+  padding: 0 40px;
+  height: 50px;
+  line-height: 50px;
+  border-bottom: 0;
+  color: #A9A9A9;
+
+  cursor: pointer;
+}
+
+.tabs-menu-item:not(.is-active) a:hover {
+  color: #3498db;
+}
+
+.tabs-menu-item.is-active a {
+  background: #fff;
+  border: 1px solid #DDD;
+  border-top: 2px solid #3498db;
+  border-bottom: 0;
+  color: #333;
+}
+/**** END TABS */
+  .flex-container {
+    -webkit-flex-direction: column; /* Safari */
+    flex-direction:         column;
+  }
+  .videoItem {
+    height:450px;
+    width:275px;
+  }
+  .grid {
+    margin: 0 auto;
+  }
+
+  #movie-details-panel .row {
+    font-family: 'coolveticaregular';
+    padding-bottom: 5px;
+  }
+
+  #movie-details-panel .row p {
+    font-family: 'coolveticaregular';
+    padding-bottom: 5px;
+  }
+
+  #movie-details-panel .row h6 {
+    font-style: italic;
+  }
+
+  #movie-details-panel .row h1, h2, h3, h4, h5, h6 {
+    display: inline;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'coolveticaregular';
+    display:'inline';
+  }
+  p, div {
+    font-family: 'Myriad Pro Regular';
+  }
+
+  .movie-info-content{
+    padding:0px !important;
+    max-height:50%;
+  }
+  .carousel {
+    height:200px;
+  }
+  .buffer{
+    margin-top: 15px;
+  }
+  .footer {
+    width:100%;
+    height: 200px;
+    position: absolute;
+    bottom:30;
+    right:0px;
+    left:0px;
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+  @media (max-width:1000px) {
+    .backdrop-img{
+      display:none;
+    }
+
+    .modal-info-body {
+      top:0px;
+    }
+  }
+
+  @media (min-width:1000px) {
+    .modal-info-body {
+      max-height:70%;
+      position: absolute;
+      top: 10%;
+      transform: translateY(10%);
+    }
+  }
+
+  .modal-video-info {
+    background-color: rgba(255, 255, 255, 0.8);
+    position: fixed;
+    top:50px;
+
+  }
+
+  .container-full {
+    width: 100%;
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-right: 0px;
+    padding-left: 0px;
+  }
+
+  .modal-dialog {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .slider-button:hover {
+    cursor: pointer;
+    text-shadow: 0px 0px 6px rgba(255,255,255,0.7);
+  }
+
+  .modal-content {
+    height: auto;
+    min-height: 100%;
+    border-radius: 0;
+  }
+
+  .slider-button {
+    color:  white;
+    font-size: 1.5em;
+  }
+
+  .modal-movie-title {
+    font-family: 'alba_superregular';
+    /*font-family: 'League Gothic';*/
+    background-color:black;
+    color:white;
+    padding-left:30px;
+  }
+  *:focus {
+      outline: none;
+  }
+  .modal-grid-row-right{
+    padding-right:40px;
+  }
+
+  .modal-grid-row-right-content  h1, h2, h3, h4, h5, h6{
+    line-height: 1.5 !important;
+  }
+
+  .movie-info-header-title{
+    margin-left:20px;
+  }
+  .col-centered{
+    float: none;
+    margin: 0 auto;
+  }
+  .movie-info-header {
+    padding-top:5px;
+    padding-bottom:5px;
+    background-color: black;
+    color: white;
+  }
+  .movie-info-backdrop-column {
+    overflow:hidden;
+  }
+  .backdrop-img {
+    width:105%
+  }
+
+  .video-search-window {
+    width: 70%;
+    height: 70%;
+
+
+    background-color: red;
+    position:absolute;
+  }
+
+  .video-option-bar {
+
+    padding-top: 10px;
+    padding-bottom: 10px;
+
+  }
+
+  .slick-current-selection {
+    border: maroon solid 3px;
+  }
+
+  input[type='text']{
+    border: none;
+    background-color: transparent;
+    border-color: black;
+  }
+
+  input[type='text']:focus {
+    outline: none;
+  }
+
+  #container-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    float: left;
+  }
+
+  #loading {
+    position:absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    background-color: black;
+    color: white;
+    left: 0px;
+  }
+
+  #loading-text {
+    display: table;
+    padding-top:0px;
+    margin-top: 25%;
+    margin-left: auto;
+    margin-right: auto;
+    vertical-align: middle;
+    font-family: "alba_superregular";
+    font-size: 50px;
+  }
+
+  .collection-row-item {
+
+    text-align: center;
+  }
+
+  .collection-row-item-text {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    font-size: 20px;
+    border-bottom: black solid 1px;
+  }
+  </style>
+
+
+<body>
+  <div id="loading">
+    <div id="loading-text">
+      Loading...
+    </div>
+  </div>
+  <div id="container-background" style="width:100%; height: 100%;">
+    <div class="container-background-front" style="min-height:100%; min-width:100%;"></div>
+  </div>
+  <div class="container-fluid">
+
+    <div id="content"></div>
+  </div>
+  <script type="text/javascript" src="./main.bundle.js">
+  </script>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" integrity="sha384-aUGj/X2zp5rLCbBxumKTCw2Z50WgIr1vs/PFN4praOTvYXWlVyh2UtNUU0KAUhAX" crossorigin="anonymous">
+
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
+
+</body>
