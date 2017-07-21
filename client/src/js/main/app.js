@@ -11,6 +11,10 @@ const Bootstrap = require('bootstrap');
 const slider = require('./components/slider');
 let api = require('../common/api.js');
 
+import '../../style/myriad-pro/style.css';
+import '../../style/alba/stylesheet.css';
+import '../../style/coolvetica/stylesheet.css';
+
 let App = React.createClass({
   getInitialState: function() {
     return {
@@ -138,7 +142,7 @@ let App = React.createClass({
         <div className="container-full">
           <VideoDisplay movies={this.state.data}/>
         </div>
-        
+
         <div style={topBarStyle}>
           <div style={controlStyle}>
             <div style={menuStyle} onClick={this.toggleOverlay}>
@@ -167,7 +171,7 @@ let App = React.createClass({
 });
 
 if (window && window.process && window.process.type === "renderer") {
-  var ipc = require('electron').ipcRenderer;
+  var ipc = window.require('electron').ipcRenderer;
 
   ipc.on('data-loaded', function(event, message) {
     console.log('data-loaded');

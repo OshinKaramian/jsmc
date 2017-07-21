@@ -12,12 +12,12 @@ var transcodeAndRun = function() {
   var transcodeRequestObject = queryString.parse(location.search);
   var mediaInfo = {};
   var durationSet = false;
-  
+
   api.media.get(transcodeRequestObject.mediaId)
     .then(function(data) {
       myPlayer.loadingSpinner.show();
       console.log(data.backdrop_path);
-      try { 
+      try {
         myPlayer.poster(api.BaseUrl + data.backdrop_path);
       } catch (exception) {
         console.log(exception);
@@ -36,7 +36,7 @@ var transcodeAndRun = function() {
         myPlayer.play();
         myPlayer.one('canplay', () => {
           myPlayer.pause();
-          myPlayer.currentTime(1);    
+          myPlayer.currentTime(1);
           myPlayer.play();
         });
       }, 15000);
@@ -68,7 +68,7 @@ var transcodeAndRun = function() {
 }(window, window.videojs));
 
 if (window && window.process && window.process.type) {
-  let ipc = require('electron').ipcRenderer;
+  let ipc = window.require('electron').ipcRenderer;
 
   ipc.on('data-loaded', function(event, message) {
     transcodeAndRun();

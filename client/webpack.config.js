@@ -1,4 +1,8 @@
-var path = require('path');
+const path = require('path');
+const fs = require('fs-extra');
+
+fs.copySync('./src/js/main/index.html', './dist/index.html');
+fs.copySync('./src/js/video/video.html', './dist/video.html');
 
 module.exports = {
   entry: {
@@ -7,13 +11,35 @@ module.exports = {
   },
   output: {
     filename: '[name].bundle.js',
-    path: path.resolve(__dirname, 'dist', 'src')
+    path: path.resolve(__dirname, 'dist')
+  },
+  devtool: 'inline-source-map',
+  devServer: {
+    contentBase: './dist'
   },
   module: {
-    loaders: [
-      { test: /\.js$/, loader: 'babel-loader', exclude: /node_modules/ },
-      { test: /\.jsx$/, loader: 'babel-loader', exclude: /node_modules/ }
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /(node_modules)/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['env']
+          }
+        }
+      },{
+        test: /\.css$/,
+        use: [
+          'style-loader',
+          'css-loader'
+        ]
+      },{
+         test: /\.(woff|woff2|eot|ttf|otf)$/,
+         use: [
+           'file-loader'
+         ]
+      }
     ]
-  },
-  target: 'electron'
+  }
 };

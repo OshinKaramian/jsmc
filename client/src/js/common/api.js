@@ -4,7 +4,7 @@ let baseApiUrl = 'http://' + location.host.split(':')[0] + ':3000/';
 module.exports.BaseUrl = baseApiUrl;
 
 if (window && window.process && window.process.type) {
-  let ipc = require('electron').ipcRenderer;
+  let ipc = window.require('electron').ipcRenderer;
 
   ipc.on('updateJsmcUrl', function(event, message) {
     baseApiUrl = message;
