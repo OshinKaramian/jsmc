@@ -7,35 +7,7 @@ const myPlayer =  videojs('my-video');
 const queryString = require('query-string');
 const backButton = $('.vjs-back-button');
 require('videojs-contrib-hls');
-/*
-var transcodeAndRun = function() {
-  var transcodeRequestObject = queryString.parse(location.search);
 
-  api.media.get(transcodeRequestObject.mediaId)
-    .then(function(data) {
-      console.log(data.backdrop_path);
-      try {
-        myPlayer.poster(api.BaseUrl + data.backdrop_path);
-      } catch (exception) {
-        console.log(exception);
-      }
-
-      var sourceUrl = api.media.mp4Url(transcodeRequestObject);
-
-var fileIndex = transcodeRequestObject.fileIndex || 0;
-console.log(transcodeRequestObject);
-console.log(data);
-//myPlayer.duration = function() {
-  //console.log(data.filedata);
-  //return data.filedata[fileIndex].duration;
-//};
-
-      myPlayer.src({src: sourceUrl, type:"video/mp4"});
-      myPlayer.play();
-     // myPlayer.currentTime(1);
-    });
-};
-*/
 var transcodeAndRun = function() {
   var transcodeRequestObject = queryString.parse(location.search);
   var mediaInfo = {};

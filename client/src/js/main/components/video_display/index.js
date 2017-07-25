@@ -55,7 +55,7 @@ module.exports = React.createClass({
   componentDidUpdate: function() {
     if (document.querySelectorAll('.slick-active').length === 0 && this.props.movies) {
       slider.construct();
-      //this.setControlEventListeners();
+      this.setControlEventListeners();
     }
   },
 

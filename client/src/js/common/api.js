@@ -59,6 +59,7 @@ module.exports.media = {
       return response.json();
     });
   }
+
 }
 
 module.exports.collection = {
@@ -70,6 +71,12 @@ module.exports.collection = {
    */
   get: function(collectionName) {
     return fetch(baseApiUrl + 'collections/' + collectionName).then(function(response) {
+      return response.json();
+    });
+  },
+
+  genres: function(collectionName) {
+    return fetch(baseApiUrl + 'collections/' + collectionName + '/genres').then(function(response) {
       return response.json();
     });
   }
