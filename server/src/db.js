@@ -68,6 +68,19 @@ module.exports = function(dbPath) {
     },
 
     /**
+     * Gets a media object from the database
+     *
+     * @param {string} mediaId - id of entry to pull
+     * @return {object} database response
+     */
+    getByGenre(genre) {
+      return db.findAsync({ 'genres.name' : genre})
+        .catch(function(error) {
+          throw error;
+        });
+    },
+
+    /**
      * Queries for media
      *
      * @param {string} query - data to query off of

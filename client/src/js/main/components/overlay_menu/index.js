@@ -14,6 +14,7 @@ const GenresPanel = React.createClass({
       data: ['']
     };
   },
+
   componentDidMount: function() {
     console.log('mounted');
     api.collection.genres('Movies')
@@ -21,6 +22,15 @@ const GenresPanel = React.createClass({
         this.setState({
           data: response.items
         });
+      });
+  },
+
+  updateMedia: function(genre) {
+    console.log(genre);
+    api.collection.getByGenre('Movies', genre)
+      .then(response => {
+        console.log(response.items);
+        this.props.updateParentState(response.items);
       });
   },
 
@@ -33,7 +43,7 @@ const GenresPanel = React.createClass({
     };
 
     const { data = [''] } = this.state;
-    const genres = data.map(genre => <Row key={genre}><h2 style={itemStyle}>{genre}</h2></Row>);
+    const genres = data.map(genre => <Row key={genre}><h2 style={itemStyle} onClick={this.updateMedia.bind(this, genre)}>{genre}</h2></Row>);
     return (<div>{genres}</div>);
   }
 });
@@ -55,7 +65,6 @@ const CollectionsPanel = React.createClass({
   },
 
   render: function() {
-
     const itemStyle = {
       fontFamily: 'coolveticaregular',
       color: 'white',
@@ -63,11 +72,10 @@ const CollectionsPanel = React.createClass({
     };
 
     const { data = [''] } = this.state;
-    console.log(data);
-    const genres = data.map(genre => <Row key={genre}><h2 style={itemStyle}>{genre}</h2></Row>);
+    const genres = Object.keys(data).map(genre => <Row key={genre}><h2 style={itemStyle} onClick={this.props.updateParentState.bind(this, genre)}>{genre}</h2></Row>);
     return (<div>{genres}</div>);
   }
-              
+
 });
 
 module.exports = React.createClass({
@@ -78,7 +86,7 @@ module.exports = React.createClass({
   },
 
   setActive: function(activePanel) {
-    this.setState({ 
+    this.setState({
       currentActive: activePanel
     });
   },
@@ -125,10 +133,12 @@ module.exports = React.createClass({
         </Col>
         <Col md={3} style={midPanelStyle}>
           {
-            !this.state.currentActive || this.state.currentActive === 'collections' ? <CollectionsPanel /> : null
+            !this.state.currentActive || this.state.currentActive === 'collections' ?
+              <CollectionsPanel updateParentState={this.props.updateParentState}/> : null
           }
           {
-            this.state.currentActive === 'genres' ? <GenresPanel /> : null
+            this.state.currentActive === 'genres' ?
+              <GenresPanel updateParentState={this.props.updateParentState}/> : null
           }
         </Col>
 

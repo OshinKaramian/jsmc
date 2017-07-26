@@ -41,6 +41,7 @@ server.get('/media', controller.media.search);
 server.get('/media/:mediaId', controller.media.get);
 server.get('/config/', controller.config.get);
 server.get('/collections/:collection/genres', controller.collection.genres);
+server.get('/collections/:collection/genres/:genre', controller.collection.getByGenreName);
 server.get('/collections/:collection', controller.collection.get);
 server.get('/*', controller.static.get);
 

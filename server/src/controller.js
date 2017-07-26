@@ -58,7 +58,7 @@ module.exports.collection = {
 
     if (name) {
       return db.getCollection(name).then(function(docs) {
-        docs.sort((a, b) => { 
+        docs.sort((a, b) => {
           if (a.title < b.title) {
             return -1;
           }
@@ -83,6 +83,13 @@ module.exports.collection = {
 
     return db.getAllGenres(collection)
       .then(genres => res.json({ items: genres }));
+  },
+
+  getByGenreName: function(req, res) {
+    let { genre = '' } = req.params;
+
+    return db.getByGenre(genre)
+      .then(files => res.json({ items: files } ));
   }
 };
 

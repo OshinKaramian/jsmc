@@ -79,6 +79,12 @@ module.exports.collection = {
     return fetch(baseApiUrl + 'collections/' + collectionName + '/genres').then(function(response) {
       return response.json();
     });
+  },
+
+  getByGenre: function(collectionName, genre) {
+    return fetch(baseApiUrl + 'collections/' + collectionName + '/genres/' + genre).then(function(response) {
+      return response.json();
+    });
   }
 }
 

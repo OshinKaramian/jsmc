@@ -40,6 +40,14 @@ let App = React.createClass({
     }
   },
 
+  changeAppState: function(mediaList) {
+    slider.deconstruct();
+    this.setState({ data: mediaList });
+    let item = slider.findByIndex('0');
+    item.click();
+    this.toggleOverlay();
+  },
+
   selectChange: function(value) {
     slider.deconstruct();
 
@@ -65,8 +73,6 @@ let App = React.createClass({
 
     api.config.get().then((config) => {
       let firstKey = Object.keys(config)[0];
-      console.log(firstKey);
-
       this.setState({
         currentCollection: 'Movies'
       });
@@ -138,7 +144,7 @@ let App = React.createClass({
         <div className="container-full">
           <VideoDisplay movies={this.state.data}/>
         </div>
-        
+
         <div style={topBarStyle}>
           <div style={controlStyle}>
             <div style={menuStyle} onClick={this.toggleOverlay}>
@@ -159,7 +165,7 @@ let App = React.createClass({
           </div>
         </div>
         <div className="container-full">
-          { this.state.showOverlay ? <OverlayMenu /> : null }
+          { this.state.showOverlay ? <OverlayMenu updateParentState={this.changeAppState} /> : null }
         </div>
       </div>
     );
