@@ -64,6 +64,13 @@ const CollectionsPanel = React.createClass({
       });
   },
 
+  updateMedia: function(collection) {
+    api.collection.get(collection)
+      .then(response => {
+        this.props.updateParentState(response);
+      });
+  },
+
   render: function() {
     const itemStyle = {
       fontFamily: 'coolveticaregular',
@@ -72,11 +79,54 @@ const CollectionsPanel = React.createClass({
     };
 
     const { data = [''] } = this.state;
-    const genres = Object.keys(data).map(genre => <Row key={genre}><h2 style={itemStyle} onClick={this.props.updateParentState.bind(this, genre)}>{genre}</h2></Row>);
-    return (<div>{genres}</div>);
+    const collections =
+      Object.keys(data).map(genre =>
+        <Row key={genre}><h2 style={itemStyle} onClick={this.updateMedia.bind(this, genre)}>{genre}</h2></Row>);
+    return (<div>{collections}</div>);
   }
 
 });
+
+const RecentlyAddedPanel = React.createClass({
+  getInitialState: function() {
+    return {
+      data: ['']
+    };
+  },
+
+ componentDidMount: function() {
+   this.updateMedia('Movies');
+
+ },
+
+  updateMedia: function(collection) {
+    api.collection.get(collection)
+      .then(response => {
+        response = response.sort((a,b) => {
+          const aFiles = a.filedata;
+          const bFiles = b.filedata;
+          const aCreate = aFiles[aFiles.length - 1].create_time;
+          const bCreate = bFiles[bFiles.length - 1].create_time;
+
+          if (aCreate > bCreate) {
+            return 1;
+          }
+
+          if (bCreate > aCreate) {
+            return -1;
+          }
+
+          return 0;
+        });
+        this.props.updateParentState(response);
+      });
+  },
+
+  render: function() {
+    return (null);
+  }
+});
+
 
 module.exports = React.createClass({
   getInitialState: function() {
@@ -124,6 +174,9 @@ module.exports = React.createClass({
           <Row style={itemStyle} onClick={this.setActive.bind(this, 'genres')}>
             <h1>Genres</h1>
           </Row>
+          <Row style={itemStyle} onClick={this.setActive.bind(this, 'recent')}>
+            <h1>Recently Added</h1>
+          </Row>
           <Row style={itemStyle} onClick={this.setActive.bind(this, 'awards')}>
             <h1>Award Winners</h1>
           </Row>
@@ -139,6 +192,11 @@ module.exports = React.createClass({
           {
             this.state.currentActive === 'genres' ?
               <GenresPanel updateParentState={this.props.updateParentState}/> : null
+          }
+
+          {
+            this.state.currentActive === 'recent' ?
+              <RecentlyAddedPanel updateParentState={this.props.updateParentState}/> : null
           }
         </Col>
 

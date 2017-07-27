@@ -91,8 +91,14 @@ let Media = class Media {
       codecLong: fileMetadata.format.format_long_name,
       duration: fileMetadata.format.duration,
     };
-    this.filedata.push(fileInfo);
-    return this;
+
+    return fs.statAsync(fileInfo.filename)
+      .then(stats => {
+        fileInfo.create_time = stats.ctime.getTime();
+        fileInfo.access_time = stats.atime.getTime();
+        this.filedata.push(fileInfo);
+        return this;
+      });
   }
 
   save (collectionName) {
