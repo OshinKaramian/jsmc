@@ -6,12 +6,12 @@ const fileWatcher = require('./src/watchers/file_cleanup.js');
 const controller = require('./src/controller.js');
 
 const server = express();
-/*
+
 schedule.scheduleJob('10 * * * * *', () => {
   console.log('Running file cleanup');
   fileWatcher();
 });
-*/
+
 const broadcast = new SSDP({
   //unicastHost: '192.168.11.63',
   location: require('ip').address() + '/desc.html',
@@ -22,7 +22,7 @@ broadcast.addUSN('upnp:rootdevice')
 broadcast.addUSN('urn:schemas-upnp-org:device:MediaServer:1')
 
 broadcast.on('advertise-alive', function (heads) {
-  //console.log('advertise-alive', heads)
+ // console.log('advertise-alive', heads)
 })
 
 broadcast.on('advertise-bye', function (heads) {

@@ -25,6 +25,7 @@ module.exports = React.createClass({
 
   setEventListeners: function() {
     document.addEventListener('keydown', function(event) {
+      //event.preventDefault();
       var keyPressed = String.fromCharCode(event.keyCode);
 
       if (document.querySelectorAll('.movies-search-box')[0] === document.activeElement && event.keyCode === 27) {
@@ -35,7 +36,7 @@ module.exports = React.createClass({
       if (document.querySelectorAll('.movies-search-box')[0] !== document.activeElement && keyPressed === 'S') {
         document.querySelectorAll('.movies-search-box')[0].focus();
         document.querySelectorAll('.movies-search-box')[0].select();
-        event.preventDefault();
+//        event.preventDefault();
       }
     }.bind(this));
   },

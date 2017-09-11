@@ -5,13 +5,12 @@ const Col = require('react-bootstrap').Col;
 
 let VideoOptionBar = React.createClass({
   setEventListeners: function() {
-      /*document.addEventListener('keydown', function(event) {
+      document.addEventListener('keydown', function(event) {
         var keyPressed = String.fromCharCode(event.keyCode);
-        if (keyPressed === 'P') {
+        if (event.keyCode ===  113) {
           this.playVideo();
         }
       }.bind(this));
-      */
   },
 
   playVideo: function() {

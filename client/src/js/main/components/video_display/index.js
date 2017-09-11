@@ -7,6 +7,7 @@ const Col = require('react-bootstrap').Col;
 const VideoItemModal = require('../video_item_modal');
 const VideoItemSlider = require('./video_item_slider.js');
 const slider = require('../slider');
+const keyboard = require('../../../common/keyboard.js');
 const api = require('../../../common/api.js');
 
 module.exports = React.createClass({
@@ -33,17 +34,25 @@ module.exports = React.createClass({
   setControlEventListeners: function() {
     if (!this.slickSet) {
       this.slickSet = true;
+      keyboard.push(37, function(event) {
+        if (document.querySelectorAll('.movies-search-box')[0] !== document.activeElement) {
+          // left
+          document.querySelectorAll('.slider-button-left')[0].click();
+        }
+      });
+
+      keyboard.push(39, function(event) {
+        if (document.querySelectorAll('.movies-search-box')[0] !== document.activeElement) {
+          //right
+          document.querySelectorAll('.slider-button-right')[0].click();
+        }
+      });
+
       document.addEventListener('keydown', function(event) {
         if (document.querySelectorAll('.movies-search-box')[0] !== document.activeElement) {
           let totalSlides = $('.carousel').slick('getOption', 'slidesToShow');
-          // left
-          if (event.keyCode === 37) {
-            document.querySelectorAll('.slider-button-left')[0].click();
-          //right
-          } else if (event.keyCode === 39) {
-            document.querySelectorAll('.slider-button-right')[0].click();
           // A number
-          } else if (event.keyCode >= 49 && event.keyCode < (49 + totalSlides)) {
+          if (event.keyCode >= 49 && event.keyCode < (49 + totalSlides)) {
             let index = event.keyCode - 49;
             document.querySelectorAll('.slick-active')[index].click();
           }

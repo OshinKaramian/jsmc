@@ -87,7 +87,7 @@ const CollectionsPanel = React.createClass({
 
 });
 
-const RecentlyAddedPanel = React.createClass({
+const SortPanel = React.createClass({
   getInitialState: function() {
     return {
       data: ['']
@@ -99,7 +99,7 @@ const RecentlyAddedPanel = React.createClass({
 
  },
 
-  updateMedia: function(collection) {
+  sortByRecentMedia: function(collection) {
     api.collection.get(collection)
       .then(response => {
         response = response.sort((a,b) => {
@@ -109,11 +109,11 @@ const RecentlyAddedPanel = React.createClass({
           const bCreate = bFiles[bFiles.length - 1].create_time;
 
           if (aCreate > bCreate) {
-            return 1;
+            return -1;
           }
 
           if (bCreate > aCreate) {
-            return -1;
+            return 1;
           }
 
           return 0;
@@ -123,7 +123,17 @@ const RecentlyAddedPanel = React.createClass({
   },
 
   render: function() {
-    return (null);
+    const itemStyle = {
+      fontFamily: 'coolveticaregular',
+      color: 'white',
+      marginLeft: '20px'
+    };
+
+    return (
+      <div>
+        <Row key='recently_added'><h2 style={itemStyle} onClick={this.sortByRecentMedia.bind(this, 'Movies')}>Recently Added</h2></Row>);
+      </div>
+    );
   }
 });
 
@@ -145,7 +155,7 @@ module.exports = React.createClass({
   render: function() {
     const style = {
       background: 'linear-gradient(to bottom right, #b3b3b3, white)',
-      width: '100%',
+      width: '50%',
       height: '100%',
       position: 'absolute',
       top: '50px',
@@ -167,15 +177,15 @@ module.exports = React.createClass({
     };
     return (
       <div style={style}>
-        <Col md={3} style={leftPanelStyle} >
+        <Col md={6} style={leftPanelStyle} >
           <Row style={itemStyle} onClick={this.setActive.bind(this, 'collections')}>
             <h1>Collections</h1>
           </Row>
           <Row style={itemStyle} onClick={this.setActive.bind(this, 'genres')}>
             <h1>Genres</h1>
           </Row>
-          <Row style={itemStyle} onClick={this.setActive.bind(this, 'recent')}>
-            <h1>Recently Added</h1>
+          <Row style={itemStyle} onClick={this.setActive.bind(this, 'sort')}>
+            <h1>Sort By</h1>
           </Row>
           <Row style={itemStyle} onClick={this.setActive.bind(this, 'awards')}>
             <h1>Award Winners</h1>
@@ -184,7 +194,7 @@ module.exports = React.createClass({
             <h1>Directors</h1>
           </Row>
         </Col>
-        <Col md={3} style={midPanelStyle}>
+        <Col md={6} style={midPanelStyle}>
           {
             !this.state.currentActive || this.state.currentActive === 'collections' ?
               <CollectionsPanel updateParentState={this.props.updateParentState}/> : null
@@ -195,8 +205,8 @@ module.exports = React.createClass({
           }
 
           {
-            this.state.currentActive === 'recent' ?
-              <RecentlyAddedPanel updateParentState={this.props.updateParentState}/> : null
+            this.state.currentActive === 'sort' ?
+              <SortPanel updateParentState={this.props.updateParentState}/> : null
           }
         </Col>
 

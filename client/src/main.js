@@ -6,9 +6,7 @@ const BrowserWindow = electron.BrowserWindow;  // Module to create native browse
 var ipc = require('electron').ipcMain;
 const remote = require('electron').remote;
 const ssdp = require('node-ssdp').Client;
-const client =  new ssdp({
-//    unicastHost: '192.168.11.63'
-  });
+const client =  new ssdp({ explicitSocketBind: true });
 var baseApiUrl;
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -61,10 +59,6 @@ var handleStartupEvent = function() {
       return true;
   }
 };
- 
-if (handleStartupEvent()) {
-  return;
-}
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -85,7 +79,7 @@ app.on('ready', function() {
   mainWindow.loadURL('file://' + __dirname + '/index.html');
 
   // Open the DevTools.
-  //mainWindow.webContents.openDevTools();
+ // mainWindow.webContents.openDevTools();
 
 
 
@@ -104,22 +98,25 @@ app.on('ready', function() {
   ipc.on('close-app', function(event, arg) {
     app.quit();
   });
-  
+
+  client.on('notify', function () {
+    console.log('notify');
+  });
+
+  client.on('response', function inResponse(headers, code, rinfo) {
+    const oldUrl = baseApiUrl;
+    // console.log('Got a response to an m-search:\n%d\n%s\n%s', code, JSON.stringify(headers, null, '  '), JSON.stringify(rinfo, null, '  '))
+    console.log(rinfo);
+    baseApiUrl = 'http://' + rinfo.address + ':3000' + '/';
+
+    if (oldUrl != baseApiUrl) {
+      mainWindow.webContents.send('updateJsmcUrl', baseApiUrl);
+    }
+  });
+  client.search('urn:schemas-upnp-org:device:MediaServer:1');
+
   mainWindow.webContents.on('did-finish-load', function() {
     console.log('did finish load');     
-    client.on('notify', function () {
-      console.log('notify');
-    });
-    client.on('response', function inResponse(headers, code, rinfo) {
-      const oldUrl = baseApiUrl;
-     // console.log('Got a response to an m-search:\n%d\n%s\n%s', code, JSON.stringify(headers, null, '  '), JSON.stringify(rinfo, null, '  '))
-      console.log(rinfo);
-      baseApiUrl = 'http://' + rinfo.address + ':3000' + '/';
-      mainWindow.webContents.send('updateJsmcUrl', baseApiUrl);
-      if (oldUrl != baseApiUrl) {
-        mainWindow.webContents.send('data-loaded');
-      }
-    });
-    client.search('urn:schemas-upnp-org:device:MediaServer:232')
+    mainWindow.webContents.send('data-loaded', baseApiUrl);
   });
 });

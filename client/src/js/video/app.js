@@ -70,9 +70,11 @@ var transcodeAndRun = function() {
 if (window && window.process && window.process.type) {
   let ipc = require('electron').ipcRenderer;
 
-  ipc.on('data-loaded', function(event, message) {
+  ipc.on('api-url', function(event, message) {
     transcodeAndRun();
   });
+
+  ipc.send('request-api-url', '');
 }  else {
   $(document).ready(function() {
     transcodeAndRun();
