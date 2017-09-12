@@ -3,6 +3,7 @@ const $ = require('jquery');
 const React = require('react');
 const ReactDOM = require('react-dom');
 const api = require('../../../common/api.js');
+const keyboard = require('../../../common/keyboard.js');
 
 module.exports = React.createClass({
   getInitialState: function() {
@@ -24,21 +25,21 @@ module.exports = React.createClass({
   },
 
   setEventListeners: function() {
-    document.addEventListener('keydown', function(event) {
-      //event.preventDefault();
-      var keyPressed = String.fromCharCode(event.keyCode);
+      // escape
+      keyboard.push(27, 'Leave search box', event => {
+        if (document.querySelectorAll('.movies-search-box')[0] === document.activeElement) {
+          document.body.focus();
+          document.querySelectorAll('.movies-search-box')[0].blur();
+        }
+      });
 
-      if (document.querySelectorAll('.movies-search-box')[0] === document.activeElement && event.keyCode === 27) {
-        document.body.focus();
-        document.querySelectorAll('.movies-search-box')[0].blur();
-      }
-
-      if (document.querySelectorAll('.movies-search-box')[0] !== document.activeElement && keyPressed === 'S') {
-        document.querySelectorAll('.movies-search-box')[0].focus();
-        document.querySelectorAll('.movies-search-box')[0].select();
-//        event.preventDefault();
-      }
-    }.bind(this));
+      // f6
+      keyboard.push(117, 'Enter search box', event => {
+        if (document.querySelectorAll('.movies-search-box')[0] !== document.activeElement) {
+          document.querySelectorAll('.movies-search-box')[0].focus();
+          document.querySelectorAll('.movies-search-box')[0].select();
+        }
+      });
   },
 
   componentDidMount: function() {

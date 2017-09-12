@@ -28,7 +28,6 @@ module.exports = React.createClass({
     this.setState({ isModalOpen: true });
   },
 
-
   generalInfoContent: function() {
     let modalStyle = {
       overlay : {

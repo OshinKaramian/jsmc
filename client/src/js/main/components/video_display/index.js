@@ -34,14 +34,14 @@ module.exports = React.createClass({
   setControlEventListeners: function() {
     if (!this.slickSet) {
       this.slickSet = true;
-      keyboard.push(37, function(event) {
+      keyboard.push(37, 'Go forward one set of movies', function(event) {
         if (document.querySelectorAll('.movies-search-box')[0] !== document.activeElement) {
           // left
           document.querySelectorAll('.slider-button-left')[0].click();
         }
       });
 
-      keyboard.push(39, function(event) {
+      keyboard.push(39, 'Go backward one set of movies', function(event) {
         if (document.querySelectorAll('.movies-search-box')[0] !== document.activeElement) {
           //right
           document.querySelectorAll('.slider-button-right')[0].click();

@@ -8,6 +8,7 @@ const VideoDisplay = require('./components/video_display');
 const VideoSearchBox = require('./components/video_search_box');
 const CollectionSelector = require('./components/collection_selector');
 const OverlayMenu = require('./components/overlay_menu');
+const HelpModal = require('./components/help_modal');
 const Bootstrap = require('bootstrap');
 const slider = require('./components/slider');
 const keyboard = require('../common/keyboard.js');
@@ -23,7 +24,7 @@ let App = React.createClass({
   },
 
   setEventListeners: function() {
-    keyboard.push(114, (event) => this.toggleOverlay());
+    keyboard.push(114, 'Open collections menu', (event) => this.toggleOverlay());
   },
 
   toggleOverlay: function() {
@@ -173,21 +174,19 @@ let App = React.createClass({
         </div>
         <div className="container-full">
           <ReactCSSTransitionGroup transitionName="slide" transitionAppearTimeout={700} transitionEnterTimeout={300} transitionLeaveTimeout={300}>
-          { this.state.showOverlay ? 
-              <OverlayMenu updateParentState={this.changeAppState} /> 
+          { this.state.showOverlay ?
+              <OverlayMenu updateParentState={this.changeAppState} />
               : null }
               </ReactCSSTransitionGroup>
         </div>
+        <HelpModal />
       </div>
     );
   }
 });
 
 if (window && window.process && window.process.type === "renderer") {
-  console.log('hey');
   var ipc = window.require('electron').ipcRenderer;
-  console.log('ipc');
-  console.log(ipc);
 
   ipc.on('data-loaded', function(event, message) {
     console.log('data-loaded');

@@ -2,15 +2,11 @@
 const React = require('react');
 const Row = require('react-bootstrap').Row;
 const Col = require('react-bootstrap').Col;
+const keyboard = require('../../../common/keyboard.js');
 
 let VideoOptionBar = React.createClass({
   setEventListeners: function() {
-      document.addEventListener('keydown', function(event) {
-        var keyPressed = String.fromCharCode(event.keyCode);
-        if (event.keyCode ===  113) {
-          this.playVideo();
-        }
-      }.bind(this));
+    keyboard.push(113, 'Play current move', event => this.playVideo());
   },
 
   playVideo: function() {

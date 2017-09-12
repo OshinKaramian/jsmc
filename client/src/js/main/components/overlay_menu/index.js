@@ -16,7 +16,6 @@ const GenresPanel = React.createClass({
   },
 
   componentDidMount: function() {
-    console.log('mounted');
     api.collection.genres('Movies')
       .then(response => {
         this.setState({
@@ -26,20 +25,18 @@ const GenresPanel = React.createClass({
   },
 
   updateMedia: function(genre) {
-    console.log(genre);
     api.collection.getByGenre('Movies', genre)
       .then(response => {
-        console.log(response.items);
         this.props.updateParentState(response.items);
       });
   },
 
   render: function() {
-
     const itemStyle = {
       fontFamily: 'coolveticaregular',
       color: 'white',
-      marginLeft: '20px'
+      marginLeft: '20px',
+      cursor: 'pointer'
     };
 
     const { data = [''] } = this.state;
@@ -75,7 +72,8 @@ const CollectionsPanel = React.createClass({
     const itemStyle = {
       fontFamily: 'coolveticaregular',
       color: 'white',
-      marginLeft: '20px'
+      marginLeft: '20px',
+      cursor: 'pointer'
     };
 
     const { data = [''] } = this.state;
@@ -126,7 +124,8 @@ const SortPanel = React.createClass({
     const itemStyle = {
       fontFamily: 'coolveticaregular',
       color: 'white',
-      marginLeft: '20px'
+      marginLeft: '20px',
+      cursor: 'pointer'
     };
 
     return (
@@ -173,7 +172,8 @@ module.exports = React.createClass({
     const itemStyle = {
       fontFamily: 'coolveticaregular',
       color: 'white',
-      marginLeft: '0px'
+      marginLeft: '0px',
+      cursor: 'pointer'
     };
     return (
       <div style={style}>
