@@ -23,6 +23,8 @@ module.exports = React.createClass({
   },
 
   toggleModal: function() {
+    console.log('hey');
+    console.log(keyboard.callRegister)
     this.setState({ isModalOpen: !this.state.isModalOpen });
   },
 
@@ -58,13 +60,12 @@ module.exports = React.createClass({
         borderRadius               : '4px',
         outline                    : 'none',
         padding                    : '0px'
-
       }
     };
 
     const contentStyle = { margin: '15px' };
 
-    const nodes = keyboard.callRegister.map((keyCall, index) => {
+    const nodes = keyboard.callRegister().map((keyCall, index) => {
       return (
         <Row key={index}>
           <Col md={2}>{keyCall.value.toUpperCase()} :</Col>
@@ -76,7 +77,7 @@ module.exports = React.createClass({
     return (
       <Modal isOpen={this.state.isModalOpen} onRequestClose={this.closeModal} style={modalStyle} contentLabel={"Modal"}>
         <Row className="modal-movie-title" ><h1>Help!</h1></Row>
-        <div style={contentStyle} >
+        <div style={contentStyle}>
           {nodes}
         </div>
       </Modal>

@@ -94,7 +94,6 @@ const SortPanel = React.createClass({
 
  componentDidMount: function() {
    this.updateMedia('Movies');
-
  },
 
   sortByRecentMedia: function(collection) {
