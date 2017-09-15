@@ -6,7 +6,7 @@ const keyboard = require('../../../common/keyboard.js');
 
 let VideoOptionBar = React.createClass({
   setEventListeners: function() {
-    keyboard.push(113, 'Play current move', event => this.playVideo());
+    keyboard.push(113, 'videodisplay', 'Play current movie', event => this.playVideo());
   },
 
   playVideo: function() {

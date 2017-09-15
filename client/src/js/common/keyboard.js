@@ -1,8 +1,8 @@
-let callRegister = [];
+const callRegister = [];
 let stash = [];
 const keycode = require('keycode');
 
-const push = (key, description, method) => {
+const push = (key, bucket, description, method) => {
   const methodReference = function(event) {
       if (event.target.type !== 'text' && event.keyCode === key) {
         event.preventDefault();
@@ -13,32 +13,26 @@ const push = (key, description, method) => {
       }
     };
 
-  callRegister.push({
+  if (!callRegister[bucket]) {
+    callRegister[bucket] = [];
+  }
+
+  callRegister[bucket].push({
     key,
     description,
     value: keycode(key),
     method: methodReference
   });
 
-  callRegister.sort( (a,b) => {
-    const aValue = a.value.toLowerCase();
-    const bValue = b.value.toLowerCase();
 
-    if (aValue < bValue) {
-      return -1;
-    }
-    if (aValue > bValue) {
-      return 1;
-    }
 
-    return 0
-  });
+  console.log(callRegister);
 
   document.addEventListener('keydown', methodReference);
 };
 
 module.exports = {
-  stash: {
+  /*stash: {
     push: (options) => {
       stash = callRegister.filter(item => !options.ignore.includes(item.key));
       callRegister = callRegister.filter(item => options.ignore.includes(item.key));
@@ -57,11 +51,35 @@ module.exports = {
       });
       stash = [];
     }
-  },
+  },*/
 
   push: push,
 
-  callRegister: () => callRegister,
+  callRegister: (buckets) => {
+    let returnRegister = [];
+
+    buckets.forEach(bucket => {
+      if (callRegister[bucket]) {
+        returnRegister = returnRegister.concat(callRegister[bucket]);
+      }
+    });
+
+    returnRegister.sort( (a,b) => {
+      const aValue = a.value.toLowerCase();
+      const bValue = b.value.toLowerCase();
+
+      if (aValue < bValue) {
+        return -1;
+      }
+      if (aValue > bValue) {
+        return 1;
+      }
+
+      return 0
+    });
+
+    return returnRegister;
+  },
 
   remove: (method) => {
   },

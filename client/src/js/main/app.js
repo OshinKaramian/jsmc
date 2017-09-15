@@ -24,13 +24,13 @@ let App = React.createClass({
   },
 
   setEventListeners: function() {
-    keyboard.push(114, 'Open collections overlay', (event) => {
-      if (this.state.showOverlay) {
-        keyboard.stash.pop({ignore: [114]});
-      } else {
-        keyboard.stash.push({ignore: [114]});
-      }
-      this.toggleOverlay()
+    keyboard.push(114, 'collections', 'Open collections overlay', (event) => {
+      //if (this.state.showOverlay) {
+      //  keyboard.stash.pop({ignore: [114]});
+      //} else {
+       // keyboard.stash.push({ignore: [114]});
+      //}
+      this.toggleOverlay();
     });
   },
 

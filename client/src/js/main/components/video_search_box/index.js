@@ -26,7 +26,7 @@ module.exports = React.createClass({
 
   setEventListeners: function() {
       // escape
-      keyboard.push(27, 'Leave search box', event => {
+      keyboard.push(27, 'videodisplay', 'Leave search box', event => {
         if (document.querySelectorAll('.movies-search-box')[0] === document.activeElement) {
           document.body.focus();
           document.querySelectorAll('.movies-search-box')[0].blur();
@@ -34,7 +34,7 @@ module.exports = React.createClass({
       });
 
       // f6
-      keyboard.push(117, 'Enter search box', event => {
+      keyboard.push(117, 'videodisplay', 'Enter search box', event => {
         if (document.querySelectorAll('.movies-search-box')[0] !== document.activeElement) {
           document.querySelectorAll('.movies-search-box')[0].focus();
           document.querySelectorAll('.movies-search-box')[0].select();

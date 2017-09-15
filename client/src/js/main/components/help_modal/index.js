@@ -23,13 +23,11 @@ module.exports = React.createClass({
   },
 
   toggleModal: function() {
-    console.log('hey');
-    console.log(keyboard.callRegister)
     this.setState({ isModalOpen: !this.state.isModalOpen });
   },
 
   componentDidMount: function() {
-    keyboard.push(112, 'Open help modal', (event) => {
+    keyboard.push(112, 'help', 'Open help modal', (event) => {
       this.toggleModal();
     });
   },
@@ -65,7 +63,7 @@ module.exports = React.createClass({
 
     const contentStyle = { margin: '15px' };
 
-    const nodes = keyboard.callRegister().map((keyCall, index) => {
+    const nodes = keyboard.callRegister(['videodisplay', 'collections']).map((keyCall, index) => {
       return (
         <Row key={index}>
           <Col md={2}>{keyCall.value.toUpperCase()} :</Col>
