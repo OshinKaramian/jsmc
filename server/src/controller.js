@@ -121,7 +121,13 @@ module.exports.static = {
     })
     .then(stat => {
       const videoStream = file.transcode(stat.path, mediaId, fileIndex);
-      res.send();
+      videoStream.on('progress', progress => {
+        const time = progress.timemark.split(':');
+        const seconds = parseInt(time[2]);
+        if (seconds > 45) {
+          return res.send();
+        }
+      });
     });
   }
 };

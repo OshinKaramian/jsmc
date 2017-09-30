@@ -93,7 +93,7 @@ let Media = class Media {
     };
 
     const { getFileInfo, getFileMetadata = new Promise() } = queryTranslator[this.details.category];
-    
+
     if (getFileInfo) {
       fileInfo.metadata = getFileInfo(fileMetadata.format.filename);
     }
@@ -110,7 +110,7 @@ let Media = class Media {
       });
   }
 
-  save (collectionName) {
+  save(collectionName) {
     const databaseTranslated = Object.assign({}, this.details);
     databaseTranslated.filedata = this.filedata;
     return this.database.insertQuery(collectionName, databaseTranslated)

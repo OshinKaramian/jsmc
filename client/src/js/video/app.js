@@ -12,12 +12,12 @@ var transcodeAndRun = function() {
   var transcodeRequestObject = queryString.parse(location.search);
   var mediaInfo = {};
   var durationSet = false;
-  
+
   api.media.get(transcodeRequestObject.mediaId)
     .then(function(data) {
       myPlayer.loadingSpinner.show();
       console.log(data.backdrop_path);
-      try { 
+      try {
         myPlayer.poster(api.BaseUrl + data.backdrop_path);
       } catch (exception) {
         console.log(exception);
@@ -27,19 +27,19 @@ var transcodeAndRun = function() {
     })
     .then(function(data) {
       console.log(data);
-      myPlayer.duration =  () =>{
+      myPlayer.duration = () =>{
         var fileIndex = transcodeRequestObject.fileIndex || 0;
         return mediaInfo.filedata[fileIndex].duration;
       };
-      setTimeout(function() {
+      //setTimeout(function() {
         myPlayer.src({"src": api.media.mp4Url(transcodeRequestObject), "type":"application/x-mpegURL"});
         myPlayer.play();
         myPlayer.one('canplay', () => {
           myPlayer.pause();
-          myPlayer.currentTime(1);    
+          myPlayer.currentTime(1);
           myPlayer.play();
         });
-      }, 15000);
+      //}, 15000);
     });
 };
 
