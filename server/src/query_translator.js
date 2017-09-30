@@ -72,7 +72,7 @@ module.exports.tv = {
    */
   convertResponsesToMediaObject: function(info) {
     let mediaObject = {
-      title: info.moviedb.original_name,
+      title: info.moviedb.name,
       media_type: 'tv',
       id: info.moviedb.id,
       long_plot: info.moviedb.overview,
@@ -80,8 +80,9 @@ module.exports.tv = {
       poster_path: info.moviedb.poster_path,
       backdrop_path: info.moviedb.backdrop_path,
       rated: '',//info.imdb.rating,
-      director: info.moviedb.created_by[0].name,
-      writer: info.moviedb.created_by[0].name,
+      director: '',//info.moviedb.created_by[0].name,
+      writer: '',//info.moviedb.created_by[0].name,
+      genres: info.moviedb.genres,
       actors: '',
       metacritic_rating: '',
       awards: '',
@@ -96,8 +97,8 @@ module.exports.tv = {
     return mediaObject;
   },
 
-  getDetails: (tmdbId) => {
-    return moviedbApi.getTVDetails(tmdbId);
+  getDetails: ({ tmdb_id, filename }) => {
+    return moviedbApi.getTVDetails(tmdb_id);
   },
 
   getFileInfo: function(filename) {
@@ -164,6 +165,22 @@ module.exports.tv = {
     }
 
     return null;
+  },
+
+  getFileMetadata: ({ id, metadata, title }) => {
+    return moviedbApi.getEpisodeInfo(id, metadata.episode)
+      .then(episodeInfo => {
+        if (episodeInfo) {
+          metadata.episode = Object.assign(metadata.episode, {
+            name: episodeInfo.name,
+            overview: episodeInfo.overview,
+            image: episodeInfo.still_path ? `https://image.tmdb.org/t/p/original${episodeInfo.still_path}` : null,
+            guest_stars: episodeInfo.guest_stars
+          });
+        }
+
+        return metadata;
+    });
   }
 };
 
@@ -239,11 +256,11 @@ module.exports.movie = {
     return mediaObject;
   },
 
-  getDetails: (tmdbid) => {
+  getDetails: ({tmdb_id}) => {
     let movieDbInfo = {};
     let imdbInfo = {};
 
-    return moviedbApi.getMovieDetails(tmdbid)
+    return moviedbApi.getMovieDetails(tmdb_id)
       .then(movideDbOutput => {
         movieDbInfo = movideDbOutput;
         return imdbApi.getById(movideDbOutput.imdb_id);
@@ -252,5 +269,7 @@ module.exports.movie = {
         Object.assign(imdbOutput, movieDbInfo);
         return imdbOutput;
       })
-  }
+  },
+
+  getFileMetadata: () => new Promise(resolve => resolve(''))
 };

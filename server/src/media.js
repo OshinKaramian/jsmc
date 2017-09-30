@@ -38,7 +38,7 @@ let Media = class Media {
   getDetails() {
     const detailsOutput = {};
 
-    return queryTranslator[this.details.category].getDetails(this.details.tmdb_id)
+    return queryTranslator[this.details.category].getDetails(this.details)
       .then((details) => {
         detailsOutput.moviedb = details;
         const formatDetails = queryTranslator[this.details.category].convertResponsesToMediaObject(detailsOutput);
@@ -92,7 +92,16 @@ let Media = class Media {
       duration: fileMetadata.format.duration,
     };
 
-    return fs.statAsync(fileInfo.filename)
+    const { getFileInfo, getFileMetadata = new Promise() } = queryTranslator[this.details.category];
+    
+    if (getFileInfo) {
+      fileInfo.metadata = getFileInfo(fileMetadata.format.filename);
+    }
+
+    return getFileMetadata({metadata: fileInfo.metadata, id: this.details.id, title: this.details.title})
+      .then(metadata => {
+        return fs.statAsync(fileInfo.filename)
+      })
       .then(stats => {
         fileInfo.create_time = stats.ctime.getTime();
         fileInfo.access_time = stats.atime.getTime();

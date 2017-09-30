@@ -8,9 +8,8 @@ const Col = require('react-bootstrap').Col;
 const Modal = require('react-modal');
 let ModalItemInfo = require('./modal_item_info.js');
 let VideoOptionBar = require('./video_option_bar.js');
-let VideoInfoModal = require('./video_info_modal.js');
+let VideoInfoModal = require('./details/');
 
-// This is huge, chop it down
 module.exports = React.createClass({
   getInitialState: function() {
     return {

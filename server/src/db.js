@@ -145,8 +145,9 @@ module.exports = function(dbPath) {
      * @param {string} collectionName - collection to get media from
      * @return {array} media objects based on query
      */
-    getCollection(collectionName) {
-      return db.findAsync({ collection: collectionName })
+    getCollection() {
+      //return db.findAsync({ collection: collectionName })
+      return db.findAsync({})
         .then(function(items) {
           items.sort(mediaSort);
           return items;

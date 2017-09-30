@@ -99,7 +99,16 @@ module.exports.collection = {
 module.exports.static = {
   get: function(req, res) {
     console.log(req.url);
-    res.sendFile(path.join(__dirname, '..', req.url));
+    console.log('static');
+    res.sendFile(path.join(__dirname, '..', req.url), {}, err => {
+      if (!err) {
+        if (path.extname(req.url) === '.ts') {
+          setTimeout(function() {
+            fs.remove(path.join(__dirname, '..', req.url));
+          }, 60000);
+        }
+      }
+    });
   },
 
   mp4: function(req, res) {

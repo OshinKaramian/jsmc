@@ -2,5 +2,9 @@
   "Movies": {
     "directory": "Y:\\Movies",
     "type": "movie"
+  },
+  "Television": {
+    "directory": "Z:\\TV",
+    "type": "tv"
   }
 }

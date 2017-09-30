@@ -6,6 +6,8 @@ const api = require('../../../common/api.js');
 const keyboard = require('../../../common/keyboard.js');
 
 module.exports = React.createClass({
+  searchTimer: null,
+
   getInitialState: function() {
     return {
        searchResults: null
@@ -13,14 +15,23 @@ module.exports = React.createClass({
   },
 
   handleOnChange: function(event) {
-    let searchBoxValue = event.target.value;
-    if (!event.target.value) {
-      this.props.onSearchBoxChange({searchContents: null});
-    } else {
-      api.media.search(event.target.value).then((data) => {
-        this.props.onSearchBoxChange({searchContents: searchBoxValue, data: data});
-        this.setState({searchResults: data});
-      });
+    const searchBoxValue = event.target.value;
+    
+    if (searchBoxValue.length > 2 || !searchBoxValue) {
+      if (this.searchTimer) {
+        clearTimeout(this.searchTimer);
+      }
+
+      this.searchTimer = setTimeout(() => {
+        if (!searchBoxValue) {
+          this.props.onSearchBoxChange({searchContents: null});
+        } else {
+          api.media.search(searchBoxValue).then((data) => {
+            this.props.onSearchBoxChange({searchContents: searchBoxValue, data: data});
+            this.setState({searchResults: data});
+          });
+        }
+      },1000);
     }
   },
 

@@ -45,6 +45,80 @@ const GenresPanel = React.createClass({
   }
 });
 
+const DirectorsPanel = React.createClass({
+  getInitialState: function() {
+    return {
+      data: ['']
+    };
+  },
+
+  componentDidMount: function() {
+    api.collection.get('Movies')
+      .then(response => {
+        const directors = response.reduce((array, currentMedia) => {
+          const { director } = currentMedia;
+          if (director && !array[director]) {
+            array[director] = 1;
+          } else if (array[director]) {
+            array[director]++;
+          }
+
+          return array;
+        },[])
+        const mappedDirector = Object.keys(directors).map(name => {
+          return {
+            name,
+            value: directors[name] 
+          }
+        });
+
+        mappedDirector.sort((a,b) => {
+          if (a.value > b.value) {
+            return -1;
+          }
+
+          if (b.value > a.value) {
+            return 1;
+          }
+
+          return 0;
+        });
+
+        this.setState({
+          data: mappedDirector 
+        });
+      });
+  },
+
+  updateMedia: function(director) {
+    api.collection.get('Movies')
+      .then(response => {
+        console.log(response);
+        console.log(director);
+        const directorMovies = response.filter(movie => {
+          return movie.director === director;
+        });
+
+        console.log(directorMovies);
+        this.props.updateParentState(directorMovies);
+      });
+  },
+
+  render: function() {
+    const itemStyle = {
+      fontFamily: 'coolveticaregular',
+      color: 'white',
+      marginLeft: '20px',
+      cursor: 'pointer'
+    };
+
+    const { data = [''] } = this.state;
+    const directors = data.map(((director, index) => <Row key={index}><h2 style={itemStyle} onClick={this.updateMedia.bind(this, director.name)}>{director.name}</h2></Row>));
+    return (<div>{directors}</div>);
+  }
+});
+
+
 const CollectionsPanel = React.createClass({
   getInitialState: function() {
     return {
@@ -177,9 +251,6 @@ module.exports = React.createClass({
     return (
       <div style={style}>
         <Col md={6} style={leftPanelStyle} >
-          <Row style={itemStyle} onClick={this.setActive.bind(this, 'collections')}>
-            <h1>Collections</h1>
-          </Row>
           <Row style={itemStyle} onClick={this.setActive.bind(this, 'genres')}>
             <h1>Genres</h1>
           </Row>
@@ -195,17 +266,22 @@ module.exports = React.createClass({
         </Col>
         <Col md={6} style={midPanelStyle}>
           {
-            !this.state.currentActive || this.state.currentActive === 'collections' ?
+            this.state.currentActive === 'collections' ?
               <CollectionsPanel updateParentState={this.props.updateParentState}/> : null
           }
           {
-            this.state.currentActive === 'genres' ?
+            !this.state.currentActive || this.state.currentActive === 'genres' ?
               <GenresPanel updateParentState={this.props.updateParentState}/> : null
           }
 
           {
             this.state.currentActive === 'sort' ?
               <SortPanel updateParentState={this.props.updateParentState}/> : null
+          }
+
+          {
+            this.state.currentActive === 'directors' ?
+              <DirectorsPanel updateParentState={this.props.updateParentState}/> : null
           }
         </Col>
 

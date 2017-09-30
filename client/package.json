@@ -6,7 +6,7 @@
   "scripts": {
     "start": "gulp",
     "test": "mocha --compilers js:babel-core/register --require ./tests/utils/dom.js --reporter spec ./tests/",
-    "electron-package-win": "electron-packager.cmd . --platform=win32 --arch=x64 --electron-version=1.6.11 --overwrite",
+    "electron-package-win": "electron-packager.cmd . --platform=win32 --arch=x64 --electron-version=1.6.11 --overwrite --icon='./pixelturtle.ico'",
     "electron-dev": "./node_modules/.bin/electron.cmd ."
   },
   "author": "",

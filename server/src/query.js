@@ -98,7 +98,9 @@ module.exports = function(fileData, category, year) {
       movieData.category = category;
       return new Media(movieData).getDetails();
     })
-    .then(mediaObject => mediaObject.getAssets())
+    .then(mediaObject => {
+      return mediaObject.getAssets();
+    })
     .then(mediaObject => mediaObject.addFileData(fileData.metadata))
     .catch((error) => {
       throw error;
