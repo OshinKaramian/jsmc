@@ -69,6 +69,26 @@ const directoryManager = class DirectoryManager {
     }, 0);
   }
 
+  async clearTsFiles() {
+    const tsFiles = this.stats.filter(file => {
+      return path.extname(file.filename) === '.ts';
+    });
+
+    const deletes = tsFiles.map(file => {
+      return fs.unlinkAsync(file.filename)
+        .catch(error => {
+          // Sometimes EBUSY is thrown.  We should handle this appropriately but for now
+          // swallow it.
+
+          return;
+        });
+    });
+
+    await Promise.all(deletes);
+    await this.init();
+    return this;
+  }
+
   async deleteToSize(desiredSize) {
     if(desiredSize >= this.totalSize()) {
       return this;

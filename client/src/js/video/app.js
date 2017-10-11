@@ -31,15 +31,14 @@ var transcodeAndRun = function() {
         var fileIndex = transcodeRequestObject.fileIndex || 0;
         return mediaInfo.filedata[fileIndex].duration;
       };
-      //setTimeout(function() {
-        myPlayer.src({"src": api.media.mp4Url(transcodeRequestObject), "type":"application/x-mpegURL"});
+      
+      myPlayer.src({"src": api.media.mp4Url(transcodeRequestObject), "type":"application/x-mpegURL"});
+      myPlayer.play();
+      myPlayer.one('canplay', () => {
+        myPlayer.pause();
+        myPlayer.currentTime(1);
         myPlayer.play();
-        myPlayer.one('canplay', () => {
-          myPlayer.pause();
-          myPlayer.currentTime(1);
-          myPlayer.play();
-        });
-      //}, 15000);
+      });
     });
 };
 

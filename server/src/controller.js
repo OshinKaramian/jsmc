@@ -7,6 +7,8 @@ const fs = Promise.promisifyAll(require('fs-extra'));
 const path = require('path');
 const file = require('./file.js');
 const Media = require('./media.js');
+const config = require('../config/');
+const DirectoryManager = require('./directory_manager.js');
 let db = require('./db.js')();
 let os = require('os');
 
@@ -105,7 +107,7 @@ module.exports.static = {
         if (path.extname(req.url) === '.ts') {
           setTimeout(function() {
             fs.remove(path.join(__dirname, '..', req.url));
-          }, 60000);
+          }, 30000);
         }
       }
     });
@@ -114,8 +116,12 @@ module.exports.static = {
   mp4: function(req, res) {
     const mediaId = req.params.mediaId;
     const fileIndex = req.params.fileIndex || 0;
+    const dm = new DirectoryManager(config.serverOptions.TEMP_DIR);
 
-    db.getMedia(mediaId).then(doc => {
+    dm.init()
+    .then(() => dm.clearTsFiles())
+    .then(() => db.getMedia(mediaId))
+    .then(doc => {
       console.log(doc.filedata[fileIndex]);
       return file.stats(doc.filedata[fileIndex])
     })
