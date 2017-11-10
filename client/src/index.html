@@ -9,6 +9,61 @@
   <link rel="stylesheet" type="text/css" href="style/coolvetica/stylesheet.css"/>
   <style>
  html, body {overflow:hidden;}
+ .fade-enter {
+  opacity: 0.01;
+  width: 0px;
+}
+
+.fade-enter.example-enter-active {
+  opacity: 1;
+  width: 100px;
+  transition: 700ms;
+}
+
+.fade-leave {
+  opacity: 1;
+  width: 100px;
+}
+
+.fade-leave.example-leave-active {
+  opacity: 0.01;
+  width: 0px;
+  transition: 700ms;
+}
+
+.slide-appear {
+  opacity    : 0;
+  transition : opacity .7s ease-in;
+}
+
+.slide-appear.slide-appear-active {
+  opacity : 1;
+}
+
+.slide-enter {
+  opacity: 0.01;
+  max-height : 0;
+  transition : all .3s ease-in;
+}
+
+.slide-enter.slide-enter-active {
+  opacity: 1;
+  max-height : 1000px;
+}
+
+.slide-leave {
+  opacity: 1;
+  max-height : 1000px;
+  transition : all .3s ease-out;
+}
+
+.slide-leave.slide-leave-active {
+
+  opacity: 0.01;
+  max-height : 0;
+}
+
+
 /* =============================================================================
   An example of how stylize the tabs
 ============================================================================= */

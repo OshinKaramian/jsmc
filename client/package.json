@@ -6,15 +6,12 @@
   "scripts": {
     "start": "gulp",
     "test": "mocha --compilers js:babel-core/register --require ./tests/utils/dom.js --reporter spec ./tests/",
-    "electron-package-win": "electron-packager.cmd . --no-prune --platform=win32 --arch=x64 --electron-version=1.6.11 --overwrite",
-    "electron-dev": "./node_modules/electron-prebuilt/dist/electron.exe ."
+    "electron-package-win": "electron-packager.cmd . --platform=win32 --arch=x64 --electron-version=1.6.11 --overwrite --icon='./pixelturtle.ico'",
+    "electron-dev": "./node_modules/.bin/electron.cmd ."
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "babel": "^6.0.15",
-    "babel-core": "^6.7.4",
-    "babelify": "^7.2.0",
     "bluebird": "^3.0.5",
     "bootstrap": "^3.3.5",
     "electron-prebuilt-compile": "^1.6.11",
@@ -22,9 +19,11 @@
     "hapi": "*",
     "inert": "^3.1.0",
     "jquery": "^2.1.4",
+    "keycode": "^2.1.9",
     "node-ssdp": "^3.2.1",
     "query-string": "^3.0.0",
     "react": "15.6.*",
+    "react-addons-css-transition-group": "^15.6.0",
     "react-bootstrap": "^0.31.*",
     "react-dom": "15.6.*",
     "react-modal": "^1.*.*",
@@ -35,8 +34,11 @@
     "walk": "^2.3.9"
   },
   "devDependencies": {
+    "babel": "^6.0.15",
+    "babel-core": "^6.7.4",
     "babel-preset-es2015": "^6.3.13",
     "babel-preset-react": "^6.3.13",
+    "babelify": "^7.2.0",
     "browserify": "^12.0.1",
     "del": "^2.0.2",
     "electron-windows-installer": "^1.2.5",

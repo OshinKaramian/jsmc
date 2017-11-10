@@ -82,7 +82,7 @@ module.exports.getEpisodeInfo = (id, episodeInfo) => {
       sleep.sleep(10);
       return module.exports.getEpisodeInfo(id, episodeInfo);
     } else {
-      return response;
+      return JSON.parse(response.body);
     }
   });
 };

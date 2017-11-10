@@ -1,10 +1,10 @@
 "use strict";
-let baseApiUrl = 'http://' + location.host.split(':')[0] + ':3000/';
+let baseApiUrl = '//localhost:3000/';
 
 module.exports.BaseUrl = baseApiUrl;
 
 if (window && window.process && window.process.type) {
-  let ipc = require('electron').ipcRenderer;
+  let ipc = window.require('electron').ipcRenderer;
 
   ipc.on('updateJsmcUrl', function(event, message) {
     baseApiUrl = message;
@@ -59,6 +59,7 @@ module.exports.media = {
       return response.json();
     });
   }
+
 }
 
 module.exports.collection = {
@@ -70,6 +71,18 @@ module.exports.collection = {
    */
   get: function(collectionName) {
     return fetch(baseApiUrl + 'collections/' + collectionName).then(function(response) {
+      return response.json();
+    });
+  },
+
+  genres: function(collectionName) {
+    return fetch(baseApiUrl + 'collections/' + collectionName + '/genres').then(function(response) {
+      return response.json();
+    });
+  },
+
+  getByGenre: function(collectionName, genre) {
+    return fetch(baseApiUrl + 'collections/' + collectionName + '/genres/' + genre).then(function(response) {
       return response.json();
     });
   }

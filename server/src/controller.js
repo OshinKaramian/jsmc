@@ -7,6 +7,8 @@ const fs = Promise.promisifyAll(require('fs-extra'));
 const path = require('path');
 const file = require('./file.js');
 const Media = require('./media.js');
+const config = require('../config/');
+const DirectoryManager = require('./directory_manager.js');
 let db = require('./db.js')();
 let os = require('os');
 
@@ -58,7 +60,7 @@ module.exports.collection = {
 
     if (name) {
       return db.getCollection(name).then(function(docs) {
-        docs.sort((a, b) => { 
+        docs.sort((a, b) => {
           if (a.title < b.title) {
             return -1;
           }
@@ -83,6 +85,13 @@ module.exports.collection = {
 
     return db.getAllGenres(collection)
       .then(genres => res.json({ items: genres }));
+  },
+
+  getByGenreName: function(req, res) {
+    let { genre = '' } = req.params;
+
+    return db.getByGenre(genre)
+      .then(files => res.json({ items: files } ));
   }
 };
 
@@ -92,20 +101,39 @@ module.exports.collection = {
 module.exports.static = {
   get: function(req, res) {
     console.log(req.url);
-    res.sendFile(path.join(__dirname, '..', req.url));
+    console.log('static');
+    res.sendFile(path.join(__dirname, '..', req.url), {}, err => {
+      if (!err) {
+        if (path.extname(req.url) === '.ts') {
+          setTimeout(function() {
+            fs.remove(path.join(__dirname, '..', req.url));
+          }, 60000);
+        }
+      }
+    });
   },
 
   mp4: function(req, res) {
     const mediaId = req.params.mediaId;
     const fileIndex = req.params.fileIndex || 0;
+    const dm = new DirectoryManager(config.serverOptions.TEMP_DIR);
 
-    db.getMedia(mediaId).then(doc => {
+    return dm.init()
+    .then(() => dm.clearTsFiles())
+    .then(() => db.getMedia(mediaId))
+    .then(doc => {
       console.log(doc.filedata[fileIndex]);
       return file.stats(doc.filedata[fileIndex])
     })
     .then(stat => {
       const videoStream = file.transcode(stat.path, mediaId, fileIndex);
-      res.send();
+      videoStream.on('progress', progress => {
+        const time = progress.timemark.split(':');
+        const seconds = parseInt(time[2]);
+        if (seconds > 45) {
+          return res.send();
+        }
+      });
     });
   }
 };

@@ -68,6 +68,19 @@ module.exports = function(dbPath) {
     },
 
     /**
+     * Gets a media object from the database
+     *
+     * @param {string} mediaId - id of entry to pull
+     * @return {object} database response
+     */
+    getByGenre(genre) {
+      return db.findAsync({ 'genres.name' : genre})
+        .catch(function(error) {
+          throw error;
+        });
+    },
+
+    /**
      * Queries for media
      *
      * @param {string} query - data to query off of
@@ -132,8 +145,9 @@ module.exports = function(dbPath) {
      * @param {string} collectionName - collection to get media from
      * @return {array} media objects based on query
      */
-    getCollection(collectionName) {
-      return db.findAsync({ collection: collectionName })
+    getCollection() {
+      //return db.findAsync({ collection: collectionName })
+      return db.findAsync({})
         .then(function(items) {
           items.sort(mediaSort);
           return items;
