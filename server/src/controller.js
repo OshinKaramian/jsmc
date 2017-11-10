@@ -107,7 +107,7 @@ module.exports.static = {
         if (path.extname(req.url) === '.ts') {
           setTimeout(function() {
             fs.remove(path.join(__dirname, '..', req.url));
-          }, 30000);
+          }, 60000);
         }
       }
     });
@@ -118,7 +118,7 @@ module.exports.static = {
     const fileIndex = req.params.fileIndex || 0;
     const dm = new DirectoryManager(config.serverOptions.TEMP_DIR);
 
-    dm.init()
+    return dm.init()
     .then(() => dm.clearTsFiles())
     .then(() => db.getMedia(mediaId))
     .then(doc => {

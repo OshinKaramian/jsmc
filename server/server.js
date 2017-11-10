@@ -14,6 +14,7 @@ schedule.scheduleJob('10 * * * * *', () => {
 
 const broadcast = new SSDP({
   //unicastHost: '192.168.11.63',
+  explicitSocketBind: true, 
   location: require('ip').address() + '/desc.html',
   sourcePort: 1900
 });

@@ -128,6 +128,7 @@ module.exports.transcode = (file, mediaId, index) => {
     .videoCodec('copy')
     .audioCodec('aac')
     .addOption('-b:a', '200k')
+    .addOption('-c:s', 'mov_text')
     .addOption('-bsf:v', 'h264_mp4toannexb')
     .addOption('-movflags', 'faststart+frag_keyframe+empty_moov')
     .addOption('-strict', 'experimental')
