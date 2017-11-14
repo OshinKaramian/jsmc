@@ -168,18 +168,7 @@ describe('Controller', function() {
         done(error);
       });
     });
-
-    it('should return no items if the collection doesn\'t exist', function (done) {
-      request.params.collection = 'Fake';
-      controller.collection.get(request, mockReply).then(function(collection) {
-        assert.equal(collection.body.length, 0);
-        done();
-      })
-      .catch(function(error) {
-        done(error);
-      });
-    });
-
+    
     it('should return the config if no collection name is given', function (done) {
       done();
     });
