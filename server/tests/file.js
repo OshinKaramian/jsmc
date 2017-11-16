@@ -112,7 +112,7 @@ describe('file', function() {
 
     it('can transcode a file to progressive mp4', (done) => {
       if (os.platform() === 'linux') {
-        return;
+        return done();
       }
 
       const sampleFile = path.resolve(path.join('tests','files', 'testfile.mkv'));
