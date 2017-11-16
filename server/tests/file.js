@@ -4,6 +4,7 @@ const rewire = require('rewire');
 const Promise = require('bluebird');
 const path = require('path');
 const fs = Promise.promisifyAll(require('fs-extra'));
+const os = require('os');
 const sinon = require('sinon');
 let file = rewire('../src/file.js');
 const Database = require('nedb');
@@ -113,7 +114,7 @@ describe('file', function() {
       if (os.platform() === 'linux') {
         return;
       }
-      
+
       const sampleFile = path.resolve(path.join('tests','files', 'testfile.mkv'));
       const videoStream = file.transcode(sampleFile);
 
