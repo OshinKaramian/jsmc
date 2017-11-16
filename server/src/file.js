@@ -64,6 +64,7 @@ if (process.env.JSMC_DEV) {
 
 const ffmpegExe = os.platform() === 'win32' ? 'ffmpeg.exe' : 'ffmpeg';
 const ffprobeExe = os.platform() === 'win32' ? 'ffprobe.exe' : 'ffprobe';
+const platform = os.platform();
 ffmpeg.setFfmpegPath(path.join('ffmpeg', platform, 'bin', ffmpegExe));
 ffmpeg.setFfprobePath(path.join('ffmpeg', platform, 'bin', ffprobeExe));
 
