@@ -101,10 +101,20 @@ let Media = class Media {
     return getFileMetadata({metadata: fileInfo.metadata, id: this.details.id, title: this.details.title})
       .then(metadata => {
         return fs.statAsync(fileInfo.filename)
+          .catch(ex => {
+            return {
+              path: fileInfo.filename
+            };
+          });
       })
       .then(stats => {
-        fileInfo.create_time = stats.ctime.getTime();
-        fileInfo.access_time = stats.atime.getTime();
+        try {
+          fileInfo.create_time = stats.ctime.getTime();
+          fileInfo.access_time = stats.atime.getTime();
+        } catch(ex) {
+          fileInfo.create_time = '';
+          fileInfo.access_time = '';
+        }
         this.filedata.push(fileInfo);
         return this;
       });

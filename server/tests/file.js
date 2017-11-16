@@ -47,7 +47,7 @@ describe('file', function() {
         id: 40008,
         release_date: '2013-04-04',
         director: 'Bryan Fuller',
-        writer: 'Bryan Fuller'
+        writer: ''
       };
 
       return file.createRecord(fileName, baseDir, category, collectionName)

@@ -80,7 +80,7 @@ module.exports.tv = {
       poster_path: info.moviedb.poster_path,
       backdrop_path: info.moviedb.backdrop_path,
       rated: '',//info.imdb.rating,
-      director: '',//info.moviedb.created_by[0].name,
+      director: info.moviedb.created_by.map(creator => creator.name).join(','),
       writer: '',//info.moviedb.created_by[0].name,
       genres: info.moviedb.genres,
       actors: '',
