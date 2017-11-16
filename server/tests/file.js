@@ -12,6 +12,7 @@ const testDbPath = path.join(__dirname, 'data', 'file_test.db');
 let db = rewire('../src/db.js')(testDbPath);
 
 describe('file', function() {
+  this.timeout(60000);
   before(() => {
     return file.__set__('db', db);
   });
