@@ -12,7 +12,7 @@ const expect = require('chai').expect;
 const testDbPath = path.join(__dirname, 'data', 'file_test.db');
 let db = rewire('../src/db.js')(testDbPath);
 
-describe('file', function() {
+describe('file', function () {
   this.timeout(60000);
   before(() => {
     return file.__set__('db', db);
@@ -77,11 +77,11 @@ describe('file', function() {
         .then(() => db.findMedia('Captain'))
         .then(queryOutput => {
           console.log(queryOutput);
-           return expect(queryOutput[0]).to.include(expectedOutput)
+          return expect(queryOutput[0]).to.include(expectedOutput)
         });
     });
 
-     it('can create a proper record for a movie', () => {
+    it('can create a proper record for a movie', () => {
       const fileName = path.join(baseDir, 'Schindlers_list.mpg');
       const category = 'movie';
       const collectionName = 'Movies';
@@ -96,9 +96,7 @@ describe('file', function() {
     });
   });
 
-
-
-  describe('transcode', function() {
+  describe('transcode', function () {
     this.timeout(60000);
     const tempDir = path.join('tests', 'tmp');
 
@@ -115,7 +113,7 @@ describe('file', function() {
         return done();
       }
 
-      const sampleFile = path.resolve(path.join('tests','files', 'testfile.mkv'));
+      const sampleFile = path.resolve(path.join('tests', 'files', 'testfile.mkv'));
       const videoStream = file.transcode(sampleFile);
 
       videoStream.on('end', () => {

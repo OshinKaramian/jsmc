@@ -46,7 +46,7 @@ let queryForValidObject = function(filename, category, year) {
         let newQueryInfo = modifyFilenameForNextSearch(filename);
         return queryForValidObject(newQueryInfo.filename, category, newQueryInfo.year);
       } else {
-        const match = queryTranslator.findValidObject(parsedResponse);
+        const match = queryTranslator.findValidObject(filename, parsedResponse);
         return match;
       }
     } else if (response.statusCode == 429) {

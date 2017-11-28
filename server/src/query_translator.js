@@ -12,17 +12,48 @@ const imdbApi = require('./imdb_api.js');
  * @return {object} if response contains something valid it is returned
  *  name: search name of object, id: tmdb id of object
  */
-module.exports.findValidObject = function(moviedbResponse) {
+module.exports.findValidObject = function(searchTerm, moviedbResponse) {
   let parsedResponses = moviedbResponse.results;
-  let correctMatch;
 
-  for (let responseIndex = 0; responseIndex < parsedResponses.length; responseIndex++) {
-    let parsedMovieResponse = parsedResponses[responseIndex];
-    if (parsedMovieResponse.release_date || parsedMovieResponse.first_air_date) {
-      correctMatch = parsedMovieResponse;
-      break;
+  const validResponses = parsedResponses.filter(response => {
+    return response.release_date || response.first_air_date;
+  });
+
+  const addMatchPercentage = validResponses.map(response => {
+    const searchWords = searchTerm
+      .replace(/[+]/gi, ' ')
+      .replace(/[^\w\s]/gi, ' ')
+      .toLowerCase()
+      .replace(/\s+/g,' ').trim()
+      .split(' ');
+
+    const title = (response.title || response.original_name)
+      .replace(/[^\w\s]/gi, ' ')
+      .toLowerCase()
+      .replace(/\s+/g,' ').trim()
+      .split(' ')
+
+    const numWordsMatch = title.reduce((matchCount, titleWord) => {
+      const matchIndex = searchWords.indexOf(titleWord);
+      if (matchIndex >= 0) {
+        searchWords.splice(matchIndex, 1);
+        matchCount++;
+      }
+
+      return matchCount;
+    }, 0);
+
+    response.match_percentage =  numWordsMatch / title.length; 
+    return response;
+  });
+
+  const correctMatch = addMatchPercentage.reduce((match, item) => {
+    if (match.match_percentage < item.match_percentage) {
+      return item
     }
-  }
+    return match;
+  }, { match_percentage: -1});
+  
 
   if (!correctMatch || (!correctMatch.release_date && !correctMatch.first_air_date)) {
     throw new Error('No match available');

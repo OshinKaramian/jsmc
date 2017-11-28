@@ -139,7 +139,7 @@ module.exports.transcode = (file, mediaId, index) => {
     .addOption('-segment_list', 'tmp/' + mediaId + '_' + index + '.m3u8')
     .addOption('-segment_format', 'mpegts')
     .on('progress', function(progress) {
-      console.log('Processing: ' + progress.timemark + ' for ' + file);
+      //console.log('Processing: ' + progress.timemark + ' for ' + file);
     })
     .on('error', function(err, stdout, stderr) {
       console.error(err);

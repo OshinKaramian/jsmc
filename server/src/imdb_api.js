@@ -32,7 +32,7 @@ const basic = (imdbId) => {
 const awards = (imdbId) => {
   const queryUrl = baseUrl + '/' + imdbId;
   const awardQueryUrl = queryUrl + '/awards/'
-  console.log(queryUrl);
+  
   return requester(awardQueryUrl)
     .then($ => {
       let awardStatus = '';

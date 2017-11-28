@@ -16,7 +16,6 @@ export const transcode = (req, res) => {
     const fileIndex = req.params.fileIndex || 0;
 
     db.getMedia(mediaId).then(doc => {
-      console.log(doc.filedata[fileIndex]);
       return file.stats(doc.filedata[fileIndex])
     })
     .then(stat => {
