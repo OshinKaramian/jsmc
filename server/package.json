@@ -7,8 +7,8 @@
     "test": "mocha --reporter spec ./tests/",
     "start": "node server.js",
     "lint": "./node_modules/.bin/eslint src/ && ./node_modules/.bin/eslint test/",
-    "dev": "JSMC_DEV=true NO_BROADCAST=true npm start",
-    "bootstrap-db": "JSMC_DEV=true node scripts/index_files.js"
+    "dev": "env JSMC_DEV=true NO_BROADCAST=true npm start",
+    "bootstrap-db": "env JSMC_DEV=true node scripts/index_files.js"
   },
   "author": "",
   "license": "ISC",
@@ -20,6 +20,7 @@
     "bluebird": "^3.0.5",
     "bootstrap": "^3.3.5",
     "cheerio": "^1.0.0-rc.1",
+    "connect-timeout": "^1.9.0",
     "electron-prebuilt": "^0.36.7",
     "express": "^4.15.3",
     "fluent-ffmpeg": "git://github.com/OshinKaramian/node-fluent-ffmpeg.git",

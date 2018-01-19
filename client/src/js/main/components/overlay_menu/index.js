@@ -166,9 +166,9 @@ const SortPanel = React.createClass({
     };
   },
 
- componentDidMount: function() {
+  componentDidMount: function() {
    this.updateMedia('Movies');
- },
+  },
 
   sortByRecentMedia: function(collection) {
     api.collection.get(collection)
@@ -193,6 +193,29 @@ const SortPanel = React.createClass({
       });
   },
 
+  sortByTitle: function(collection) {
+    api.collection.get(collection)
+      .then(response => {
+        console.log(response);
+        response = response.sort((a,b) => {
+          const aTitle = a.title;
+          const bTitle = b.title;
+
+          if (aTitle < bTitle) {
+            return -1;
+          }
+
+          if (bTitle < aTitle) {
+            return 1;
+          }
+
+          return 0;
+        });
+        this.props.updateParentState(response);
+      });
+
+  },
+
   render: function() {
     const itemStyle = {
       fontFamily: 'coolveticaregular',
@@ -203,7 +226,8 @@ const SortPanel = React.createClass({
 
     return (
       <div>
-        <Row key='recently_added'><h2 style={itemStyle} onClick={this.sortByRecentMedia.bind(this, 'Movies')}>Recently Added</h2></Row>);
+        <Row key='title'><h2 style={itemStyle} onClick={this.sortByTitle.bind(this, 'Movies')}>Title</h2></Row>
+        <Row key='recently_added'><h2 style={itemStyle} onClick={this.sortByRecentMedia.bind(this, 'Movies')}>Recently Added</h2></Row>
       </div>
     );
   }

@@ -69,9 +69,9 @@ const directoryManager = class DirectoryManager {
     }, 0);
   }
 
-  async clearTsFiles() {
+  async clearTsFiles(mediaId) {
     const tsFiles = this.stats.filter(file => {
-      return path.extname(file.filename) === '.ts';
+      return path.extname(file.filename) === '.ts' && file.filename.indexOf(mediaId) < 0;
     });
 
     const deletes = tsFiles.map(file => {

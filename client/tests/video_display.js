@@ -21,15 +21,15 @@ describe('<VideoDisplay />', function(){
   it('should have 2 <VideoItem />s', function(done) {
     let posterImages = TestUtils.scryRenderedDOMComponentsWithTag(detachedVideoDisplay, 'img');
     assert.equal(posterImages.length, 2);
-    done()
+    done();
   });
 
   it('<VideoItem />s should have the correct information', function(done) {
     let posterImages = TestUtils.scryRenderedDOMComponentsWithTag(detachedVideoDisplay, 'img');
     assert.equal(posterImages[0].getAttribute('data-fileid'), movieList[0].id);
     assert.equal(posterImages[1].getAttribute('data-fileid'), movieList[1].id);
-    assert(posterImages[0].getAttribute('src').indexOf(movieList[0].poster_path) > 0);
-    assert(posterImages[1].getAttribute('src').indexOf(movieList[1].poster_path) > 0);
+    assert(posterImages[0].getAttribute('data-lazy').indexOf(movieList[0].poster_path) > 0);
+    assert(posterImages[1].getAttribute('data-lazy').indexOf(movieList[1].poster_path) > 0);
     done();
   });
 

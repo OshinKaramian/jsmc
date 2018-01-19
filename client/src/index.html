@@ -8,10 +8,20 @@
   <link rel="stylesheet" type="text/css" href="style/alba/stylesheet.css"/>
   <link rel="stylesheet" type="text/css" href="style/coolvetica/stylesheet.css"/>
   <style>
- html, body {overflow:hidden;}
+ html, body {
+  width: 100%;
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+   overflow:hidden;
+   }
  .fade-enter {
   opacity: 0.01;
   width: 0px;
+}
+
+#element::-webkit-scrollbar { 
+  display: none; 
 }
 
 .fade-enter.example-enter-active {

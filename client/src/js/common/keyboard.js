@@ -24,10 +24,6 @@ const push = (key, bucket, description, method) => {
     method: methodReference
   });
 
-
-
-  console.log(callRegister);
-
   document.addEventListener('keydown', methodReference);
 };
 

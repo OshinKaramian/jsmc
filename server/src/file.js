@@ -64,9 +64,11 @@ if (process.env.JSMC_DEV) {
 
 const ffmpegExe = os.platform() === 'win32' ? 'ffmpeg.exe' : 'ffmpeg';
 const ffprobeExe = os.platform() === 'win32' ? 'ffprobe.exe' : 'ffprobe';
-
-ffmpeg.setFfmpegPath(path.join('ffmpeg', os.platform(), 'bin', ffmpegExe));
-ffmpeg.setFfprobePath(path.join('ffmpeg', os.platform(), 'bin', ffprobeExe));
+const platform = os.platform();
+const binaryFfmpeg = platform === 'linux' ? ffmpegExe : path.join('bin', ffmpegExe);
+const binaryFfprobe = platform === 'linux' ? ffprobeExe : path.join('bin', ffprobeExe);
+ffmpeg.setFfmpegPath(path.join('ffmpeg', platform, binaryFfmpeg));
+ffmpeg.setFfprobePath(path.join('ffmpeg', platform, binaryFfprobe));
 
 /**
  * Takes output from ffprobe and evaluates whether the file is valid
