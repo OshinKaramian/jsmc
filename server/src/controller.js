@@ -6,11 +6,11 @@ const Promise = require('bluebird');
 const fs = Promise.promisifyAll(require('fs-extra'));
 const path = require('path');
 const file = require('./file.js');
-const Media = require('./media.js');
 const config = require('../config/');
 const DirectoryManager = require('./directory_manager.js');
+const transcodeList = [];
+const transcodeResProcess = [];
 let db = require('./db.js')();
-let os = require('os');
 
 module.exports.media = {
   /**
@@ -105,35 +105,59 @@ module.exports.static = {
     res.sendFile(path.join(__dirname, '..', req.url), {}, err => {
       if (!err) {
         if (path.extname(req.url) === '.ts') {
-          setTimeout(function() {
-            fs.remove(path.join(__dirname, '..', req.url));
-          }, 60000);
+          //setTimeout(function() {
+          //  fs.remove(path.join(__dirname, '..', req.url));
+          //}, 60000);
         }
       }
     });
   },
 
   mp4: function(req, res) {
+    console.log('start transcode ' + req.url);
     const mediaId = req.params.mediaId;
     const fileIndex = req.params.fileIndex || 0;
     const dm = new DirectoryManager(config.serverOptions.TEMP_DIR);
+    if (!transcodeResProcess[mediaId]) {
+      transcodeResProcess[mediaId] = 'in_process';
+    }
 
     return dm.init()
-    .then(() => dm.clearTsFiles())
-    .then(() => db.getMedia(mediaId))
-    .then(doc => {
-      console.log(doc.filedata[fileIndex]);
-      return file.stats(doc.filedata[fileIndex])
-    })
-    .then(stat => {
-      const videoStream = file.transcode(stat.path, mediaId, fileIndex);
-      videoStream.on('progress', progress => {
-        const time = progress.timemark.split(':');
-        const seconds = parseInt(time[2]);
-        if (seconds > 45) {
+      .then(() => dm.clearTsFiles(mediaId))
+      .then(() => db.getMedia(mediaId))
+      .then(doc => {
+        console.log('wut');
+        console.log(doc.filedata[fileIndex]);
+        return file.stats(doc.filedata[fileIndex]);
+      })
+      .then(stat => {
+        let videoStream;
+        if (transcodeList[mediaId]) {
+          videoStream = transcodeList[mediaId];
+        } else {
+          videoStream = file.transcode(stat.path, mediaId, fileIndex);
+          transcodeList[mediaId] = videoStream;
+        }
+        console.log(transcodeResProcess[mediaId]);
+
+        if (transcodeResProcess[mediaId] !== 'in_process') {
           return res.send();
         }
+
+        videoStream.on('progress', progress => {
+          const time = progress.timemark.split(':');
+          const minutes = parseInt(time[1]);
+          if (minutes > 3) {
+            transcodeResProcess[mediaId] = 'complete';
+            return res.send();
+          }
+        });
+
+        videoStream.on('end', function() {
+          console.log('Finished transcoding ' + file);
+          const mediaIndex = transcodeList.indexOf(mediaId);
+          transcodeList.splice(mediaIndex, 1);
+        });
       });
-    });
   }
 };

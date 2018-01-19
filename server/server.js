@@ -1,16 +1,17 @@
-"use strict"
+"use strict";
 const express = require('express');
 const schedule = require('node-schedule');
 const SSDP = require('node-ssdp').Server;
+var timeout = require('connect-timeout');
 const fileWatcher = require('./src/watchers/file_cleanup.js');
 const controller = require('./src/controller.js');
 
 const server = express();
 
-schedule.scheduleJob('10 * * * * *', () => {
+/*schedule.scheduleJob('10 * * * * *', () => {
   console.log('Running file cleanup');
   fileWatcher();
-});
+});*/
 
 const broadcast = new SSDP({
   //unicastHost: '192.168.11.63',
@@ -19,16 +20,16 @@ const broadcast = new SSDP({
   sourcePort: 1900
 });
 
-broadcast.addUSN('upnp:rootdevice')
-broadcast.addUSN('urn:schemas-upnp-org:device:MediaServer:1')
+broadcast.addUSN('upnp:rootdevice');
+broadcast.addUSN('urn:schemas-upnp-org:device:MediaServer:1');
 
 broadcast.on('advertise-alive', function (heads) {
  // console.log('advertise-alive', heads)
-})
+});
 
 broadcast.on('advertise-bye', function (heads) {
   //console.log('advertise-bye', heads)
-})
+});
 
 
 server.use(function(req, res, next) {
@@ -46,15 +47,19 @@ server.get('/collections/:collection/genres/:genre', controller.collection.getBy
 server.get('/collections/:collection', controller.collection.get);
 server.get('/*', controller.static.get);
 
+
+server.use(timeout('240000s'));
 server.listen(3000, function() {
   console.log('Visit: http://127.0.0.1:3000')
   if (!process.env.NO_BROADCAST) {
     broadcast.start();
   }
 });
+
+server.timeout = 240000;
 // start server on all interfaces
 server.use(function (err, req, res, next) {
-  console.error(err.stack)
-  res.status(500).send('Something broke!')
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
 });
 
