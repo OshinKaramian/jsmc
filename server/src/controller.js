@@ -126,7 +126,6 @@ module.exports.static = {
       .then(() => dm.clearTsFiles(mediaId))
       .then(() => db.getMedia(mediaId))
       .then(doc => {
-        console.log('wut');
         console.log(doc.filedata[fileIndex]);
         return file.stats(doc.filedata[fileIndex]);
       })
@@ -135,6 +134,7 @@ module.exports.static = {
         if (transcodeList[mediaId]) {
           videoStream = transcodeList[mediaId];
         } else {
+          file.extractSubtitle(stat.path, mediaId, fileIndex);
           videoStream = file.transcode(stat.path, mediaId, fileIndex);
           transcodeList[mediaId] = videoStream;
         }
@@ -147,7 +147,7 @@ module.exports.static = {
         videoStream.on('progress', progress => {
           const time = progress.timemark.split(':');
           const minutes = parseInt(time[1]);
-          if (minutes > 3) {
+          if (minutes > 1) {
             transcodeResProcess[mediaId] = 'complete';
             return res.send();
           }

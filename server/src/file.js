@@ -125,7 +125,19 @@ module.exports.createRecord = (filePath, baseDir, category, collectionName)  => 
     });
 };
 
-module.exports.transcode = (file, mediaId, index) => {
+module.exports.extractSubtitle = (file, mediaId, index) => {
+  const ffmpegStream = ffmpeg(file)
+    .addOption('-map', '0:s:0')
+    .on('progress', function(progress) {
+      console.log('Processing caption: ' + progress.timemark + ' for ' + file);
+    })
+    .save('tmp/' + mediaId + '_' + index +'.srt'); 
+};
+
+module.exports.captureScreenShot = (file, mediaId, index) => {
+};
+
+module.exports.transcode = (file, mediaId, index, startTime = 0) => {
   const ffmpegStream  = ffmpeg(file)
     .videoCodec('copy')
     .audioCodec('aac')
