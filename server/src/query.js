@@ -84,7 +84,7 @@ let sanitizeFilenameForSearch = function(filename) {
 /**
  * Searches movie databases for the filename that matches a given entry
  *
- * @param {string} filename - File name that is being queried
+ * @param {Object} fileData - Object containing file metadata 
  * @param {string} category - Type of query, options are 'movie' and 'tv'
  * @param {string} year - Year to attach to query (not required)
  * @return {return} queried object with data from moviedb and omdb, file system data appended as well

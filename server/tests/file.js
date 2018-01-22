@@ -96,6 +96,36 @@ describe('file', function () {
     });
   });
 
+  describe.only('capture screenshot', function() {
+    this.timeout(60000);
+    const tempDir = path.join('tests', 'tmp', 'images');
+
+    beforeEach(() => {
+      return fs.mkdirs(tempDir);
+    });
+
+    afterEach(() => {
+      return fs.remove(tempDir);
+    });
+
+    it('can capture a screenshot', (done) => {
+      if (os.platform() === 'linux') {
+        return done();
+      }
+
+      const sampleFile = path.resolve(path.join('tests', 'files', 'testfile.mkv'));
+      const videoStream = file.captureScreenshot(sampleFile, '0', '0', '00:00:05');
+
+      videoStream.on('end', () => {
+        return done();
+      });
+
+      videoStream.on('error', (err) => {
+        expect(err).to.be.null;
+      });
+    });
+  });
+
   describe('transcode', function () {
     this.timeout(60000);
     const tempDir = path.join('tests', 'tmp');

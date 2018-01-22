@@ -134,7 +134,15 @@ module.exports.extractSubtitle = (file, mediaId, index) => {
     .save('tmp/' + mediaId + '_' + index +'.srt'); 
 };
 
-module.exports.captureScreenShot = (file, mediaId, index) => {
+module.exports.captureScreenshot = (file, mediaId, index, timemark) => {
+  const ffmpegStream  = ffmpeg(file)
+    .addOption('-ss', timemark)
+    .addOption('-vframes', '1')
+    .addOption('-f', 'mjpeg')
+  //  .addOption('-q:v', '2')
+    .save('tmp/' + mediaId + '_' + index +'.jpg'); 
+
+  return ffmpegStream;
 };
 
 module.exports.transcode = (file, mediaId, index, startTime = 0) => {
