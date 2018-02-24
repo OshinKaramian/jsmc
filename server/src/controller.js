@@ -11,6 +11,17 @@ const DirectoryManager = require('./directory_manager.js');
 const transcodeList = [];
 const transcodeResProcess = [];
 let db = require('./db.js')();
+const timecodeToSeconds = (timecode) => {
+  const splitTimecode = timecode.split(':');
+  const hours = parseFloat(timecode[0]);
+  const minutes = parseFloat(timecode[1]);
+  const seconds = parseFloat(timecode[2]);
+
+  const minutesToSeconds = (minuteValue) => minuteValue * 60;
+  const hoursToSeconds = (hourValue) => minutesToSeconds(hourValue * 60);
+
+  return hoursToSeconds(hours) + minutesToSeconds(minutes) + seconds;
+};
 
 module.exports.media = {
   /**
@@ -105,9 +116,9 @@ module.exports.static = {
     res.sendFile(path.join(__dirname, '..', req.url), {}, err => {
       if (!err) {
         if (path.extname(req.url) === '.ts') {
-          //setTimeout(function() {
-          //  fs.remove(path.join(__dirname, '..', req.url));
-          //}, 60000);
+          setTimeout(function() {
+            fs.remove(path.join(__dirname, '..', req.url));
+          }, 60000);
         }
       }
     });
@@ -117,6 +128,7 @@ module.exports.static = {
     console.log('start transcode ' + req.url);
     const mediaId = req.params.mediaId;
     const fileIndex = req.params.fileIndex || 0;
+    let totalTime = 1;
     const dm = new DirectoryManager(config.serverOptions.TEMP_DIR);
     if (!transcodeResProcess[mediaId]) {
       transcodeResProcess[mediaId] = 'in_process';
@@ -127,6 +139,7 @@ module.exports.static = {
       .then(() => db.getMedia(mediaId))
       .then(doc => {
         console.log(doc.filedata[fileIndex]);
+        totalTime = doc.filedata[fileIndex].duration;
         return file.stats(doc.filedata[fileIndex]);
       })
       .then(stat => {
@@ -134,7 +147,11 @@ module.exports.static = {
         if (transcodeList[mediaId]) {
           videoStream = transcodeList[mediaId];
         } else {
-          file.extractSubtitle(stat.path, mediaId, fileIndex);
+          try {
+            file.extractSubtitle(stat.path, mediaId, fileIndex);
+          } catch (ex) {
+            console.log(ex);
+          }
           videoStream = file.transcode(stat.path, mediaId, fileIndex);
           transcodeList[mediaId] = videoStream;
         }
@@ -145,9 +162,7 @@ module.exports.static = {
         }
 
         videoStream.on('progress', progress => {
-          const time = progress.timemark.split(':');
-          const minutes = parseInt(time[1]);
-          if (minutes > 1) {
+          if (progress.percent > 1.5) {
             transcodeResProcess[mediaId] = 'complete';
             return res.send();
           }

@@ -91,7 +91,6 @@ let sanitizeFilenameForSearch = function(filename) {
  */
 module.exports = function(fileData, category, year) {
   let filename = sanitizeFilenameForSearch(fileData.filename);
-
   return queryForValidObject(filename, category, year)
     .then(movieData => {
       movieData.filename = fileData.filename;
@@ -99,9 +98,12 @@ module.exports = function(fileData, category, year) {
       return new Media(movieData).getDetails();
     })
     .then(mediaObject => {
-      return mediaObject.getAssets();
+      return mediaObject.getAssets(fileData.metadata.format.filename);
     })
-    .then(mediaObject => mediaObject.addFileData(fileData.metadata))
+    .then(mediaObject => {
+     // console.log('i made it' + fileData.metadata.format.filename + ' ' + mediaObject.details.backdrop_path);
+      return mediaObject.addFileData(fileData.metadata)
+    })
     .catch((error) => {
       throw error;
     });

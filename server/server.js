@@ -4,6 +4,7 @@ const schedule = require('node-schedule');
 const SSDP = require('node-ssdp').Server;
 var timeout = require('connect-timeout');
 const fileWatcher = require('./src/watchers/file_cleanup.js');
+const updateDb = require('./src/watchers/update_db.js');
 const controller = require('./src/controller.js');
 
 const server = express();
@@ -12,6 +13,11 @@ const server = express();
   console.log('Running file cleanup');
   fileWatcher();
 });*/
+
+//schedule.scheduleJob('10 * * * * *', () => {
+//  console.log('Running file cleanup');
+//  updateDb();
+//});
 
 const broadcast = new SSDP({
   //unicastHost: '192.168.11.63',
@@ -56,10 +62,16 @@ server.listen(3000, function() {
   }
 });
 
+server.on('error', (err) => {
+  console.error(err);
+});
+
 server.timeout = 240000;
 // start server on all interfaces
 server.use(function (err, req, res, next) {
   console.error(err.stack);
   res.status(500).send('Something broke!');
 });
+
+updateDb();
 

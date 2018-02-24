@@ -27,15 +27,16 @@ var transcodeAndRun = function() {
     })
     .then(function(data) {
       console.log(data);
-      myPlayer.duration = () =>{
+      myPlayer.duration = () => {
         var fileIndex = transcodeRequestObject.fileIndex || 0;
         return mediaInfo.filedata[fileIndex].duration;
       };
       
       myPlayer.src({"src": api.media.mp4Url(transcodeRequestObject), "type":"application/x-mpegURL"});
       myPlayer.play();
+      myPlayer.pause();
+
       myPlayer.one('canplay', () => {
-        myPlayer.pause();
         myPlayer.currentTime(1);
         myPlayer.play();
       });
@@ -63,6 +64,10 @@ var transcodeAndRun = function() {
 
   myPlayer.on('mouseout', function() {
     backButton.hide()
+  });
+
+  myPlayer.on('ended', function() {
+    window.history.back();
   });
 }(window, window.videojs));
 

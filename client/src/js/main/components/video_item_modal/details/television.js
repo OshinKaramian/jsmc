@@ -42,7 +42,7 @@ const EpisodeName = React.createClass({
     return (
       <Row  key={this.props.index} style={rowStyle}>
         <Col md={10} style={columnStyle} >
-          {this.props.episode.name}
+          Episode {this.props.episode.episode_number}
         </Col>
       </Row>
     )

@@ -8,7 +8,12 @@ const request = Promise.promisify(require('request'));
 const config = require('../config/config.json');
 
 const apiBase = 'http://api.themoviedb.org/3';
-
+function delay(t, v) {
+  console.log('pausin');
+  return new Promise(function(resolve) { 
+      setTimeout(resolve.bind(null, v), t)
+  });
+};
 /**
  * Queries themoviedb.org for movie information return format is:
  * "results": [
@@ -50,8 +55,7 @@ module.exports.getMovieDetails = (id) => {
   return request(queryUrl)
     .then(response => {
       if (response.statusCode === 429) {
-        sleep.sleep(10);
-        return module.exports.getMovieDetails(id);
+        return delay(10000).then(() => module.exports.getMovieDetails(id));
       } else {
         return JSON.parse(response.body);
       }
@@ -63,8 +67,7 @@ module.exports.getTVDetails = (id) => {
   return request(queryUrl)
     .then(response => {
       if (response.statusCode === 429) {
-        sleep.sleep(10);
-        return module.exports.getTVDetails(id);
+        return delay(10000).then(() => module.exports.getTVDetails(id));
       } else {
         return JSON.parse(response.body);
       }

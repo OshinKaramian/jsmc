@@ -127,9 +127,15 @@ module.exports.createRecord = (filePath, baseDir, category, collectionName)  => 
 
 module.exports.extractSubtitle = (file, mediaId, index) => {
   const ffmpegStream = ffmpeg(file)
-    .addOption('-map', '0:s:0')
+    .addOption('-map', '0:s:0?')
     .on('progress', function(progress) {
       console.log('Processing caption: ' + progress.timemark + ' for ' + file);
+    })
+    .on('error', function(err, stdout, stderr) {
+      console.error(err);
+      console.error(stdout);
+      console.error(stderr);
+      //stream.destroy(err);
     })
     .save('tmp/' + mediaId + '_' + index +'.srt'); 
 };
@@ -139,8 +145,15 @@ module.exports.captureScreenshot = (file, mediaId, index, timemark) => {
     .addOption('-ss', timemark)
     .addOption('-vframes', '1')
     .addOption('-f', 'mjpeg')
+    .on('error', function(err, stdout, stderr) {
+      console.error(err);
+      console.error(stdout);
+      console.error(stderr);
+      //stream.destroy(err);
+    })
   //  .addOption('-q:v', '2')
-    .save('tmp/' + mediaId + '_' + index +'.jpg'); 
+    .save('assets/' + mediaId + '_' + index +'.jpg')
+    
 
   return ffmpegStream;
 };
@@ -150,8 +163,9 @@ module.exports.transcode = (file, mediaId, index, startTime = 0) => {
     .videoCodec('copy')
     .audioCodec('aac')
     .addOption('-b:a', '200k')
-    .addOption('-c:s', 'mov_text')
+    //.addOption('-c:s', 'mov_text')
     .addOption('-bsf:v', 'h264_mp4toannexb')
+    .addOption('-preset', 'ultrafast')
     .addOption('-movflags', 'faststart+frag_keyframe+empty_moov')
     .addOption('-strict', 'experimental')
     .addOption('-f', 'segment')
@@ -187,13 +201,13 @@ module.exports.stats = file => {
     });
 };
 
-module.exports.indexAllFiles = (collectionName, searchInfo) => {
+module.exports.indexAllFiles = async function(collectionName, searchInfo) {
   let options = {
     followLinks: false
   };
   let directory = searchInfo.directory;
   let category = searchInfo.type;
-
+  const files = [];
   const walker = walk.walk(directory, options);
 
   walker.on('directories', function (root, dirStatsArray, next) {
@@ -202,22 +216,38 @@ module.exports.indexAllFiles = (collectionName, searchInfo) => {
 
   walker.on('file', function (root, fileStats, next) {
     let filePath = path.join(root, fileStats.name);
-
-    module.exports.createRecord(filePath, directory, category, collectionName)
-      .finally(function() {
-        return next();
-      });
+    files.push(filePath);
+    return next();
+    //module.exports.createRecord(filePath, directory, category, collectionName)
+    //  .finally(function() {
+    //    return next();
+    //  });
   });
 
   walker.on('errors', function (root, nodeStatsArray, next) {
     return next();
   });
 
+  const createRecord = async function(files) {
+    for (const file of files) {
+      try {
+        await module.exports.createRecord(file, directory, category, collectionName);
+      } catch (ex) {
+        //console.error(`${file} - ${ex.message}`);
+      }
+    }
+
+    console.log('update complete');
+  };
+
   walker.on('end', function() {
+    createRecord(files);
     try {
       db.initDb();
     } catch(ex) {
       console.log(ex);
     }
+
+    return;
   });
 };

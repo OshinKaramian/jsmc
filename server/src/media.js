@@ -8,6 +8,7 @@ const path = require('path');
 const request = require('request');
 const queryTranslator = require('./query_translator.js');
 const db = require('./db.js')();
+const file = require('./file.js');
 
 let Media = class Media {
   constructor(mediaInfo) {
@@ -47,7 +48,7 @@ let Media = class Media {
       });
   }
 
-  getAssets() {
+  getAssets(fileLocation) {
     let writeImage = function(image_url) {
       if (!image_url) {
         return new Promise(function(resolve) {
@@ -71,17 +72,29 @@ let Media = class Media {
     const writePoster = writeImage(this.details.poster_path);
     const getBackdrop = writeImage(this.details.backdrop_path);
 
+    const self = this;
     return Promise.all([writePoster, getBackdrop])
       .then(() => {
-        if (this.details.poster_path) {
-          this.details.poster_path = 'assets' + this.details.poster_path;
+        return new Promise((resolve) => {
+        if (self.details.poster_path) {
+          self.details.poster_path = 'assets' + self.details.poster_path;
         }
 
-        if (this.details.backdrop_path) {
-          this.details.backdrop_path = 'assets' + this.details.backdrop_path;
+        if (self.details.backdrop_path) {
+          self.details.backdrop_path = 'assets' + self.details.backdrop_path;
+          return resolve(this);
+        } else {
+          const randomId = Math.floor(Math.random() * 1000);
+          const captureStream = file.captureScreenshot(fileLocation, self.details.tmdb_id, randomId, '00:10:00');
+          captureStream.on('end', () => {
+            console.log(fileLocation);
+            console.log(self.details);
+            self.details.backdrop_path = `assets/${self.details.tmdb_id}_${randomId}.jpg`;    
+            return resolve(self);
+          });
         }
-        return this;
       });
+    });
   }
 
   addFileData(fileMetadata) {
