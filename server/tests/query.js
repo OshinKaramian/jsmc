@@ -66,7 +66,7 @@ describe('Query', function() {
             filename: data.input,
             metadata: {
               format: {
-                filename: "",
+                filename: data.input, 
                 format_name: "",
                 format_long_name: "",
                 duration: ""
