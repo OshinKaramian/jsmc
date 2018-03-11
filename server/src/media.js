@@ -6,7 +6,7 @@ const Promise = require('bluebird');
 const fs = Promise.promisifyAll(require('fs-extra'));
 const path = require('path');
 const request = require('request');
-const queryTranslator = require('./query_translator.js');
+const { getDetails, getFileMetadata, getFileInfo }= require('./movie_query');
 const db = require('./db.js')();
 const file = require('./file.js');
 
@@ -17,7 +17,7 @@ let Media = class Media {
     this.details.tmdb_id = mediaInfo.tmdb_id;
     this.details.name = mediaInfo.name;
     this.details.category = mediaInfo.category;
-    this.details.filename= mediaInfo.filename;
+    this.details.filename = mediaInfo.filename;
     this.database = db;
   }
 
@@ -39,11 +39,9 @@ let Media = class Media {
   getDetails() {
     const detailsOutput = {};
 
-    return queryTranslator[this.details.category].getDetails(this.details)
+    return getDetails({ mediaType: this.details.category, filename: this.details.filename, tmdb_id: this.details.tmdb_id})
       .then((details) => {
-        detailsOutput.moviedb = details;
-        const formatDetails = queryTranslator[this.details.category].convertResponsesToMediaObject(detailsOutput);
-        Object.assign(this.details, formatDetails);
+        Object.assign(this.details, details);
         return this;
       });
   }
@@ -105,13 +103,11 @@ let Media = class Media {
       duration: fileMetadata.format.duration,
     };
 
-    const { getFileInfo, getFileMetadata = new Promise() } = queryTranslator[this.details.category];
-
-    if (getFileInfo) {
+    if (this.details.category === 'tv') {
       fileInfo.metadata = getFileInfo(fileMetadata.format.filename);
     }
 
-    return getFileMetadata({metadata: fileInfo.metadata, id: this.details.id, title: this.details.title})
+    return getFileMetadata({ mediaType: this.details.category, metadata: fileInfo.metadata, id: this.details.id })
       .then(metadata => {
         return fs.statAsync(fileInfo.filename)
           .catch(ex => {

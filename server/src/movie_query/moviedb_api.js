@@ -5,7 +5,7 @@
 const Promise = require('bluebird');
 const sleep = require('sleep');
 const request = Promise.promisify(require('request'));
-const config = require('../config/config.json');
+const config = require('../../config/config.json');
 
 const apiBase = 'http://api.themoviedb.org/3';
 function delay(t, v) {
@@ -82,8 +82,7 @@ module.exports.getEpisodeInfo = (id, episodeInfo) => {
 
   return request(queryUrl).then(function(response) {
     if (response.statusCode === 429) {
-      sleep.sleep(10);
-      return module.exports.getEpisodeInfo(id, episodeInfo);
+      return delay(10000).then(() => module.exports.getEpisodeInfo(id, episodeInfo));
     } else {
       return JSON.parse(response.body);
     }

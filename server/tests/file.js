@@ -43,7 +43,7 @@ describe('file', function () {
       const expectedOutput = {
         name: 'Hannibal',
         category: 'tv',
-        filename: 'hannibal.213.',
+        filename: 'hannibal.213.hdtv-lol.mp4',
         title: 'Hannibal',
         media_type: 'tv',
         id: 40008,
@@ -64,7 +64,7 @@ describe('file', function () {
       const expectedOutput = {
         name: 'Captain America: The Winter Soldier',
         category: 'movie',
-        filename: 'captain_america_the_winter_soldier.mpg',
+        filename: 'Captain_America_The_Winter_Soldier.mpg',
         title: 'Captain America: The Winter Soldier',
         media_type: 'movie',
         director: 'Joe Russo, Anthony Russo',
@@ -96,7 +96,7 @@ describe('file', function () {
     });
   });
 
-  describe.only('capture screenshot', function() {
+  describe('capture screenshot', function() {
     this.timeout(60000);
     const tempDir = path.join('tests', 'tmp', 'images');
 

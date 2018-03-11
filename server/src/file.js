@@ -218,10 +218,6 @@ module.exports.indexAllFiles = async function(collectionName, searchInfo) {
     let filePath = path.join(root, fileStats.name);
     files.push(filePath);
     return next();
-    //module.exports.createRecord(filePath, directory, category, collectionName)
-    //  .finally(function() {
-    //    return next();
-    //  });
   });
 
   walker.on('errors', function (root, nodeStatsArray, next) {

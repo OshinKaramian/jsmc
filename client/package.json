@@ -6,7 +6,7 @@
   "scripts": {
     "start": "gulp",
     "test": "mocha --compilers js:babel-core/register --require ./tests/utils/dom.js --reporter spec ./tests/",
-    "electron-package-win": "electron-packager.cmd . --platform=win32 --arch=x64 --electron-version=1.6.11 --overwrite --icon='./pixelturtle.ico'",
+    "electron-package-win": "electron-packager.cmd . --platform=win32 --arch=x64 --electron-version=1.6.11 --overwrite",
     "electron-dev": "./node_modules/.bin/electron.cmd ."
   },
   "author": "",
@@ -16,8 +16,8 @@
     "bootstrap": "^3.3.5",
     "electron-prebuilt-compile": "^1.6.11",
     "gutil": "^1.6.4",
-    "hapi": "*",
-    "inert": "^3.1.0",
+    "hapi": "^17.0.0",
+    "inert": "^5.1.0",
     "jquery": "^2.1.4",
     "keycode": "^2.1.9",
     "node-ssdp": "^3.2.1",
@@ -28,7 +28,7 @@
     "react-dom": "15.6.*",
     "react-modal": "^1.*.*",
     "react-simpletabs-alt": "^0.7.1",
-    "slick-carousel": "^1.5.9",
+    "slick-carousel": "1.5.9",
     "video.js": "^6.2.0",
     "videojs-contrib-hls": "^5.8.2",
     "walk": "^2.3.9"
@@ -41,6 +41,7 @@
     "babelify": "^7.2.0",
     "browserify": "^12.0.1",
     "del": "^2.0.2",
+    "electron-packager": "^11.1.0",
     "electron-windows-installer": "^1.2.5",
     "gulp": "^3.9.0",
     "gulp-concat": "^2.6.0",

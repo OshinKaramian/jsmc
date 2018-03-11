@@ -129,89 +129,14 @@ module.exports.tv = {
   },
 
   getDetails: ({ tmdb_id, filename }) => {
-    return moviedbApi.getTVDetails(tmdb_id);
-  },
-
-  getFileInfo: function(filename) {
-    let episodeRegExp = new RegExp('(S[0-9][0-9]E[0-9][0-9])', 'i');
-    let episodeNumbersRegExp = new RegExp('\\b[0-9]?[0-9][0-9][0-9]\\b', 'i');
-    let episodeNumbersRegExpWithX = new RegExp('\\b[0-9]?[0-9]x[0-9][0-9]\\b', 'i');
-    let episodeNumbersRegExpWithDash = new RegExp('\\b[0-9]?[0-9]-[0-9][0-9]\\b', 'i');
-    let regExOutput = episodeRegExp.exec(filename);
-    let episodeObject;
-
-    if (!regExOutput) {
-      regExOutput = episodeNumbersRegExp.exec(filename);
-    } else {
-      let splitObject = regExOutput[0].toLowerCase().slice(1).split('e');
-      episodeObject = {
-        episode: {
-          season_number: parseInt(splitObject[0]),
-          episode_number: parseInt(splitObject[1])
-        }
-      };
-      return episodeObject;
-    }
-
-    if (!regExOutput) {
-      regExOutput = episodeNumbersRegExpWithX.exec(filename);
-    } else {
-      let episodeNumber = regExOutput[0].slice(regExOutput[0].length - 2, regExOutput[0].length);
-      let seasonNumber = regExOutput[0].substr(0, regExOutput[0].length - 2);
-
-      episodeObject = {
-        episode: {
-          season_number: parseInt(seasonNumber),
-          episode_number: parseInt(episodeNumber)
-        }
-      };
-
-      return episodeObject;
-    }
-
-    if (!regExOutput) {
-      regExOutput = episodeNumbersRegExpWithDash.exec(filename);
-    } else {
-      let splitObject = regExOutput[0].toLowerCase().slice(1).split('x');
-      episodeObject = {
-        episode: {
-          season_number: parseInt(splitObject[0]),
-          episode_number: parseInt(splitObject[1])
-        }
-      };
-
-      return episodeObject;
-    }
-
-    if (regExOutput) {
-      let splitObject = regExOutput[0].toLowerCase().slice(1).split('-');
-      episodeObject = {
-        episode: {
-          season_number: parseInt(splitObject[0]),
-          episode_number: parseInt(splitObject[1])
-        }
-      };
-
-      return episodeObject;
-    }
-
-    return null;
-  },
-
-  getFileMetadata: ({ id, metadata, title }) => {
-    return moviedbApi.getEpisodeInfo(id, metadata.episode)
-      .then(episodeInfo => {
-        if (episodeInfo) {
-          metadata.episode = Object.assign(metadata.episode, {
-            name: episodeInfo.name,
-            overview: episodeInfo.overview,
-            image: episodeInfo.still_path ? `https://image.tmdb.org/t/p/original${episodeInfo.still_path}` : null,
-            guest_stars: episodeInfo.guest_stars
-          });
-        }
-
-        return metadata;
-    });
+    return moviedbApi.getTVDetails(tmdb_id)
+      .then(details => {
+        const detailsOutput = {
+          moviedb: details
+        };
+        
+        return this.tv.convertResponsesToMediaObject(detailsOutput);
+      });
   }
 };
 
@@ -284,10 +209,11 @@ module.exports.movie = {
       tomato_user_rating: '',//omdbResponse.tomatoUserMeter,
       tomato_image: '',//omdbResponse.tomatoImage
     };
+
     return mediaObject;
   },
 
-  getDetails: ({tmdb_id}) => {
+  getDetails: ({ tmdb_id }) => {
     let movieDbInfo = {};
     let imdbInfo = {};
 
@@ -298,9 +224,11 @@ module.exports.movie = {
       })
       .then(imdbOutput => {
         Object.assign(imdbOutput, movieDbInfo);
-        return imdbOutput;
-      })
-  },
+        const detailsOutput = {
+          moviedb: imdbOutput
+        };
 
-  getFileMetadata: () => new Promise(resolve => resolve(''))
+        return this.movie.convertResponsesToMediaObject(detailsOutput);
+      });
+  }
 };

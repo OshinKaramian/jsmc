@@ -1,12 +1,11 @@
 var
   hapi = require('hapi'),
   inert = require('inert'),
-  server = new hapi.Server();
+  server = new hapi.Server({ port: 8000});
 
-server.register(inert, function () {
+const init = async () => {
 
-  server.connection({ port: 8000});
-
+  await server.register(require('inert'));
   server.route({
     method: 'GET',
     path: '/{param*}',
@@ -14,9 +13,10 @@ server.register(inert, function () {
       directory: { path: 'dist' }
      }
   });
-
-  server.start(function() { 
-    console.log('Visit: http://127.0.0.1:8000');
-  });
   
-}); // requires a callback function but can be blank
+
+  await server.start();
+  console.log(`Server running at: ${server.info.uri}`);
+};
+
+init();
