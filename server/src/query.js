@@ -27,8 +27,5 @@ module.exports = function(fileData, category, year) {
     })
     .then(mediaObject => {
       return mediaObject.addFileData(fileData.metadata)
-    })
-    .catch((error) => {
-      throw error;
     });
 };

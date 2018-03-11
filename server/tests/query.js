@@ -101,7 +101,7 @@ describe('Query', function() {
         }
       };
 
-      query(queryObject, 'movie', null)
+      return query(queryObject, 'movie', null)
         .then((queryOutput) => {
           done('Query returned data when it should not have: ' + queryOutput);
           return queryOutput;

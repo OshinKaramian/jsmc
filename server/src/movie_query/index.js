@@ -54,7 +54,7 @@ let sanitizeFilenameForSearch = function(filename) {
  */
 module.exports.queryForValidObject = function({ filename, mediaType, year, searchTerm }) {
   if (!filename && !searchTerm) {
-    throw new Error('No Filename for Query');
+    return new Promise((resolve, reject) => reject(new Error('No Filename for Query')));
   }
 
   if (!searchTerm) {
