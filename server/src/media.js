@@ -6,7 +6,6 @@ const Promise = require('bluebird');
 const fs = Promise.promisifyAll(require('fs-extra'));
 const path = require('path');
 const request = require('request');
-const { getDetails, getFileMetadata, getFileInfo }= require('./movie_query');
 const db = require('./db.js')();
 const file = require('./file.js');
 

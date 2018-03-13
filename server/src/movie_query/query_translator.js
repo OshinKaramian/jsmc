@@ -2,9 +2,78 @@
  * @file Queries both omdbapi and moviedb to generate an object based on the filename
  */
 'use strict';
-const moviedbApi = require('./moviedb_api.js');
 const imdbApi = require('./imdb_api.js');
 
+module.exports = ({ moviedbKey }) => {
+  const moviedbApi = require('./moviedb_api.js')({ apiKey: moviedbKey });
+    
+  const tvConvert = function(info) {
+    let mediaObject = {
+      title: info.moviedb.name,
+      media_type: 'tv',
+      id: info.moviedb.id,
+      long_plot: info.moviedb.overview,
+      release_date: info.moviedb.first_air_date,
+      poster_path: info.moviedb.poster_path,
+      backdrop_path: info.moviedb.backdrop_path,
+      rated: '',//info.imdb.rating,
+      director: info.moviedb.created_by.map(creator => creator.name).join(','),
+      writer: '',//info.moviedb.created_by[0].name,
+      genres: info.moviedb.genres,
+      actors: '',
+      metacritic_rating: '',
+      awards: '',
+      short_plot: '',
+      imdb_rating: '',//info.imdb.imdbScore,
+      imdb_id: info.moviedb.external_ids.imdb_id,
+      tomato_meter: '',
+      tomato_user_rating: '',
+      tomato_image: ''
+    };
+
+    return mediaObject;
+  };
+
+  const movieConvert = function(info) {
+    const crew = info.moviedb.credits.crew;
+    const directors = crew.filter(crewInfo => crewInfo.job === 'Director');
+    const writers = crew.filter(crewInfo => crewInfo.job === 'Screenplay');
+    let actors = info.moviedb.credits.cast;
+
+    if (actors.length > 3) {
+      actors = actors.splice(0,3);
+    }
+
+    let mediaObject = {
+      title: info.moviedb.title,
+      media_type: 'movie',
+      id: info.moviedb.id,
+      long_plot: info.moviedb.overview,
+      release_date: info.moviedb.release_date,
+      poster_path: info.moviedb.poster_path,
+      budget: info.moviedb.budget,
+      backdrop_path: info.moviedb.backdrop_path,
+      genres: info.moviedb.genres,
+      rated: info.moviedb.rating,//omdbResponse.Rated,
+      director: directors.map(people => people.name).join(', '),//omdbResponse.Director,
+      writer: writers.map(people => people.name).join(', '),//omdbResponse.Writer,
+      actors: actors.map(people => people.name).join(', '),//omdbResponse.Actors,
+      metacritic_rating: '',//omdbResponse.Metascore,
+      awards: info.moviedb.awards,//omdbResponse.Awards,
+      short_plot:'',// omdbResponse.Plot,
+      imdb_rating: info.moviedb.imdbScore,//omdbResponse.imdbRating,
+      imdb_id: '',//omdbResponse.imdbID,
+      tomato_meter: '',//omdbResponse.tomatoMeter,
+      tomato_user_rating: '',//omdbResponse.tomatoUserMeter,
+      tomato_image: '',//omdbResponse.tomatoImage
+    };
+
+    return mediaObject;
+  };
+
+
+
+  return {
 /**
  * Determines whether a given response is a valid object
  *
@@ -12,7 +81,7 @@ const imdbApi = require('./imdb_api.js');
  * @return {object} if response contains something valid it is returned
  *  name: search name of object, id: tmdb id of object
  */
-module.exports.findValidObject = function(searchTerm, moviedbResponse) {
+findValidObject: function(searchTerm, moviedbResponse) {
   let parsedResponses = moviedbResponse.results;
 
   const validResponses = parsedResponses.filter(response => {
@@ -63,12 +132,12 @@ module.exports.findValidObject = function(searchTerm, moviedbResponse) {
       tmdb_id: correctMatch.id
     };
   }
-};
+},
 
 /**
  * Contains all functionality to transform and extract tv queries to a common format
  */
-module.exports.tv = {
+tv: {
 
   /**
    * Gets the title from a moviedb object
@@ -101,32 +170,7 @@ module.exports.tv = {
    * @param {object} omdbResponse - omdbapi object
    * @return {object} common format media object
    */
-  convertResponsesToMediaObject: function(info) {
-    let mediaObject = {
-      title: info.moviedb.name,
-      media_type: 'tv',
-      id: info.moviedb.id,
-      long_plot: info.moviedb.overview,
-      release_date: info.moviedb.first_air_date,
-      poster_path: info.moviedb.poster_path,
-      backdrop_path: info.moviedb.backdrop_path,
-      rated: '',//info.imdb.rating,
-      director: info.moviedb.created_by.map(creator => creator.name).join(','),
-      writer: '',//info.moviedb.created_by[0].name,
-      genres: info.moviedb.genres,
-      actors: '',
-      metacritic_rating: '',
-      awards: '',
-      short_plot: '',
-      imdb_rating: '',//info.imdb.imdbScore,
-      imdb_id: info.moviedb.external_ids.imdb_id,
-      tomato_meter: '',
-      tomato_user_rating: '',
-      tomato_image: ''
-    };
-
-    return mediaObject;
-  },
+  convertResponsesToMediaObject: tvConvert,
 
   getDetails: ({ tmdb_id, filename }) => {
     return moviedbApi.getTVDetails(tmdb_id)
@@ -135,15 +179,15 @@ module.exports.tv = {
           moviedb: details
         };
         
-        return this.tv.convertResponsesToMediaObject(detailsOutput);
+        return tvConvert(detailsOutput);
       });
   }
-};
+},
 
 /**
  * Contains all functionality to transform and extract movie queries to a common format
  */
-module.exports.movie = {
+movie: {
 
   /**
    * Gets the title from a moviedb object
@@ -176,42 +220,7 @@ module.exports.movie = {
    * @param {object} omdbResponse - omdbapi object
    * @return {object} common format media object
    */
-  convertResponsesToMediaObject: function(info) {
-    const crew = info.moviedb.credits.crew;
-    const directors = crew.filter(crewInfo => crewInfo.job === 'Director');
-    const writers = crew.filter(crewInfo => crewInfo.job === 'Screenplay');
-    let actors = info.moviedb.credits.cast;
-
-    if (actors.length > 3) {
-      actors = actors.splice(0,3);
-    }
-
-    let mediaObject = {
-      title: info.moviedb.title,
-      media_type: 'movie',
-      id: info.moviedb.id,
-      long_plot: info.moviedb.overview,
-      release_date: info.moviedb.release_date,
-      poster_path: info.moviedb.poster_path,
-      budget: info.moviedb.budget,
-      backdrop_path: info.moviedb.backdrop_path,
-      genres: info.moviedb.genres,
-      rated: info.moviedb.rating,//omdbResponse.Rated,
-      director: directors.map(people => people.name).join(', '),//omdbResponse.Director,
-      writer: writers.map(people => people.name).join(', '),//omdbResponse.Writer,
-      actors: actors.map(people => people.name).join(', '),//omdbResponse.Actors,
-      metacritic_rating: '',//omdbResponse.Metascore,
-      awards: info.moviedb.awards,//omdbResponse.Awards,
-      short_plot:'',// omdbResponse.Plot,
-      imdb_rating: info.moviedb.imdbScore,//omdbResponse.imdbRating,
-      imdb_id: '',//omdbResponse.imdbID,
-      tomato_meter: '',//omdbResponse.tomatoMeter,
-      tomato_user_rating: '',//omdbResponse.tomatoUserMeter,
-      tomato_image: '',//omdbResponse.tomatoImage
-    };
-
-    return mediaObject;
-  },
+  convertResponsesToMediaObject: movieConvert,
 
   getDetails: ({ tmdb_id }) => {
     let movieDbInfo = {};
@@ -228,7 +237,9 @@ module.exports.movie = {
           moviedb: imdbOutput
         };
 
-        return this.movie.convertResponsesToMediaObject(detailsOutput);
+        return movieConvert(detailsOutput);
       });
+  }
+}
   }
 };

@@ -1,6 +1,4 @@
 'use strict';
-const queryTranslator = require('./query_translator.js');
-const moviedb = require('./moviedb_api.js');
 const Promise = require('bluebird');
 const path = require('path');
 
@@ -52,101 +50,88 @@ let sanitizeFilenameForSearch = function(filename) {
  * @param {string} year - Year to attach to query (not required)
  * @return {object} matching moviedb response, no filename exception if query fails
  */
-module.exports.queryForValidObject = function({ filename, mediaType, year, searchTerm }) {
-  if (!filename && !searchTerm) {
-    return new Promise((resolve, reject) => reject(new Error('No Filename for Query')));
-  }
+module.exports = ({ moviedbKey }) => {
+  const moviedb = require('./moviedb_api.js')({ apiKey: moviedbKey });
+  const queryTranslator = require('./query_translator.js')({ moviedbKey });
 
-  if (!searchTerm) {
-    searchTerm = sanitizeFilenameForSearch(filename);
-  } else {
-    searchTerm = sanitizeFilenameForSearch(searchTerm);
-  }
+  const query = function({ filename, mediaType, year, searchTerm }) {
+    if (!filename && !searchTerm) {
+      return new Promise((resolve, reject) => reject(new Error('No Filename for Query')));
+    }
 
-  return moviedb.search(searchTerm, mediaType, year)
-  .then(function (response) {
-    if (response.statusCode == 200) {
-      let parsedResponse = JSON.parse(response.body);
-      if (parsedResponse.total_results == 0) {
-        let newQueryInfo = modifyFilenameForNextSearch(searchTerm); 
-
-        return module.exports.queryForValidObject({ 
-          filename: filename, 
-          year: newQueryInfo.year,
-          mediaType,
-          searchTerm: newQueryInfo.filename
-        });
-      } else {
-        const match = queryTranslator.findValidObject(searchTerm, parsedResponse);
-        match.filename = path.basename(filename);
-        match.category = mediaType;
-
-        return match;
-      }
-    } else if (response.statusCode == 429) {
-      return Promise.delay(10000).then(() => module.exports.queryForValidObject({ 
-        filename, 
-        mediaType, 
-        year,
-        searchTerm
-      }));
+    if (!searchTerm) {
+      searchTerm = sanitizeFilenameForSearch(filename);
     } else {
-      throw new Error('Unexpected HTTP Status Code: ' + response.statusCode);
-    }
-  })
-  .then(queryInfo => {
-    return queryTranslator[mediaType].getDetails(queryInfo)
-      .then(details => Object.assign(queryInfo, details));
-  })
-  .then(queryDetailsInfo => {
-    if (mediaType === 'tv') {
-      const metadata = module.exports.getFileInfo(filename);
-
-      if (metadata.episode) {
-      return moviedb.getEpisodeInfo(queryDetailsInfo.id, metadata.episode)
-          .then(episodeInfo => {
-            if (episodeInfo) {
-              metadata.episode = Object.assign(metadata.episode, {
-                name: episodeInfo.name,
-                overview: episodeInfo.overview,
-                image: episodeInfo.still_path ? `https://image.tmdb.org/t/p/original${episodeInfo.still_path}` : null,
-                guest_stars: episodeInfo.guest_stars
-              });
-            }
-
-            return Object.assign(queryDetailsInfo, metadata);
-        });
-      } 
+      searchTerm = sanitizeFilenameForSearch(searchTerm);
     }
 
-    return queryDetailsInfo;
-  })
-  .catch(function(error) {
-    throw error;
-  });
-};
+    return moviedb.search(searchTerm, mediaType, year)
+    .then(function (response) {
+      if (response.statusCode == 200) {
+        let parsedResponse = JSON.parse(response.body);
+        if (parsedResponse.total_results == 0) {
+          let newQueryInfo = modifyFilenameForNextSearch(searchTerm); 
 
-module.exports.getFileMetadata = function({ mediaType, metadata, id }) {
-  if (mediaType === 'tv') {
-    return moviedb.getEpisodeInfo(id, metadata.episode)
-      .then(episodeInfo => {
-        if (episodeInfo) {
-          metadata.episode = Object.assign(metadata.episode, {
-            name: episodeInfo.name,
-            overview: episodeInfo.overview,
-            image: episodeInfo.still_path ? `https://image.tmdb.org/t/p/original${episodeInfo.still_path}` : null,
-            guest_stars: episodeInfo.guest_stars
+          return query({ 
+            filename: filename, 
+            year: newQueryInfo.year,
+            mediaType,
+            searchTerm: newQueryInfo.filename
           });
+        } else {
+          const match = queryTranslator.findValidObject(searchTerm, parsedResponse);
+          match.filename = path.basename(filename);
+          match.category = mediaType;
+
+          return match;
         }
+      } else if (response.statusCode == 429) {
+        return Promise.delay(10000).then(() => query({ 
+          filename, 
+          mediaType, 
+          year,
+          searchTerm
+        }));
+      } else {
+        throw new Error('Unexpected HTTP Status Code: ' + response.statusCode);
+      }
+    })
+    .then(queryInfo => {
+      return queryTranslator[mediaType].getDetails(queryInfo)
+        .then(details => Object.assign(queryInfo, details));
+    })
+    .then(queryDetailsInfo => {
+      if (mediaType === 'tv') {
+        const metadata = getFileInfo(filename);
 
-        return metadata;
+        if (metadata.episode) {
+        return moviedb.getEpisodeInfo(queryDetailsInfo.id, metadata.episode)
+            .then(episodeInfo => {
+              if (episodeInfo) {
+                metadata.episode = Object.assign(metadata.episode, {
+                  name: episodeInfo.name,
+                  overview: episodeInfo.overview,
+                  image: episodeInfo.still_path ? `https://image.tmdb.org/t/p/original${episodeInfo.still_path}` : null,
+                  guest_stars: episodeInfo.guest_stars
+                });
+              }
+
+              return Object.assign(queryDetailsInfo, metadata);
+          });
+        } 
+      }
+
+      return queryDetailsInfo;
+    })
+    .catch(function(error) {
+      throw error;
     });
-  }
+  };
 
-  return new Promise(resolve => resolve(''));
+  return query;
 };
 
-module.exports.getFileInfo = function(filename) {
+const getFileInfo = function(filename) {
   let episodeRegExp = new RegExp('(S[0-9][0-9]E[0-9][0-9])', 'i');
   let episodeNumbersRegExp = new RegExp('\\b[0-9]?[0-9][0-9][0-9]\\b', 'i');
   let episodeNumbersRegExpWithX = new RegExp('\\b[0-9]?[0-9]x[0-9][0-9]\\b', 'i');

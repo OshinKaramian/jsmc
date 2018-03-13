@@ -4,7 +4,8 @@
 'use strict';
 const Media = require('./media.js');
 const Promise = require('bluebird');
-const { queryForValidObject } = require('./movie_query/');
+const { apiKey } = require('../config/config.json');
+const query = require('./movie_query/')({ moviedbKey: apiKey });
 
 
 
@@ -18,7 +19,7 @@ const { queryForValidObject } = require('./movie_query/');
  */
 module.exports = function(fileData, category, year) {
   const { filename } = fileData.metadata.format;
-  return queryForValidObject({ filename, mediaType: category, year, searchTerm: filename })
+  return query({ filename, mediaType: category, year, searchTerm: filename })
     .then(movieData => {
       if (movieData.episode) {
         fileData.metadata.episode = movieData.episode;
