@@ -53,7 +53,7 @@ describe('file', function () {
       };
 
       const expectedFileData = [{
-        filename: 'tmp\\baseDir\\hannibal.213.hdtv-lol.mp4',
+        filename: path.join('tmp', 'baseDir', 'hannibal.213.hdtv-lol.mp4'),
         codecShort: 'fnm',
         codecLong: 'format name long',
         duration: undefined,
