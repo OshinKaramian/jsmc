@@ -12,6 +12,14 @@ let modifyFilenameForNextSearch = function(filename) {
   let lastIndex;
 
   filename = filename.split('+');
+  if (filename.length === 1) {
+    console.log('spooky');
+    return {
+      filename: null,
+      year: null
+    } 
+  }
+
   lastIndex  = filename.pop();
   filename = filename.join('+');
 
@@ -42,6 +50,12 @@ let sanitizeFilenameForSearch = function(filename) {
   return sanitizedFilename;
 };
 
+function delay(t, v) {
+  return new Promise(function(resolve) { 
+      setTimeout(resolve.bind(null, v), t)
+  });
+};
+
 /**
  * Queries moviedb repeatedly until finding a match or determining no match exists
  *
@@ -55,7 +69,7 @@ module.exports = ({ moviedbKey }) => {
   const queryTranslator = require('./query_translator.js')({ moviedbKey });
 
   const query = function({ filename, mediaType, year, searchTerm }) {
-    if (!filename && !searchTerm) {
+    if (!filename || !searchTerm) {
       return new Promise((resolve, reject) => reject(new Error('No Filename for Query')));
     }
 
@@ -67,7 +81,7 @@ module.exports = ({ moviedbKey }) => {
 
     return moviedb.search(searchTerm, mediaType, year)
     .then(function (response) {
-      if (response.statusCode == 200) {
+      if (response.statusCode === 200) {
         let parsedResponse = JSON.parse(response.body);
         if (parsedResponse.total_results == 0) {
           let newQueryInfo = modifyFilenameForNextSearch(searchTerm); 
@@ -80,13 +94,17 @@ module.exports = ({ moviedbKey }) => {
           });
         } else {
           const match = queryTranslator.findValidObject(searchTerm, parsedResponse);
+
           match.filename = path.basename(filename);
           match.category = mediaType;
 
           return match;
         }
-      } else if (response.statusCode == 429) {
-        return Promise.delay(10000).then(() => query({ 
+      } else if (response.statusCode === 429) {
+        console.log('owned noob');
+        console.log(filename);
+        console.log(searchTerm);
+        return delay(10000).then(() => query({ 
           filename, 
           mediaType, 
           year,
@@ -123,8 +141,9 @@ module.exports = ({ moviedbKey }) => {
 
       return queryDetailsInfo;
     })
-    .catch(function(error) {
-      throw error;
+    .catch(ex => {
+      console.error('query bad news bears' + filePath);
+      throw ex;
     });
   };
 
