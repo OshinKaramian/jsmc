@@ -11,6 +11,7 @@ const DirectoryManager = require('./directory_manager.js');
 const transcodeList = [];
 const transcodeResProcess = [];
 let db = require('./db.js')();
+
 const timecodeToSeconds = (timecode) => {
   const splitTimecode = timecode.split(':');
   const hours = parseFloat(timecode[0]);

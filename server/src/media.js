@@ -14,10 +14,13 @@ let Media = class Media {
   constructor(mediaInfo) {
     this.filedata = [];
     this.details = {};
-    this.details.tmdb_id = mediaInfo.tmdb_id;
-    this.details.name = mediaInfo.name;
-    this.details.category = mediaInfo.category;
-    this.details.filename = mediaInfo.filename;
+
+    Object.assign(this.details, mediaInfo);
+    
+    if (this.details.episode) {
+      delete this.details.episode;
+    }
+
     this.database = db;
   }
 
@@ -33,16 +36,6 @@ let Media = class Media {
         mediaObj.filedata = filedata;
 
         return mediaObj;
-      });
-  }
-
-  getDetails() {
-    const detailsOutput = {};
-
-    return getDetails({ mediaType: this.details.category, filename: this.details.filename, tmdb_id: this.details.tmdb_id})
-      .then((details) => {
-        Object.assign(this.details, details);
-        return this;
       });
   }
 
@@ -90,6 +83,10 @@ let Media = class Media {
             self.details.backdrop_path = `assets/${self.details.tmdb_id}_${randomId}.jpg`;    
             return resolve(self);
           });
+
+          captureStream.on('error', () => {
+            return resolve(self);
+          });
         }
       });
     });
@@ -103,19 +100,16 @@ let Media = class Media {
       duration: fileMetadata.format.duration,
     };
 
-    if (this.details.category === 'tv') {
-      fileInfo.metadata = getFileInfo(fileMetadata.format.filename);
+    if (fileMetadata.episode) {
+      fileInfo.metadata = { episode: fileMetadata.episode }; 
     }
 
-    return getFileMetadata({ mediaType: this.details.category, metadata: fileInfo.metadata, id: this.details.id })
-      .then(metadata => {
-        return fs.statAsync(fileInfo.filename)
-          .catch(ex => {
-            return {
-              path: fileInfo.filename
-            };
-          });
-      })
+    return fs.statAsync(fileInfo.filename)
+      .catch(ex => {
+        return {
+          path: fileInfo.filename
+        };
+       })
       .then(stats => {
         try {
           fileInfo.create_time = stats.ctime.getTime();
@@ -124,6 +118,7 @@ let Media = class Media {
           fileInfo.create_time = '';
           fileInfo.access_time = '';
         }
+
         this.filedata.push(fileInfo);
         return this;
       });

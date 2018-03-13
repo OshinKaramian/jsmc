@@ -52,9 +52,31 @@ describe('file', function () {
         writer: ''
       };
 
+      const expectedFileData = [{
+        filename: 'tmp\\baseDir\\hannibal.213.hdtv-lol.mp4',
+        codecShort: 'fnm',
+        codecLong: 'format name long',
+        duration: undefined,
+        metadata: { 
+          episode: {
+            season_number: 2,
+            episode_number: 13,
+            name: 'Mizumono',
+            overview: 'Springing their trap, Jack, Will and Alana face off with Hannibal in a bloody final showdown, but the doctor has a few surprises of his own.',
+            image: 'https://image.tmdb.org/t/p/original/40jqX3XRk6W97gscX5rj4kTy411.jpg',
+            guest_stars: [] 
+          }
+        },
+        create_time: '',
+        access_time: ''
+      }];
+
       return file.createRecord(fileName, baseDir, category, collectionName)
         .then(() => db.findMedia('Hannibal'))
-        .then(queryOutput => expect(queryOutput[0]).to.include(expectedOutput));
+        .then(queryOutput => {
+          expect(queryOutput[0]).to.include(expectedOutput)
+          return expect(queryOutput[0].filedata[0]).to.deep.equal(expectedFileData[0]);
+        });
     });
 
     it('can create a proper record for a movie', () => {

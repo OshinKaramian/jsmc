@@ -63,7 +63,8 @@ module.exports.queryForValidObject = function({ filename, mediaType, year, searc
     searchTerm = sanitizeFilenameForSearch(searchTerm);
   }
 
-  return moviedb.search(searchTerm, mediaType, year).then(function (response) {
+  return moviedb.search(searchTerm, mediaType, year)
+  .then(function (response) {
     if (response.statusCode == 200) {
       let parsedResponse = JSON.parse(response.body);
       if (parsedResponse.total_results == 0) {
@@ -92,13 +93,37 @@ module.exports.queryForValidObject = function({ filename, mediaType, year, searc
     } else {
       throw new Error('Unexpected HTTP Status Code: ' + response.statusCode);
     }
-  }).catch(function(error) {
+  })
+  .then(queryInfo => {
+    return queryTranslator[mediaType].getDetails(queryInfo)
+      .then(details => Object.assign(queryInfo, details));
+  })
+  .then(queryDetailsInfo => {
+    if (mediaType === 'tv') {
+      const metadata = module.exports.getFileInfo(filename);
+
+      if (metadata.episode) {
+      return moviedb.getEpisodeInfo(queryDetailsInfo.id, metadata.episode)
+          .then(episodeInfo => {
+            if (episodeInfo) {
+              metadata.episode = Object.assign(metadata.episode, {
+                name: episodeInfo.name,
+                overview: episodeInfo.overview,
+                image: episodeInfo.still_path ? `https://image.tmdb.org/t/p/original${episodeInfo.still_path}` : null,
+                guest_stars: episodeInfo.guest_stars
+              });
+            }
+
+            return Object.assign(queryDetailsInfo, metadata);
+        });
+      } 
+    }
+
+    return queryDetailsInfo;
+  })
+  .catch(function(error) {
     throw error;
   });
-};
-
-module.exports.getDetails = function({ mediaType, tmdb_id, filename }) {
-  return queryTranslator[mediaType].getDetails({tmdb_id, filename});
 };
 
 module.exports.getFileMetadata = function({ mediaType, metadata, id }) {
@@ -184,5 +209,5 @@ module.exports.getFileInfo = function(filename) {
     return episodeObject;
   }
 
-  return null;
+  return {};
 };

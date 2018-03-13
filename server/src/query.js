@@ -20,11 +20,13 @@ module.exports = function(fileData, category, year) {
   const { filename } = fileData.metadata.format;
   return queryForValidObject({ filename, mediaType: category, year, searchTerm: filename })
     .then(movieData => {
-      return new Media(movieData).getDetails();
+      if (movieData.episode) {
+        fileData.metadata.episode = movieData.episode;
+      }
+
+      return new Media(movieData);
     })
-    .then(mediaObject => {
-      return mediaObject.getAssets(fileData.metadata.format.filename);
-    })
+    .then(mediaObject => mediaObject.getAssets(fileData.metadata.format.filename))
     .then(mediaObject => {
       return mediaObject.addFileData(fileData.metadata)
     });
