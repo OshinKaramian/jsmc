@@ -56,101 +56,7 @@ function delay(t, v) {
   });
 };
 
-/**
- * Queries moviedb repeatedly until finding a match or determining no match exists
- *
- * @param {string} filename - File name that is being queried
- * @param {string} category - Type of query, options are 'movie' and 'tv'
- * @param {string} year - Year to attach to query (not required)
- * @return {object} matching moviedb response, no filename exception if query fails
- */
-module.exports = ({ moviedbKey }) => {
-  const moviedb = require('./moviedb_api.js')({ apiKey: moviedbKey });
-  const queryTranslator = require('./query_translator.js')({ moviedbKey });
-
-  const query = function({ filename, mediaType, year, searchTerm }) {
-    if (!filename || !searchTerm) {
-      return new Promise((resolve, reject) => reject(new Error('No Filename for Query')));
-    }
-
-    if (!searchTerm) {
-      searchTerm = sanitizeFilenameForSearch(filename);
-    } else {
-      searchTerm = sanitizeFilenameForSearch(searchTerm);
-    }
-
-    return moviedb.search(searchTerm, mediaType, year)
-    .then(function (response) {
-      if (response.statusCode === 200) {
-        let parsedResponse = JSON.parse(response.body);
-        if (parsedResponse.total_results == 0) {
-          let newQueryInfo = modifyFilenameForNextSearch(searchTerm); 
-
-          return query({ 
-            filename: filename, 
-            year: newQueryInfo.year,
-            mediaType,
-            searchTerm: newQueryInfo.filename
-          });
-        } else {
-          const match = queryTranslator.findValidObject(searchTerm, parsedResponse);
-
-          match.filename = path.basename(filename);
-          match.category = mediaType;
-
-          return match;
-        }
-      } else if (response.statusCode === 429) {
-        console.log('owned noob');
-        console.log(filename);
-        console.log(searchTerm);
-        return delay(10000).then(() => query({ 
-          filename, 
-          mediaType, 
-          year,
-          searchTerm
-        }));
-      } else {
-        throw new Error('Unexpected HTTP Status Code: ' + response.statusCode);
-      }
-    })
-    .then(queryInfo => {
-      return queryTranslator[mediaType].getDetails(queryInfo)
-        .then(details => Object.assign(queryInfo, details));
-    })
-    .then(queryDetailsInfo => {
-      if (mediaType === 'tv') {
-        const metadata = getFileInfo(filename);
-
-        if (metadata.episode) {
-        return moviedb.getEpisodeInfo(queryDetailsInfo.id, metadata.episode)
-            .then(episodeInfo => {
-              if (episodeInfo) {
-                metadata.episode = Object.assign(metadata.episode, {
-                  name: episodeInfo.name,
-                  overview: episodeInfo.overview,
-                  image: episodeInfo.still_path ? `https://image.tmdb.org/t/p/original${episodeInfo.still_path}` : null,
-                  guest_stars: episodeInfo.guest_stars
-                });
-              }
-
-              return Object.assign(queryDetailsInfo, metadata);
-          });
-        } 
-      }
-
-      return queryDetailsInfo;
-    })
-    .catch(ex => {
-      console.error('query bad news bears' + filePath);
-      throw ex;
-    });
-  };
-
-  return query;
-};
-
-const getFileInfo = function(filename) {
+const parseEpisodeInfo = function(filename) {
   let episodeRegExp = new RegExp('(S[0-9][0-9]E[0-9][0-9])', 'i');
   let episodeNumbersRegExp = new RegExp('\\b[0-9]?[0-9][0-9][0-9]\\b', 'i');
   let episodeNumbersRegExpWithX = new RegExp('\\b[0-9]?[0-9]x[0-9][0-9]\\b', 'i');
@@ -214,4 +120,86 @@ const getFileInfo = function(filename) {
   }
 
   return {};
+};
+
+module.exports = ({ moviedbKey }) => {
+  const moviedb = require('./moviedb_api.js')({ apiKey: moviedbKey });
+  const queryTranslator = require('./query_translator.js')({ moviedbKey });
+
+  /**
+   * Queries moviedb repeatedly until finding a match or determining no match exists
+   *
+   * @param {string} filename - File name that is being queried
+   * @param {string} category - Type of query, options are 'movie' and 'tv'
+   * @param {string} year - Year to attach to query (not required)
+   * @return {object} matching moviedb response, no filename exception if query fails
+   */
+  const queryMovieDbForMatch = ({ filename, mediaType, year, searchTerm }) => {
+    if (!filename || !searchTerm) {
+      return new Promise((resolve, reject) => reject(new Error('No Filename for Query')));
+    }
+
+    searchTerm = sanitizeFilenameForSearch(searchTerm);
+
+    return moviedb.search(searchTerm, mediaType, year).then((response) => {
+      if (response.statusCode === 200) {
+        const parsedResponse = JSON.parse(response.body);
+
+        if (parsedResponse.total_results === 0) {
+          let newQueryInfo = modifyFilenameForNextSearch(searchTerm); 
+
+          return queryMovieDbForMatch({ 
+            filename: filename, 
+            year: newQueryInfo.year,
+            mediaType,
+            searchTerm: newQueryInfo.filename
+          });
+        } else {
+          const match = queryTranslator.findValidObject(searchTerm, parsedResponse);
+
+          match.filename = path.basename(filename);
+          match.category = mediaType;
+
+          return match;
+        }
+      } else if (response.statusCode === 429) {
+        return delay(10000).then(() => queryMovieDbForMatch({ 
+          filename, 
+          mediaType, 
+          year,
+          searchTerm
+        }));
+      } else {
+        throw new Error('Unexpected HTTP Status Code: ' + response.statusCode);
+      }
+    });
+  };
+
+  return async ({ filename, mediaType, year }) => {
+    const queryInfo = await queryMovieDbForMatch({ filename, mediaType, year, searchTerm: filename})
+    const details = await queryTranslator[mediaType].getDetails(queryInfo)
+
+    Object.assign(queryInfo, details);
+
+    if (mediaType === 'tv') {
+      const metadata = parseEpisodeInfo(filename);
+
+      if (metadata.episode) {
+        const episodeInfo = await moviedb.getEpisodeInfo(queryInfo.id, metadata.episode)
+
+        if (episodeInfo) {
+          metadata.episode = Object.assign(metadata.episode, {
+            name: episodeInfo.name,
+            overview: episodeInfo.overview,
+            image: episodeInfo.still_path ? `https://image.tmdb.org/t/p/original${episodeInfo.still_path}` : null,
+            guest_stars: episodeInfo.guest_stars
+          });
+        }
+
+        return Object.assign(queryInfo, metadata);
+      } 
+    }
+
+    return queryInfo;
+  };
 };

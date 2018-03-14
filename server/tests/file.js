@@ -79,7 +79,7 @@ describe('file', function () {
         });
     });
 
-    it('can create a proper record for a movie', () => {
+    it('can create a proper record for a movie (complex)', () => {
       const fileName = path.join(baseDir, 'Captain_America_The_Winter_Soldier.mpg');
       const category = 'movie';
       const collectionName = 'Movies';
