@@ -1,6 +1,8 @@
 'use strict';
 const Promise = require('bluebird');
 const path = require('path');
+const MovieType = require('./translator/movie');
+const TvType = require('./translator/tv');
 
 /**
  * Prepares filename to be queried after a failed search
@@ -13,7 +15,6 @@ let modifyFilenameForNextSearch = function(filename) {
 
   filename = filename.split('+');
   if (filename.length === 1) {
-    console.log('spooky');
     return {
       filename: null,
       year: null
@@ -122,9 +123,68 @@ const parseEpisodeInfo = function(filename) {
   return {};
 };
 
+/**
+   * Determines whether a given response is a valid object
+   *
+   * @param {array} movieDbResponse - Array returned from moviedb
+   * @return {object} if response contains something valid it is returned
+   *  name: search name of object, id: tmdb id of object
+   */
+const findValidObject = (searchTerm, moviedbResponse) => {
+  let parsedResponses = moviedbResponse.results;
+
+  const validResponses = parsedResponses.filter(response => {
+      return response.release_date || response.first_air_date;
+  });
+
+  const addMatchPercentage = validResponses.map(response => {
+      const searchWords = searchTerm
+      .replace(/[+]/gi, ' ')
+      .replace(/[^\w\s]/gi, ' ')
+      .toLowerCase()
+      .replace(/\s+/g,' ').trim()
+      .split(' ');
+
+      const title = (response.title || response.original_name)
+      .replace(/[^\w\s]/gi, ' ')
+      .toLowerCase()
+      .replace(/\s+/g,' ').trim()
+      .split(' ')
+
+      const numWordsMatch = title.reduce((matchCount, titleWord) => {
+      const matchIndex = searchWords.indexOf(titleWord);
+      if (matchIndex >= 0) {
+          searchWords.splice(matchIndex, 1);
+          matchCount++;
+      }
+
+      return matchCount;
+      }, 0);
+
+      response.match_percentage =  numWordsMatch / title.length; 
+      return response;
+  });
+
+  const correctMatch = addMatchPercentage.reduce((match, item) => {
+      if (match.match_percentage < item.match_percentage) {
+      return item
+      }
+      return match;
+  }, { match_percentage: -1});
+  
+
+  if (!correctMatch || (!correctMatch.release_date && !correctMatch.first_air_date)) {
+      throw new Error('No match available');
+  } else {
+      return {
+      name: correctMatch.original_name || correctMatch.title,
+      tmdb_id: correctMatch.id
+      };
+  }
+}
+
 module.exports = ({ moviedbKey }) => {
-  const moviedb = require('./moviedb_api.js')({ apiKey: moviedbKey });
-  const queryTranslator = require('./query_translator.js')({ moviedbKey });
+  const moviedb = require('./api/moviedb.js')({ apiKey: moviedbKey });
 
   /**
    * Queries moviedb repeatedly until finding a match or determining no match exists
@@ -134,50 +194,58 @@ module.exports = ({ moviedbKey }) => {
    * @param {string} year - Year to attach to query (not required)
    * @return {object} matching moviedb response, no filename exception if query fails
    */
-  const queryMovieDbForMatch = ({ filename, mediaType, year, searchTerm }) => {
+  const queryMovieDbForMatch = async ({ filename, mediaType, year, searchTerm }) => {
     if (!filename || !searchTerm) {
       return new Promise((resolve, reject) => reject(new Error('No Filename for Query')));
     }
 
     searchTerm = sanitizeFilenameForSearch(searchTerm);
 
-    return moviedb.search(searchTerm, mediaType, year).then((response) => {
-      if (response.statusCode === 200) {
-        const parsedResponse = JSON.parse(response.body);
+    const response = await moviedb.search(searchTerm, mediaType);
 
-        if (parsedResponse.total_results === 0) {
-          let newQueryInfo = modifyFilenameForNextSearch(searchTerm); 
+    if (response.statusCode === 200) {
+      const parsedResponse = JSON.parse(response.body);
 
-          return queryMovieDbForMatch({ 
-            filename: filename, 
-            year: newQueryInfo.year,
-            mediaType,
-            searchTerm: newQueryInfo.filename
-          });
-        } else {
-          const match = queryTranslator.findValidObject(searchTerm, parsedResponse);
+      if (parsedResponse.total_results === 0) {
+        let newQueryInfo = modifyFilenameForNextSearch(searchTerm); 
 
-          match.filename = path.basename(filename);
-          match.category = mediaType;
+        return queryMovieDbForMatch({ 
+          filename: filename, 
+          year: newQueryInfo.year,
+          mediaType,
+          searchTerm: newQueryInfo.filename
+        });
+      } 
 
-          return match;
-        }
-      } else if (response.statusCode === 429) {
-        return delay(10000).then(() => queryMovieDbForMatch({ 
-          filename, 
-          mediaType, 
-          year,
-          searchTerm
-        }));
-      } else {
-        throw new Error('Unexpected HTTP Status Code: ' + response.statusCode);
-      }
-    });
+      const match = findValidObject(searchTerm, parsedResponse);
+
+      match.filename = path.basename(filename);
+      match.category = mediaType;
+
+      return match;
+    }
+
+    if (response.statusCode === 429) {
+      await delay(10000);
+      
+      return queryMovieDbForMatch({ 
+        filename, 
+        mediaType, 
+        year,
+        searchTerm
+      });
+    }
+
+    throw new Error('Unexpected HTTP Status Code: ' + response.statusCode);
   };
 
   return async ({ filename, mediaType, year }) => {
     const queryInfo = await queryMovieDbForMatch({ filename, mediaType, year, searchTerm: filename})
-    const details = await queryTranslator[mediaType].getDetails(queryInfo)
+    const mediaController = mediaType === 'tv' ? 
+      new TvType({ moviedbKey, moviedbResponse: queryInfo }) :
+      new MovieType({ moviedbKey, moviedbResponse: queryInfo });
+
+    const details = await mediaController.getDetails();
 
     Object.assign(queryInfo, details);
 
