@@ -4,7 +4,6 @@
 'use strict';
 const Promise = require('bluebird');
 const request = Promise.promisify(require('request'));
-const config = require('../../config/config.json');
 const apiBase = 'http://api.themoviedb.org/3';
 
 function delay(t, v) {
