@@ -5,7 +5,7 @@
 const Media = require('./media.js');
 const Promise = require('bluebird');
 const { apiKey } = require('../config/config.json');
-const query = require('./movie_query/')({ moviedbKey: apiKey });
+const query = require('cinefile')({ moviedbKey: apiKey });
 
 
 
@@ -30,5 +30,5 @@ module.exports = function(fileData, category, year) {
     .then(mediaObject => mediaObject.getAssets(fileData.metadata.format.filename))
     .then(mediaObject => {
       return mediaObject.addFileData(fileData.metadata)
-    });
+    }).catch(ex => console.log(ex));
 };

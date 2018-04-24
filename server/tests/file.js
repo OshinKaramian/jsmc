@@ -98,7 +98,6 @@ describe('file', function () {
       return file.createRecord(fileName, baseDir, category, collectionName)
         .then(() => db.findMedia('Captain'))
         .then(queryOutput => {
-          console.log(queryOutput);
           return expect(queryOutput[0]).to.include(expectedOutput)
         });
     });
